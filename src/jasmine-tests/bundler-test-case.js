@@ -1,6 +1,7 @@
 
 function BundlerTestCase(
   testDir,
+  extension,
   exec, 
   runs, 
   waitsFor,
@@ -11,6 +12,7 @@ function BundlerTestCase(
    this.Exec = exec;
    this.TestDirectory = testDir;
    this.FinishedBundlerRun = false;
+   this.Extension = extension;
    this.Error = null;
    this.StdOut = null;
    this.StdError = null;
@@ -78,10 +80,10 @@ BundlerTestCase.prototype.VerifyBundle = function() {
   var _this = this;
   _this.runFunc(function() {
 	  var expectedFile = _this.GetFile(
-		"expected-results/" + _this.TestDirectory  + "/test.min.js"
+		"expected-results/" + _this.TestDirectory + "/test.min" + _this.Extension
 	  );
           var resultFile = _this.GetFile(
-		"test-cases/" + _this.TestDirectory  + "/test.min.js"
+		"test-cases/" + _this.TestDirectory + "/test.min" + _this.Extension
 	  );
  
           _this.Console.log('Expected File:');
@@ -102,7 +104,8 @@ BundlerTestCase.prototype.CleanDirectory = function() {
   var _this = this,
       finishedClean1 = false,
       finishedClean2 = false,
-      finishedClean3 = false;
+      finishedClean3 = false,
+      finishedClean4 = false;
 
   _this.runFunc(function() {	  
     _this.Console.log('Cleaning the directory');  
@@ -119,16 +122,22 @@ BundlerTestCase.prototype.CleanDirectory = function() {
                   finishedClean2 = true;
              });
 
-    _this.Exec("rm -v test-cases/" + _this.TestDirectory  + "/test.js"
+    _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/test" + _this.Extension
             , function(error, stdout, stderr) {
                  _this.Console.log(stdout);
                  finishedClean3 = true;
-              });
+            });
+
+    _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/less*.css"
+          , function (error, stdout, stderr) {
+              _this.Console.log(stdout);
+              finishedClean4 = true;
+          });
 
   });
   
   _this.waitFunc(function() {
-        return finishedClean1 && finishedClean2 && finishedClean3;
+        return finishedClean1 && finishedClean2 && finishedClean3 && finishedClean4;
       }, 
       "Clean did not complete", 
       750);

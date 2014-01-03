@@ -190,7 +190,7 @@ function scanDir(allFiles, cb) {
                     var cssFiles = removeCR(data).split("\n");
                     var options = getOptions(cssFiles);
                     if (options.folder !== undefined) {
-                        options.nobundle = true;
+                        options.nobundle = !options.forcebundle;
                         var recursive = options.folder === 'recursive';
                         cssFiles = allFiles.map(function cssMatches(fileName) {
                             if (!fileName.startsWith(bundleDir)) return '#';

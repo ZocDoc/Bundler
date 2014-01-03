@@ -7,6 +7,7 @@ describe("Javascript bundling tests", function() {
     getTestCase = function(directory) { 
       return  new testCase.BundlerTestCase(
           directory,
+          ".js",
           exec,
           runs,
           waitsFor,
