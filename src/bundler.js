@@ -75,6 +75,7 @@ var fs = require("fs"),
     sass = require('node-sass'),
     stylus = require('stylus'),
     nib = require('nib'),
+    hogan = require('hogan.js-template/lib/hogan.js'),
     coffee = require('coffee-script'),
     livescript = require('livescript'),
     CleanCss = require('clean-css'),
@@ -162,7 +163,7 @@ function scanDir(allFiles, cb) {
                         var recursive = options.folder === 'recursive';
                         jsFiles = allFiles.map(function jsMatches(fileName) {
                             if (!fileName.startsWith(bundleDir)) return '#';
-                            if (!fileName.endsWithAny(['.js', '.coffee', '.ls', '.ts'])) return '#';
+                            if (!fileName.endsWithAny(['.js', '.coffee', '.ls', '.ts', '.mustache'])) return '#';
                             if (fileName.endsWithAny(['.min.js'])) return '#';
                             if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
                             return fileName.substring(bundleDir.length + 1);
@@ -255,11 +256,11 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         var isCoffee = file.endsWith(".coffee");
         var isLiveScript = file.endsWith(".ls");
-        var jsFile = isCoffee ?
-            file.replace(".coffee", ".js")
-    		: isLiveScript ?
-            file.replace(".ls", ".js") :
-            file;
+        var isMustache = file.endsWith(".mustache");
+        var jsFile = isCoffee ? file.replace(".coffee", ".js")
+                   : isLiveScript ? file.replace(".ls", ".js")
+                   : isMustache ? file.replace(".mustache", ".js")
+	           : file;
 
         var filePath = path.join(bundleDir, file),
               jsPath = path.join(bundleDir, jsFile),
@@ -278,7 +279,12 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                     readTextFile(filePath, function(livescriptText){
                         getOrCreateJsLiveScript(options, livescriptText, filePath, jsPath, next);
                     });
-                } else {
+                } else if(isMustache){
+                    readTextFile(filePath, function(mustacheText){
+                        getOrCreateJsMustache(options, mustacheText, filePath, jsPath, next);
+                    });  
+                }
+                else {
                     readTextFile(jsPath, next);
                 }
             },
@@ -405,6 +411,20 @@ function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*c
     compileAsync(options, "compiling", function (livescriptText, lsPath, cb) {
             cb(livescript.compile(livescriptText));
         }, livescriptText, lsPath, jsPath, cb);
+}
+
+function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)*/) {
+    compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
+            var templateName = path.basename(mPath, path.extname(mPath)); 
+            var templateFn = hogan.compile(mustacheText, { asString: true });
+            var compiledTemplate = "JST = JST || {};" 
+                        + " JST['" 
+                        + templateName 
+                        + "'] = new Hogan.Template("
+			+ templateFn 
+                        + ");";
+            cb(compiledTemplate);
+        }, mustacheText, mPath, jsPath, cb);
 }
 
 function getOrCreateMinJs(options, js, jsPath, minJsPath, cb /*cb(minJs)*/) {
