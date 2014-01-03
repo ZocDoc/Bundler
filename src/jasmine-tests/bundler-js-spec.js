@@ -12,58 +12,57 @@ describe("Javascript bundling tests", function() {
           waitsFor,
           fs
       );
+    },
+    runTestCase = function (directory) {
+        var testCase = getTestCase(directory);
+        testCase.RunBundlerAndVerifyOutput();
     };
 
-  it("Concatenates individual files in a .bundle file"
-     + "into a single minified bundle."
-     , function() {
-
-        var testCase = getTestCase(
-          "combines-individual-js-files"
-         );
-
-        testCase.RunBundlerAndVerifyOutput();
+  it("Concatenates individual files in a .bundle file into a single minified bundle.", function() {
+         runTestCase("combines-individual-js-files");
   });  
 
   it("Compiles and Concatenates .mustache files", function() {
-     var testCase = getTestCase("combines-mustache");
-     testCase.RunBundlerAndVerifyOutput();
+      runTestCase("combines-mustache");
   });
 
-  it("Compiles and Concatenates .mustache files with js files"
-     , function() {
-     var testCase = getTestCase("combines-mustache-and-js");
-     testCase.RunBundlerAndVerifyOutput();
+  it("Compiles and Concatenates .mustache files with js files", function() {
+      runTestCase("combines-mustache-and-js");
   });
 
   it("Folder option by default minifies, but does not bundle."
     , function() {
 
-      var directory = "default-folder-option";
-      var baseTestFile = "test-cases/" + directory + "/";
-      var minShouldExist = false;
-      var testCase = getTestCase(directory);
+        var directory = "default-folder-option";
+        var baseTestFile = "test-cases/" + directory + "/";
+        var minShouldExist = false;
+        var testCase = getTestCase(directory);
 
-      testCase.VerifySetUp = function() {
-	testCase.Console.log("Verify the min files are "
-	  + (minShouldExist ? "" : "not ") + "in " + baseTestFile + "."
-	);  
-	var minFile1 = fs.existsSync(baseTestFile + "file1.min.js");
-        expect(minFile1).toBe(minShouldExist);
-	var minFile2 = fs.existsSync(baseTestFile + "file2.min.js");
-        expect(minFile2).toBe(minShouldExist);
-	var minFile3 = fs.existsSync(baseTestFile + "file3.min.js");
-        expect(minFile3).toBe(minShouldExist);
-      };
+        testCase.VerifySetUp = function() {
+            testCase.Console.log("Verify the min files are "
+	            + (minShouldExist ? "" : "not ") + "in " + baseTestFile + "."
+            );
 
-      testCase.VerifyBundle = function() { 
-	minShouldExist = true;
-        testCase.VerifySetUp();
-	var bundleFile  = fs.existsSync(directory + "file3.min.js");
-        expect(bundleFile).toBe(false);      
-      };
+            var minFile1 = fs.existsSync(baseTestFile + "file1.min.js");
+                expect(minFile1).toBe(minShouldExist);
+            var minFile2 = fs.existsSync(baseTestFile + "file2.min.js");
+                expect(minFile2).toBe(minShouldExist);
+            var minFile3 = fs.existsSync(baseTestFile + "file3.min.js");
+                expect(minFile3).toBe(minShouldExist);
+        };
 
-      testCase.RunBundlerAndVerifyOutput();
+        testCase.VerifyBundle = function() { 
+        minShouldExist = true;
+            testCase.VerifySetUp();
+            var bundleFile  = fs.existsSync(directory + "file3.min.js");
+            expect(bundleFile).toBe(false);      
+        };
+
+        testCase.RunBundlerAndVerifyOutput();
   });
  
+  it("Folder option will bundle with force bundle option", function () {
+      runTestCase("combines-folder-with-forcebundle");
+  });
+
 });

@@ -159,7 +159,7 @@ function scanDir(allFiles, cb) {
                     var jsFiles = removeCR(data).split("\n");
                     var options = getOptions(jsFiles);
                     if (options.folder !== undefined) {
-                        options.nobundle = true;
+                        options.nobundle = !options.forcebundle;
                         var recursive = options.folder === 'recursive';
                         jsFiles = allFiles.map(function jsMatches(fileName) {
                             if (!fileName.startsWith(bundleDir)) return '#';
