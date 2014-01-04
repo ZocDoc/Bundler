@@ -18,11 +18,11 @@ function BundlerTestCase(
    this.StdError = null;
    this.Options = '';
    this.FileSystem = fs;
-   this.Console = { log: function() { } };  
-   //this.Console = console;
+   this.Console = { log: function() { } };
 };
 
 exports.BundlerTestCase = BundlerTestCase;
+exports.Type = { Javascript: '.js', Css: '.css' }
 
 BundlerTestCase.prototype.GetFile = function(fileName){
   var _this = this;
@@ -101,43 +101,70 @@ BundlerTestCase.prototype.VerifyBundle = function() {
 };          
   
 BundlerTestCase.prototype.CleanDirectory = function() {
-  var _this = this,
-      finishedClean1 = false,
-      finishedClean2 = false,
-      finishedClean3 = false,
-      finishedClean4 = false;
+    var _this = this,
+        finishedClean = {};
 
   _this.runFunc(function() {	  
-    _this.Console.log('Cleaning the directory');  
+    _this.Console.log('Cleaning the directory');
 
+    finishedClean.minFiles = false;
     _this.Exec("rm -v test-cases/" + _this.TestDirectory  + "/*min*"
-            , function(error, stdout, stderr){
-                _this.Console.log(stdout);
-                  finishedClean1 = true;
-             });
-
-    _this.Exec("rm -v test-cases/" + _this.TestDirectory  + "/mustache*.js"
-            , function(error, stdout, stderr){
-                _this.Console.log(stdout);
-                  finishedClean2 = true;
-             });
-
-    _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/test" + _this.Extension
-            , function(error, stdout, stderr) {
-                 _this.Console.log(stdout);
-                 finishedClean3 = true;
+        , function(error, stdout, stderr){
+            _this.Console.log(stdout);
+            finishedClean.minFiles = true;
             });
 
-    _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/less*.css"
-          , function (error, stdout, stderr) {
-              _this.Console.log(stdout);
-              finishedClean4 = true;
-          });
+    finishedClean.testFile = false;
+    _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/test" + _this.Extension
+        , function (error, stdout, stderr) {
+            _this.Console.log(stdout);
+            finishedClean.testFile = true;
+        });
+
+    if (_this.Extension == exports.Type.Javascript) {
+
+        finishedClean.mustache = false;
+        _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/mustache*.js"
+                , function (error, stdout, stderr) {
+                    _this.Console.log(stdout);
+                    finishedClean.mustache = true;
+                });
+       
+        finishedClean.mustacheFolder = false;
+        _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/folder1/mustache*.js"
+                , function (error, stdout, stderr) {
+                    _this.Console.log(stdout);
+                    finishedClean.mustacheFolder = true;
+                });
+    }
+    else if (_this.Extension == exports.Type.Css) {
+
+        finishedClean.less = false;
+        _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/less*.css"
+              , function (error, stdout, stderr) {
+                  _this.Console.log(stdout);
+                  finishedClean.less = true;
+              });
+
+        finishedClean.lessFolder = false;
+        _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/folder1/less*.css"
+              , function (error, stdout, stderr) {
+                  _this.Console.log(stdout);
+                  finishedClean.lessFolder = true;
+              });
+    }
 
   });
   
-  _this.waitFunc(function() {
-        return finishedClean1 && finishedClean2 && finishedClean3 && finishedClean4;
+  _this.waitFunc(function () {
+          var finished = true;
+          for (var key in finishedClean) {
+              finished = finished && finishedClean[key];
+          }
+
+          if(finished) { _this.Console.log('Wait for clean completed'); }
+
+          return finished;
       }, 
       "Clean did not complete", 
       750);

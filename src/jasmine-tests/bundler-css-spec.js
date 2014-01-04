@@ -62,8 +62,14 @@ describe("Css bundling tests", function() {
         testCase.RunBundlerAndVerifyOutput();
   });
  
+  it("The recursive option on a folder searches sub-directories", function () {
+      runTestCase("recursive-folder-css");
+  });
+
   it("Folder option will bundle with force bundle option", function () {
       runTestCase("combines-css-folder-with-forcebundle");
   });
+
+    
 
 });

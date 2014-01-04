@@ -14,8 +14,13 @@ describe("Javascript bundling tests", function() {
           fs
       );
     },
-    runTestCase = function (directory) {
+    runTestCase = function (directory, logToConsole) {
         var testCase = getTestCase(directory);
+
+        if (logToConsole) {
+            testCase.Console = console;
+        }
+
         testCase.RunBundlerAndVerifyOutput();
     };
 
@@ -62,6 +67,10 @@ describe("Javascript bundling tests", function() {
         testCase.RunBundlerAndVerifyOutput();
   });
  
+  it("The recursive option on a folder searches sub-directories.", function () {
+      runTestCase("recursive-folder-js");
+  });
+
   it("Folder option will bundle with force bundle option", function () {
       runTestCase("combines-folder-with-forcebundle");
   });
