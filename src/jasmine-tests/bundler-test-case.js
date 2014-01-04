@@ -9,6 +9,7 @@ String.prototype.endsWith = function (suffix) {
 function BundlerTestCase(
   testDir,
   extension,
+  outputDirectory,
   exec, 
   runs, 
   waitsFor,
@@ -27,6 +28,7 @@ function BundlerTestCase(
    this.FileSystem = fs;
    this.Console = { log: function () { } };
    this.TestRootDirectory = __dirname;
+   this.OutputDirectory = outputDirectory || '';
 };
 
 exports.BundlerTestCase = BundlerTestCase;
@@ -91,7 +93,7 @@ BundlerTestCase.prototype.VerifyBundle = function() {
 		"expected-results/" + _this.TestDirectory + "/verify" + _this.Extension
 	  );
           var resultFile = _this.GetFile(
-		"test-cases/" + _this.TestDirectory + "/test.min" + _this.Extension
+		"test-cases/" + _this.TestDirectory + _this.OutputDirectory + "/test.min" + _this.Extension
 	  );
  
           _this.Console.log('Expected File:');

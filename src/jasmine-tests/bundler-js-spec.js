@@ -4,18 +4,23 @@ describe("Javascript Bundling: ", function() {
   var exec = require('child_process').exec,
     fs = require('fs'),
     testCase = require('./bundler-test-case.js'),
-    getTestCase = function(directory) { 
+    getTestCase = function(directory, outputDirectory) { 
       return  new testCase.BundlerTestCase(
           directory,
           ".js",
+          outputDirectory,
           exec,
           runs,
           waitsFor,
           fs
       );
     },
-    runTestCase = function (directory, logToConsole) {
-        var testCase = getTestCase(directory);
+    runTestCase = function (
+        directory,
+        outputDirectory,
+        logToConsole
+    ) {
+        var testCase = getTestCase(directory, outputDirectory);
 
         if (logToConsole) {
             testCase.Console = console;
@@ -81,6 +86,10 @@ describe("Javascript Bundling: ", function() {
 
   it("Listing items within a listed directory preferentially orders them.", function () {
       runTestCase("preferential-ordering-js");
+  });
+
+  it("If an output directory is specified, then the minified bundle is put in it.", function () {
+      runTestCase("output-directory-js", "/folder-output/");
   });
 
 });

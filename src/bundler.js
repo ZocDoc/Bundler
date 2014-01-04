@@ -171,9 +171,19 @@ function scanDir(allFiles, cb) {
             function processBundle(jsBundle) {
                 var bundleDir = path.dirname(jsBundle);
                 var bundleName = jsBundle.replace('.bundle', '');
+                var splitBundle = bundleName.split('/');
+                var bundleFileName = splitBundle[splitBundle.length - 1];
+
                 readTextFile(jsBundle, function (data) {
                     var jsFiles = removeCR(data).split("\n");
                     var options = getOptions(jsFiles);
+
+                    if(options.outputdirectory) {
+                        bundleName = options.outputdirectory + '/' + bundleFileName;
+                    }
+                
+                    console.log('Bundle Directory', bundleDir);
+                    console.log('Bundle Name', bundleName);
 
                     if(options.directory !== undefined) {
                         var tmpFiles = [];
@@ -228,9 +238,16 @@ function scanDir(allFiles, cb) {
             function processBundle(cssBundle) {
                 var bundleDir = path.dirname(cssBundle);
                 var bundleName = cssBundle.replace('.bundle', '');
+                var splitBundle = bundleName.split('/');
+                var bundleFileName = splitBundle[splitBundle.length - 1];
+
                 readTextFile(cssBundle, function (data) {
                     var cssFiles = removeCR(data).split("\n");
                     var options = getOptions(cssFiles);
+
+                    if(options.outputdirectory) {
+                        bundleName = options.outputdirectory + '/' + bundleFileName;
+                    }
 
                     if(options.directory !== undefined) {
                         var tmpFiles = [];

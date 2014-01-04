@@ -4,18 +4,28 @@ describe("Css bundling tests", function() {
   var exec = require('child_process').exec,
     fs = require('fs'),
     testCase = require('./bundler-test-case.js'),
-    getTestCase = function(directory) { 
+    getTestCase = function(directory, outputDirectory) { 
       return  new testCase.BundlerTestCase(
           directory,
           ".css",
+          outputDirectory,
           exec,
           runs,
           waitsFor,
           fs
       );
     },
-    runTestCase = function (directory) {
-        var testCase = getTestCase(directory);
+    runTestCase = function (
+        directory,
+        outputDirectory,
+        logToConsole
+    ) {
+        var testCase = getTestCase(directory, outputDirectory);
+
+        if (logToConsole) {
+            testCase.Console = console;
+        }
+
         testCase.RunBundlerAndVerifyOutput();
     };
 
@@ -72,6 +82,10 @@ describe("Css bundling tests", function() {
 
   it("Folder option will bundle with force bundle option", function () {
       runTestCase("combines-css-folder-with-forcebundle");
+  });
+
+  it("If an output directory is specified, then the minified bundle is put in it.", function () {
+      runTestCase("output-directory-css", "/folder-output/");
   });
 
 });
