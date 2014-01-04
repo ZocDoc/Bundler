@@ -79,4 +79,8 @@ describe("Javascript Bundling: ", function() {
       runTestCase("combines-folder-with-forcebundle");
   });
 
+  it("Listing items within a listed directory preferentially orders them.", function () {
+      runTestCase("preferential-ordering-js");
+  });
+
 });

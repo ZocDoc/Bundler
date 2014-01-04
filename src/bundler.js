@@ -284,6 +284,7 @@ function getMinFileName(fileName) {
 
 function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) {
 
+    var processedFiles = {};
     console.log("\nprocessing " + jsBundle + ":");
     
     for (var optionKey in options) {
@@ -321,8 +322,11 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         if (!(file = file.trim())
             || (file.startsWith(".") && !file.startsWith(".."))
-            || file.startsWith('#'))
+            || file.startsWith('#')
+            || processedFiles[file])
             return;
+
+        processedFiles[file] = true;
 
         var isCoffee = file.endsWith(".coffee");
         var isLiveScript = file.endsWith(".ls");
