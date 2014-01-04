@@ -130,6 +130,22 @@ function scanDir(allFiles, cb) {
     var jsBundles  = allFiles.filter(function (file) { return file.endsWith(".js.bundle"); });
     var cssBundles = allFiles.filter(function (file) { return file.endsWith(".css.bundle"); });
 
+    function jsMatches(fileName, bundleDir, recursive, path) {
+        if (!fileName.startsWith(bundleDir)) return '#';
+        if (!fileName.endsWithAny(['.js', '.coffee', '.ls', '.ts', '.mustache'])) return '#';
+        if (fileName.endsWithAny(['.min.js'])) return '#';
+        if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
+        return fileName.substring(bundleDir.length + 1);
+    } 
+
+    function cssMatches(fileName, bundleDir, recursive, path) {
+        if (!fileName.startsWith(bundleDir)) return '#';
+        if (!fileName.endsWithAny(['.css', '.less', '.sass', '.scss', '.styl'])) return '#';
+        if (fileName.endsWithAny(['.min.css'])) return '#';
+        if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
+        return fileName.substring(bundleDir.length + 1);
+    }
+
     function getOptions(fileLines) {
         var options = clone(defaultOptions);
         if (fileLines.length === 0) return options;
@@ -158,15 +174,41 @@ function scanDir(allFiles, cb) {
                 readTextFile(jsBundle, function (data) {
                     var jsFiles = removeCR(data).split("\n");
                     var options = getOptions(jsFiles);
-                    if (options.folder !== undefined) {
+
+                    if(options.directory !== undefined) {
+                        var tmpFiles = [];
+
+                        jsFiles.forEach(function(name) { 
+
+                            if(name.startsWith('#')) { return; }
+
+                            var currentItem = bundleDir + '/' +  name;
+                            var stat = fs.statSync(currentItem);
+                            if(!stat.isDirectory()) {
+                                tmpFiles.push(name);
+                            }
+                            else if(currentItem != bundleDir + '/'){
+                                
+                                allFiles.map(function(fileName) {
+                                    var match = jsMatches(fileName, currentItem, true);
+                                    return name + '/' + match;
+                                })
+                                .forEach(function(name) {
+
+                                    if(!name.endsWith('#')){
+                                        tmpFiles.push(name);
+                                    }
+                                });
+                            }
+                        });
+
+                        jsFiles = tmpFiles;
+                    }
+                    else if (options.folder !== undefined) {
                         options.nobundle = !options.forcebundle;
                         var recursive = options.folder === 'recursive';
-                        jsFiles = allFiles.map(function jsMatches(fileName) {
-                            if (!fileName.startsWith(bundleDir)) return '#';
-                            if (!fileName.endsWithAny(['.js', '.coffee', '.ls', '.ts', '.mustache'])) return '#';
-                            if (fileName.endsWithAny(['.min.js'])) return '#';
-                            if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
-                            return fileName.substring(bundleDir.length + 1);
+                        jsFiles = allFiles.map(function(fileName) {
+                            return jsMatches(fileName, bundleDir, recursive, path);
                         });
                     }
                     processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, nextBundle);
@@ -189,15 +231,41 @@ function scanDir(allFiles, cb) {
                 readTextFile(cssBundle, function (data) {
                     var cssFiles = removeCR(data).split("\n");
                     var options = getOptions(cssFiles);
-                    if (options.folder !== undefined) {
+
+                    if(options.directory !== undefined) {
+                        var tmpFiles = [];
+
+                        cssFiles.forEach(function(name) { 
+
+                            if(name.startsWith('#')) { return; }
+
+                            var currentItem = bundleDir + '/' +  name;
+                            var stat = fs.statSync(currentItem);
+                            if(!stat.isDirectory()) {
+                                tmpFiles.push(name);
+                            }
+                            else if(currentItem != bundleDir + '/'){
+                                
+                                allFiles.map(function(fileName) {
+                                    var match = cssMatches(fileName, currentItem, true);
+                                    return name + '/' + match;
+                                })
+                                .forEach(function(name) {
+
+                                    if(!name.endsWith('#')){
+                                        tmpFiles.push(name);
+                                    }
+                                });
+                            }
+                        });
+
+                        cssFiles = tmpFiles;
+                    }
+                    else if (options.folder !== undefined) {
                         options.nobundle = !options.forcebundle;
                         var recursive = options.folder === 'recursive';
-                        cssFiles = allFiles.map(function cssMatches(fileName) {
-                            if (!fileName.startsWith(bundleDir)) return '#';
-                            if (!fileName.endsWithAny(['.css', '.less', '.sass', '.scss', '.styl'])) return '#';
-                            if (fileName.endsWithAny(['.min.css'])) return '#';
-                            if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
-                            return fileName.substring(bundleDir.length + 1);
+                        cssFiles = allFiles.map(function(fileName) {
+                            return cssMatches(fileName, bundleDir, recursive, path);
                         });
                     }
                     processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, nextBundle);
@@ -217,6 +285,7 @@ function getMinFileName(fileName) {
 function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) {
 
     console.log("\nprocessing " + jsBundle + ":");
+    
     for (var optionKey in options) {
         console.log("option: " + optionKey + " -> " + options[optionKey]);
     }
@@ -249,6 +318,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
     jsFiles.forEach(function (file) {
         // Skip blank lines/files beginning with '.' or '#', but allow ../relative paths
+
         if (!(file = file.trim())
             || (file.startsWith(".") && !file.startsWith(".."))
             || file.startsWith('#'))
@@ -265,6 +335,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var filePath = path.join(bundleDir, file),
               jsPath = path.join(bundleDir, jsFile),
            minJsPath = getMinFileName(jsPath);
+
 
         var i = index++;
         pending++;
