@@ -1,4 +1,11 @@
 
+String.prototype.startsWith = function (str) {
+    return this.indexOf(str) === 0;
+};
+String.prototype.endsWith = function (suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
 function BundlerTestCase(
   testDir,
   extension,
@@ -18,7 +25,8 @@ function BundlerTestCase(
    this.StdError = null;
    this.Options = '';
    this.FileSystem = fs;
-   this.Console = { log: function() { } };
+   this.Console = { log: function () { } };
+   this.TestRootDirectory = __dirname;
 };
 
 exports.BundlerTestCase = BundlerTestCase;
@@ -44,13 +52,13 @@ BundlerTestCase.prototype.RunBundlerAndVerifyOutput = function() {
   _this.runFunc(function() { 
      _this.Exec("node ../bundler.js " + _this.Options + " test-cases/" + _this.TestDirectory
        , function(error, stdout, stderr) {
-	    _this.Error = error;
+	        _this.Error = error;
             _this.StdOut = stdout;
-            _this.StdError = stderr;	
-	
-            _this.Console.log("stdOut: (" + stdout + ")");
-            _this.Console.log("stdErr: (" + stderr + ")");
-            _this.Console.log("Error:  (" + error  + ")");
+            _this.StdError = stderr;
+
+            if (_this.StdOut) { _this.Console.log("stdOut: (" + _this.StdOut + ")"); }
+            if (_this.StdError) { _this.Console.log("stdErr: (" + _this.StdError + ")"); }
+            if (_this.Error) { _this.Console.log("stdErr: (" + _this.Error + ")"); }
 		
             _this.FinishedBundlerRun = true;
           });
@@ -101,74 +109,42 @@ BundlerTestCase.prototype.VerifyBundle = function() {
 };          
   
 BundlerTestCase.prototype.CleanDirectory = function() {
-    var _this = this,
-        finishedClean = {};
+    var _this = this, finished = true;
 
-  _this.runFunc(function() {	  
-    _this.Console.log('Cleaning the directory');
+    _this.runFunc(function() {	  
+        var unlinkFiles = function (file, currentDir) {
 
-    finishedClean.minFiles = false;
-    _this.Exec("rm -v test-cases/" + _this.TestDirectory  + "/*min*"
-        , function(error, stdout, stderr){
-            _this.Console.log(stdout);
-            finishedClean.minFiles = true;
-            });
+            if (file.match(/min/g)
+                || file == 'test.js'
+                || file == 'test.css'
+                || (file.startsWith('mustache') && file.endsWith('.js'))
+                || (file.startsWith('less') && file.endsWith('.css'))) {
+                _this.FileSystem.unlinkSync(currentDir + '/' + file);
 
-    finishedClean.testFile = false;
-    _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/test" + _this.Extension
-        , function (error, stdout, stderr) {
-            _this.Console.log(stdout);
-            finishedClean.testFile = true;
-        });
+                _this.Console.log(file + ' has been removed.');
+            }
+            else if (file.startsWith('folder')) {
+                var subdirectory = currentDir + "/" + file;
+                _this.FileSystem
+                        .readdirSync(subdirectory)
+                        .forEach(function (file) { unlinkFiles(file, subdirectory) });
+            }
+        };
 
-    if (_this.Extension == exports.Type.Javascript) {
+        _this.Console.log('Cleaning the directory');
+        var directory = _this.TestRootDirectory + "/test-cases/" + _this.TestDirectory;
+        _this.FileSystem
+                .readdirSync(directory)
+                .forEach(function (file) { unlinkFiles(file, directory) });
 
-        finishedClean.mustache = false;
-        _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/mustache*.js"
-                , function (error, stdout, stderr) {
-                    _this.Console.log(stdout);
-                    finishedClean.mustache = true;
-                });
-       
-        finishedClean.mustacheFolder = false;
-        _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/folder1/mustache*.js"
-                , function (error, stdout, stderr) {
-                    _this.Console.log(stdout);
-                    finishedClean.mustacheFolder = true;
-                });
-    }
-    else if (_this.Extension == exports.Type.Css) {
-
-        finishedClean.less = false;
-        _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/less*.css"
-              , function (error, stdout, stderr) {
-                  _this.Console.log(stdout);
-                  finishedClean.less = true;
-              });
-
-        finishedClean.lessFolder = false;
-        _this.Exec("rm -v test-cases/" + _this.TestDirectory + "/folder1/less*.css"
-              , function (error, stdout, stderr) {
-                  _this.Console.log(stdout);
-                  finishedClean.lessFolder = true;
-              });
-    }
-
-  });
+        finished = true;
+    });
   
   _this.waitFunc(function () {
-          var finished = true;
-          for (var key in finishedClean) {
-              finished = finished && finishedClean[key];
-          }
-
-          if(finished) { _this.Console.log('Wait for clean completed'); }
-
           return finished;
       }, 
       "Clean did not complete", 
       750);
 
-
-  _this.Console.log("Clean Complete");
+  _this.runFunc(function () { _this.Console.log("Clean Complete"); });
 };

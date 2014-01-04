@@ -1,5 +1,5 @@
 
-describe("Javascript bundling tests", function() {
+describe("Javascript Bundling: ", function() {
 
   var exec = require('child_process').exec,
     fs = require('fs'),
