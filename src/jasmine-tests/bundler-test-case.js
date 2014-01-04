@@ -80,7 +80,7 @@ BundlerTestCase.prototype.VerifyBundle = function() {
   var _this = this;
   _this.runFunc(function() {
 	  var expectedFile = _this.GetFile(
-		"expected-results/" + _this.TestDirectory + "/test.min" + _this.Extension
+		"expected-results/" + _this.TestDirectory + "/verify" + _this.Extension
 	  );
           var resultFile = _this.GetFile(
 		"test-cases/" + _this.TestDirectory + "/test.min" + _this.Extension
