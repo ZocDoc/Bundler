@@ -110,6 +110,27 @@ BundlerTestCase.prototype.VerifyBundle = function() {
 
 };          
   
+BundlerTestCase.prototype.VerifyFileState = function (files, shouldExist) {
+    var _this = this;
+    var baseTestFile = "test-cases/" + _this.TestDirectory + "/";
+
+    _this.Console.log("Verify the min files are "
+	            + (shouldExist ? "" : "not ") + "in " + baseTestFile + "."
+            );
+
+    for (var i = 0; i < files.length; i++) {
+        _this.CheckIfFileExists(baseTestFile, files[i], shouldExist);
+    }
+}
+
+BundlerTestCase.prototype.CheckIfFileExists = function(directory, file, shouldExist) {
+    var _this = this;
+
+    var isThere = _this.FileSystem.existsSync(directory + file + _this.Extension);
+    _this.Console.log(file + " is " + (isThere ? "there" : "not there"));
+    expect(isThere).toBe(shouldExist);
+}
+
 BundlerTestCase.prototype.CleanDirectory = function() {
     var _this = this, finished = true;
 

@@ -44,29 +44,18 @@ describe("Css bundling tests", function() {
   it("Folder option by default minifies, but does not bundle."
     , function() {
 
-        var directory = "default-folder-option-css";
-        var baseTestFile = "test-cases/" + directory + "/";
+        var minFiles = ["file1.min", "file2.min", "file3.min"];
         var minShouldExist = false;
-        var testCase = getTestCase(directory);
+        var testCase = getTestCase("default-folder-option-css");
 
         testCase.VerifySetUp = function() {
-            testCase.Console.log("Verify the min files are "
-	            + (minShouldExist ? "" : "not ") + "in " + baseTestFile + "."
-            );
-
-            var minFile1 = fs.existsSync(baseTestFile + "file1.min.css");
-                expect(minFile1).toBe(minShouldExist);
-            var minFile2 = fs.existsSync(baseTestFile + "file2.min.css");
-                expect(minFile2).toBe(minShouldExist);
-            var minFile3 = fs.existsSync(baseTestFile + "file3.min.css");
-                expect(minFile3).toBe(minShouldExist);
+            testCase.VerifyFileState(minFiles, minShouldExist)
         };
 
         testCase.VerifyBundle = function() { 
-        minShouldExist = true;
+            minShouldExist = true;
             testCase.VerifySetUp();
-            var bundleFile  = fs.existsSync(directory + "file3.min.css");
-            expect(bundleFile).toBe(false);      
+            testCase.VerifyFileState(["test.min"], false);    
         };
 
         testCase.RunBundlerAndVerifyOutput();
