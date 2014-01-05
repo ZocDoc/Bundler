@@ -1,0 +1,2 @@
+;JST=JST||{},JST.mustache1=new Hogan.Template(function(a,b,c){var d=this;return d.b(c=c||""),d.b("<div> "),d.b(d.v(d.f("i",a,b,0))),d.b(" </div>"),d.b("\n"),d.fl()})
+;JST=JST||{},JST.mustache2=new Hogan.Template(function(a,b,c){var d=this;return d.b(c=c||""),d.b("<div> "),d.b(d.v(d.f("p",a,b,0))),d.b(" </div>"),d.b("\n"),d.fl()})
