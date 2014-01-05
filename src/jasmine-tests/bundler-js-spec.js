@@ -41,24 +41,10 @@ describe("Javascript Bundling: ", function() {
       runTestCase("combines-mustache-and-js");
   });
 
-  it("Folder option by default minifies, but does not bundle."
-    , function() {
-
-        var minFiles = ["file1.min", "file2.min", "file3.min"];
-        var minShouldExist = false;
-        var testCase = getTestCase("default-folder-option");
-
-        testCase.VerifySetUp = function () {
-            testCase.VerifyFileState(minFiles, minShouldExist)
-        };
-
-        testCase.VerifyBundle = function () {
-            minShouldExist = true;
-            testCase.VerifySetUp();
-            testCase.VerifyFileState(["test.min"], false);
-        };
-
-        testCase.RunBundlerAndVerifyOutput();
+  it("Folder option by default minifies, but does not bundle.", function() {
+      var testCase = getTestCase("default-folder-option");
+      testCase.SetUpCacheFileTest(false);
+      testCase.RunBundlerAndVerifyOutput();
   });
  
   it("The recursive option on a folder searches sub-directories.", function () {
@@ -79,6 +65,12 @@ describe("Javascript Bundling: ", function() {
 
   it("If an output directory is specified, then the minified bundle is put in it.", function () {
       runTestCase("output-directory-js", "/folder-output/");
+  });
+
+  it("If an output directory is specified, then any computed files are put in it.", function () {
+      var testCase = getTestCase("output-directory-js", "/folder-output/");
+      testCase.SetUpCacheFileTest(true, ["file1.min", "file2.min"]);
+      testCase.RunBundlerAndVerifyOutput();
   });
 
 });

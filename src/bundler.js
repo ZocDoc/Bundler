@@ -125,6 +125,18 @@ var scanIndex = 0;
         console.log("\nDone. " + (Date.now() - startedAt) + "ms");
 })();
 
+function getOutputFilePath(filename, options) {
+        
+    if(options.outputdirectory) {
+        var split = filename.indexOf('/') < 0 ? '\\' : '/';
+        var splitBundle = filename.split(split);
+        var bundleFileName = splitBundle[splitBundle.length - 1];
+        return options.outputdirectory + split + bundleFileName;
+    }
+
+    return filename;
+}
+
 function scanDir(allFiles, cb) {
 
     var jsBundles  = allFiles.filter(function (file) { return file.endsWith(".js.bundle"); });
@@ -171,19 +183,12 @@ function scanDir(allFiles, cb) {
             function processBundle(jsBundle) {
                 var bundleDir = path.dirname(jsBundle);
                 var bundleName = jsBundle.replace('.bundle', '');
-                var splitBundle = bundleName.split('/');
-                var bundleFileName = splitBundle[splitBundle.length - 1];
 
                 readTextFile(jsBundle, function (data) {
                     var jsFiles = removeCR(data).split("\n");
                     var options = getOptions(jsFiles);
 
-                    if(options.outputdirectory) {
-                        bundleName = options.outputdirectory + '/' + bundleFileName;
-                    }
-                
-                    console.log('Bundle Directory', bundleDir);
-                    console.log('Bundle Name', bundleName);
+                    bundleName = getOutputFilePath(bundleName, options);
 
                     if(options.directory !== undefined) {
                         var tmpFiles = [];
@@ -238,16 +243,12 @@ function scanDir(allFiles, cb) {
             function processBundle(cssBundle) {
                 var bundleDir = path.dirname(cssBundle);
                 var bundleName = cssBundle.replace('.bundle', '');
-                var splitBundle = bundleName.split('/');
-                var bundleFileName = splitBundle[splitBundle.length - 1];
 
                 readTextFile(cssBundle, function (data) {
                     var cssFiles = removeCR(data).split("\n");
                     var options = getOptions(cssFiles);
 
-                    if(options.outputdirectory) {
-                        bundleName = options.outputdirectory + '/' + bundleFileName;
-                    }
+                    bundleName = getOutputFilePath(bundleName, options);
 
                     if(options.directory !== undefined) {
                         var tmpFiles = [];
@@ -355,9 +356,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         var filePath = path.join(bundleDir, file),
               jsPath = path.join(bundleDir, jsFile),
-           minJsPath = getMinFileName(jsPath);
-
-
+              jsPathOutput = getOutputFilePath(jsPath, options),
+              minJsPath = getMinFileName(jsPathOutput);
+        
         var i = index++;
         pending++;
         Step(
@@ -450,8 +451,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             file;
 
         var filePath = path.join(bundleDir, file),
-             cssPath = path.join(bundleDir, cssFile),
-          minCssPath = getMinFileName(cssPath);
+            cssPath = path.join(bundleDir, cssFile),
+            cssPathOutput = getOutputFilePath(cssPath, options),
+            minCssPath = getMinFileName(cssPathOutput);
 
         var i = index++;
         pending++;

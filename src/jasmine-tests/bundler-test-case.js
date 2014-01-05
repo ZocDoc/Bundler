@@ -112,7 +112,7 @@ BundlerTestCase.prototype.VerifyBundle = function() {
   
 BundlerTestCase.prototype.VerifyFileState = function (files, shouldExist) {
     var _this = this;
-    var baseTestFile = "test-cases/" + _this.TestDirectory + "/";
+    var baseTestFile = "test-cases/" + _this.TestDirectory + _this.OutputDirectory + "/";
 
     _this.Console.log("Verify the min files are "
 	            + (shouldExist ? "" : "not ") + "in " + baseTestFile + "."
@@ -130,6 +130,23 @@ BundlerTestCase.prototype.CheckIfFileExists = function(directory, file, shouldEx
     _this.Console.log(file + " is " + (isThere ? "there" : "not there"));
     expect(isThere).toBe(shouldExist);
 }
+
+BundlerTestCase.prototype.SetUpCacheFileTest = function (shouldMinifyBundle, files) {
+    var _this = this;
+    var minShouldExist = false;
+
+    _this.VerifySetUp = function () {
+        var minFiles = files || ["file1.min", "file2.min", "file3.min"];
+        _this.VerifyFileState(minFiles, minShouldExist)
+    };
+
+    _this.VerifyBundle = function () {
+        minShouldExist = true;
+        _this.VerifySetUp();
+        _this.VerifyFileState(["test.min"], shouldMinifyBundle);
+    };
+}
+
 
 BundlerTestCase.prototype.CleanDirectory = function() {
     var _this = this, finished = true;

@@ -1,5 +1,5 @@
 
-describe("Css bundling tests", function() {
+describe("Css Bundling:", function() {
 
   var exec = require('child_process').exec,
     fs = require('fs'),
@@ -43,21 +43,8 @@ describe("Css bundling tests", function() {
 
   it("Folder option by default minifies, but does not bundle."
     , function() {
-
-        var minFiles = ["file1.min", "file2.min", "file3.min"];
-        var minShouldExist = false;
         var testCase = getTestCase("default-folder-option-css");
-
-        testCase.VerifySetUp = function() {
-            testCase.VerifyFileState(minFiles, minShouldExist)
-        };
-
-        testCase.VerifyBundle = function() { 
-            minShouldExist = true;
-            testCase.VerifySetUp();
-            testCase.VerifyFileState(["test.min"], false);    
-        };
-
+        testCase.SetUpCacheFileTest(false);
         testCase.RunBundlerAndVerifyOutput();
   });
  
@@ -75,6 +62,12 @@ describe("Css bundling tests", function() {
 
   it("If an output directory is specified, then the minified bundle is put in it.", function () {
       runTestCase("output-directory-css", "/folder-output/");
+  });
+
+  it("If an output directory is specified, then any computed files are put in it.", function () {
+      var testCase = getTestCase("output-directory-css", "/folder-output/");
+      testCase.SetUpCacheFileTest(true, ["file1.min", "file2.min"]);
+      testCase.RunBundlerAndVerifyOutput();
   });
 
 });
