@@ -74,5 +74,4 @@ BundleHasher.prototype.AddFileHash = function (bundleName, bundleContents) {
     var _this = this;
     var hash = _this.GenerateHash(bundleContents);
     this.HashCollection[bundleName] = hash;
-
 }

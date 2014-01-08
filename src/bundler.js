@@ -49,18 +49,23 @@ String.prototype.endsWithAny = function (endings) {
     return endings.some(function (ending) { return str.endsWith(ending); });
 };
 
+function ArgumentisOptional(arg) {
+    return arg.startsWith('#') || arg.startsWith('-');
+}
+
 //recursively scans the directory below for *.js.bundle and *.css.bundle files
 var commandLineArgs = process.argv.splice(2); //directories specified in bundler.cmd
 
-var commandLineOptions = commandLineArgs.filter(function (arg) { return arg.startsWith('#'); });
+var commandLineOptions = commandLineArgs.filter(function (arg) { return ArgumentisOptional(arg); });
+
 var defaultOptions = {};
 commandLineOptions.forEach(function (option) {
-    while (option.startsWith('#')) { option = option.substring(1); }
+    while (ArgumentisOptional(option)) { option = option.substring(1); }
     var parts = option.split(':');
     defaultOptions[parts[0].toLowerCase()] = parts.length > 1 ? parts[1] : true;
 });
 
-var SCAN_ROOT_DIRS = commandLineArgs.filter(function (arg) { return !arg.startsWith('#'); });
+var SCAN_ROOT_DIRS = commandLineArgs.filter(function (arg) { return !ArgumentisOptional(arg); });
 if (!SCAN_ROOT_DIRS.length) {
     console.log("No directories were specified.");
     console.log("Usage: bundler.js [#option:value] ../Content [../Scripts]");
@@ -80,7 +85,10 @@ var fs = require("fs"),
     livescript = require('livescript'),
     CleanCss = require('clean-css'),
     Step = require('step'),
-    startedAt = Date.now();
+    startedAt = Date.now(),
+    hashingRequire = require('./bundle-hash.js'),
+    bundleHasher = new hashingRequire.BundleHasher();
+
 
 var walk = function (dir, done) {
     var results = [];
@@ -122,6 +130,11 @@ var scanIndex = 0;
             }
         });
     } else
+
+        if(defaultOptions.computefilehashes) {
+            bundleHasher.SaveFileHashesToDisk(defaultOptions.outputdirectory ||  process.cwd());
+        }
+
         console.log("\nDone. " + (Date.now() - startedAt) + "ms");
 })();
 
@@ -141,6 +154,10 @@ function scanDir(allFiles, cb) {
 
     var jsBundles  = allFiles.filter(function (file) { return file.endsWith(".js.bundle"); });
     var cssBundles = allFiles.filter(function (file) { return file.endsWith(".css.bundle"); });
+
+    if(defaultOptions.computefilehashes) {
+        bundleHasher.LoadFileHashFromDisk(defaultOptions.outputdirectory ||  process.cwd());
+    }
 
     function jsMatches(fileName, bundleDir, recursive, path) {
         if (!fileName.startsWith(bundleDir)) return '#';
@@ -326,6 +343,11 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         var afterBundle = options.skipmin ? cb : function (_) {
             var minFileName = getMinFileName(bundleName);
+            console.log(options.computefilehashes);
+            if(options.computefilehashes) {
+                bundleHasher.AddFileHash(bundleName, allMinJs);
+            }
+
             fs.writeFile(minFileName, allMinJs, cb);
         };
         if (!options.bundleminonly) {
@@ -427,6 +449,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         };
 
         if (!options.bundleminonly) {
+            if(options.computefilehashes) {
+                bundleHasher.AddFileHash(bundleName, allMinCss);
+            }
             fs.writeFile(bundleName, allCss, afterBundle);
         } else {
             afterBundle();

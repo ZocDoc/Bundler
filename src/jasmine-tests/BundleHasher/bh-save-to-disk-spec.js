@@ -39,7 +39,6 @@ describe("Bundle Hashing Save Hashes To Disk: ", function() {
   it("On file error, the error is thrown", function () {
       var exception = "an exception";
       fileSystem.writeFileSync = function () {
-          console.log('throwing')
           throw exception;
       };
 
