@@ -28,9 +28,9 @@ function BundleHasher(fileSystem) {
 
     this.FileSystem = fileSystem || fs;
     this.GenerateHash = function (fileText) {
-        return hasher.createHash('md5').update(name).digest('hex');
+        return hasher.createHash('md5').update(fileText).digest('hex');
     };
-    this.HashCollection = null;
+    this.HashCollection = { };
     this.Console = { log: function () { } };
 }
 
@@ -67,4 +67,12 @@ BundleHasher.prototype.SaveFileHashesToDisk = function (outputdirectory) {
         fileContents = JSON.stringify(_this.HashCollection);
 
     _this.FileSystem.writeFileSync(hashFile, fileContents);
+}
+
+BundleHasher.prototype.AddFileHash = function (bundleName, bundleContents) {
+    
+    var _this = this;
+    var hash = _this.GenerateHash(bundleContents);
+    this.HashCollection[bundleName] = hash;
+
 }
