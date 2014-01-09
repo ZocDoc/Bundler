@@ -29,19 +29,23 @@ function BundlerTestCase(
    this.Console = { log: function () { } };
    this.TestRootDirectory = __dirname;
    this.OutputDirectory = outputDirectory || '';
+   this.ExpectedFile = "expected-results/" + this.TestDirectory + "/verify" + this.Extension;
+   this.TestFile = "test-cases/" + this.TestDirectory + this.OutputDirectory + "/test.min" + this.Extension;
+   this.CommandOptions = '';
 };
 
 exports.BundlerTestCase = BundlerTestCase;
 exports.Type = { Javascript: '.js', Css: '.css' }
 
 BundlerTestCase.prototype.GetFile = function(fileName){
-  var _this = this;
-  return _this.FileSystem.readFileSync(
-		fileName,
-                {
-		  encoding: 'utf8' 
-		}
-	  );
+        var _this = this;
+        _this.Console.log(fileName);
+        return _this.FileSystem.readFileSync(
+            fileName,
+                    {
+	            encoding: 'utf8' 
+            }
+        );
 };
 
 BundlerTestCase.prototype.VerifySetUp = function() { };
@@ -51,8 +55,11 @@ BundlerTestCase.prototype.RunBundlerAndVerifyOutput = function() {
   _this.CleanDirectory(); 
   _this.VerifySetUp();
 
-  _this.runFunc(function() { 
-     _this.Exec("node ../bundler.js " + _this.Options + " test-cases/" + _this.TestDirectory
+  _this.runFunc(function () {
+
+      var cmd = "node ../bundler.js " + _this.Options + " test-cases/" + _this.TestDirectory + _this.CommandOptions;
+      _this.Console.log('Running: ' + cmd);
+      _this.Exec(cmd
        , function(error, stdout, stderr) {
 	        _this.Error = error;
             _this.StdOut = stdout;
@@ -89,20 +96,16 @@ BundlerTestCase.prototype.RunBundlerAndVerifyOutput = function() {
 BundlerTestCase.prototype.VerifyBundle = function() {	
   var _this = this;
   _this.runFunc(function() {
-	  var expectedFile = _this.GetFile(
-		"expected-results/" + _this.TestDirectory + "/verify" + _this.Extension
-	  );
-          var resultFile = _this.GetFile(
-		"test-cases/" + _this.TestDirectory + _this.OutputDirectory + "/test.min" + _this.Extension
-	  );
+        var expectedFile = _this.GetFile(_this.ExpectedFile);
+        var resultFile = _this.GetFile(_this.TestFile);
  
-          _this.Console.log('Expected File:');
-          _this.Console.log(expectedFile);
+        _this.Console.log('Expected File:');
+        _this.Console.log(expectedFile);
 	
-          _this.Console.log('Test File:');
-          _this.Console.log(resultFile);
+        _this.Console.log('Test File:');
+        _this.Console.log(resultFile);
 
-          expect(resultFile).toBe(expectedFile);
+        expect(resultFile).toBe(expectedFile);
     }, 
     function() {
  	_this.VerifyFinished = true;
@@ -147,6 +150,21 @@ BundlerTestCase.prototype.SetUpCacheFileTest = function (shouldMinifyBundle, fil
     };
 }
 
+BundlerTestCase.prototype.SetUpHashTest = function (shouldHash) {
+    var _this = this,
+        directory =  "test-cases/" + _this.TestDirectory + _this.OutputDirectory;
+    if (shouldHash) {
+        _this.TestFile = directory + '/bundle-hashes.json';
+    }
+    else {
+
+        _this.VerifyBundle = function () {
+            var file = directory + 'bundle-hashes.json';
+            _this.Console.log('Hash file should not be present: ' + file)
+            _this.VerifyFileState([file], false);
+        };
+    }
+}
 
 BundlerTestCase.prototype.CleanDirectory = function() {
     var _this = this, finished = true;
@@ -157,6 +175,7 @@ BundlerTestCase.prototype.CleanDirectory = function() {
             if (file.match(/min/g)
                 || file == 'test.js'
                 || file == 'test.css'
+                || file == 'bundle-hashes.json'
                 || (file.startsWith('mustache') && file.endsWith('.js'))
                 || (file.startsWith('less') && file.endsWith('.css'))) {
                 _this.FileSystem.unlinkSync(currentDir + '/' + file);

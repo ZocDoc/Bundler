@@ -156,6 +156,7 @@ function scanDir(allFiles, cb) {
     var cssBundles = allFiles.filter(function (file) { return file.endsWith(".css.bundle"); });
 
     if(defaultOptions.computefilehashes) {
+        bundleHasher.Console = console;
         bundleHasher.LoadFileHashFromDisk(defaultOptions.outputdirectory ||  process.cwd());
     }
 
