@@ -113,9 +113,10 @@ BundlerTestCase.prototype.VerifyBundle = function() {
 
 };          
   
-BundlerTestCase.prototype.VerifyFileState = function (files, shouldExist) {
+BundlerTestCase.prototype.VerifyFileState = function (files, shouldExist, ignoreOutputDirectory) {
     var _this = this;
-    var baseTestFile = "test-cases/" + _this.TestDirectory + _this.OutputDirectory + "/";
+    var outputdir = ignoreOutputDirectory ? '' : _this.OutputDirectory;
+    var baseTestFile = "test-cases/" + _this.TestDirectory + outputdir + "/";
 
     _this.Console.log("Verify the min files are "
 	            + (shouldExist ? "" : "not ") + "in " + baseTestFile + "."
@@ -124,13 +125,20 @@ BundlerTestCase.prototype.VerifyFileState = function (files, shouldExist) {
     for (var i = 0; i < files.length; i++) {
         _this.CheckIfFileExists(baseTestFile, files[i], shouldExist);
     }
+
+    if (_this.OutputDirectory && !ignoreOutputDirectory) {
+        _this.Console.log("Make sure nothing was put in the main directories.")
+        _this.VerifyFileState(files, false, true);
+    }
+
 }
 
 BundlerTestCase.prototype.CheckIfFileExists = function(directory, file, shouldExist) {
     var _this = this;
 
     var isThere = _this.FileSystem.existsSync(directory + file + _this.Extension);
-    _this.Console.log(file + " is " + (isThere ? "there" : "not there"));
+    var intendedStatus = shouldExist ? ' and should be there' : ' and should not be there.';
+    _this.Console.log(file + " is " + (isThere ? "there" : "not there") + intendedStatus);
     expect(isThere).toBe(shouldExist);
 }
 
