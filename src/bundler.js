@@ -87,11 +87,12 @@ var fs = require("fs"),
     Step = require('step'),
     startedAt = Date.now(),
     hashingRequire = require('./bundle-hash.js'),
+    bundlefiles = require('./bundle-files.js'),
     bundleHasher = new hashingRequire.BundleHasher();
 
 
 var walk = function (dir, done) {
-    var results = [];
+    var results = new bundlefiles.BundleFiles();
     fs.readdir(dir, function (err, list) {
         if (err) throw err;
         var i = 0;
@@ -102,11 +103,11 @@ var walk = function (dir, done) {
             fs.stat(file, function (_, stat) {
                 if (stat && stat.isDirectory()) {
                     walk(file, function (_, res) {
-                        results = results.concat(res);
+                        results.addFiles(res.files);
                         next();
                     });
                 } else {
-                    results.push(file);
+                    results.addFile(file);
                     next();
                 }
             });
@@ -129,13 +130,14 @@ var scanIndex = 0;
                 scanNext();
             }
         });
-    } else
+    } else {
 
         if(defaultOptions.computefilehashes) {
             bundleHasher.SaveFileHashesToDisk(defaultOptions.outputdirectory ||  process.cwd());
         }
 
         console.log("\nDone. " + (Date.now() - startedAt) + "ms");
+    }
 })();
 
 function getOutputFilePath(filename, options) {
@@ -152,28 +154,12 @@ function getOutputFilePath(filename, options) {
 
 function scanDir(allFiles, cb) {
 
-    var jsBundles  = allFiles.filter(function (file) { return file.endsWith(".js.bundle"); });
-    var cssBundles = allFiles.filter(function (file) { return file.endsWith(".css.bundle"); });
+    var jsBundles  = allFiles.getBundles(bundlefiles.BundleType.Javascript);
+    var cssBundles = allFiles.getBundles(bundlefiles.BundleType.Css);
 
     if(defaultOptions.computefilehashes) {
         bundleHasher.Console = console;
         bundleHasher.LoadFileHashFromDisk(defaultOptions.outputdirectory ||  process.cwd());
-    }
-
-    function jsMatches(fileName, bundleDir, recursive, path) {
-        if (!fileName.startsWith(bundleDir)) return '#';
-        if (!fileName.endsWithAny(['.js', '.coffee', '.ls', '.ts', '.mustache'])) return '#';
-        if (fileName.endsWithAny(['.min.js'])) return '#';
-        if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
-        return fileName.substring(bundleDir.length + 1);
-    } 
-
-    function cssMatches(fileName, bundleDir, recursive, path) {
-        if (!fileName.startsWith(bundleDir)) return '#';
-        if (!fileName.endsWithAny(['.css', '.less', '.sass', '.scss', '.styl'])) return '#';
-        if (fileName.endsWithAny(['.min.css'])) return '#';
-        if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
-        return fileName.substring(bundleDir.length + 1);
     }
 
     function getOptions(fileLines) {
@@ -222,16 +208,13 @@ function scanDir(allFiles, cb) {
                             }
                             else if(currentItem != bundleDir + '/'){
                                 
-                                allFiles.map(function(fileName) {
-                                    var match = jsMatches(fileName, currentItem, true);
-                                    return name + '/' + match;
-                                })
-                                .forEach(function(name) {
-
-                                    if(!name.endsWith('#')){
-                                        tmpFiles.push(name);
-                                    }
-                                });
+                                tmpFiles = tmpFiles.concat(
+                                    allFiles.getFilesInDirectory(
+                                        bundlefiles.BundleType.Javascript,
+                                        currentItem,
+                                        name
+                                    )
+                                );
                             }
                         });
 
@@ -240,9 +223,7 @@ function scanDir(allFiles, cb) {
                     else if (options.folder !== undefined) {
                         options.nobundle = !options.forcebundle;
                         var recursive = options.folder === 'recursive';
-                        jsFiles = allFiles.map(function(fileName) {
-                            return jsMatches(fileName, bundleDir, recursive, path);
-                        });
+                        jsFiles = allFiles.getFilesInFolder(bundlefiles.BundleType.Javascript, bundleDir, recursive, path);
                     }
                     processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, nextBundle);
                 });
@@ -282,16 +263,13 @@ function scanDir(allFiles, cb) {
                             }
                             else if(currentItem != bundleDir + '/'){
                                 
-                                allFiles.map(function(fileName) {
-                                    var match = cssMatches(fileName, currentItem, true);
-                                    return name + '/' + match;
-                                })
-                                .forEach(function(name) {
-
-                                    if(!name.endsWith('#')){
-                                        tmpFiles.push(name);
-                                    }
-                                });
+                                tmpFiles = tmpFiles.concat(
+                                    allFiles.getFilesInDirectory(
+                                        bundlefiles.BundleType.Css,
+                                        currentItem,
+                                        name
+                                    )
+                                );
                             }
                         });
 
@@ -300,9 +278,7 @@ function scanDir(allFiles, cb) {
                     else if (options.folder !== undefined) {
                         options.nobundle = !options.forcebundle;
                         var recursive = options.folder === 'recursive';
-                        cssFiles = allFiles.map(function(fileName) {
-                            return cssMatches(fileName, bundleDir, recursive, path);
-                        });
+                        cssFiles = allFiles.getFilesInFolder(bundlefiles.BundleType.Css, bundleDir, recursive, path);
                     }
                     processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, nextBundle);
                 });
