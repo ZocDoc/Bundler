@@ -20,7 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-function BundleFiles(fileSystem) {
+String.prototype.endsWith = function (suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+String.prototype.startsWith = function (str) {
+    return this.indexOf(str) === 0;
+};
+String.prototype.endsWithAny = function (endings) {
+    var str = this;
+    return endings.some(function (ending) { return str.endsWith(ending); });
+};
+String.prototype.NormalizeSlash = function () {
+    if (this.endsWith("/")) {
+        return this.substring(0, this.length - 1);
+    }
+    return this;
+};
+
+function BundleFiles() {
     this.files = [];
 };
 
@@ -29,17 +46,19 @@ exports.BundleType = { Javascript: "Javascript", Css: "Css" };
 
 
 BundleFiles.prototype.jsMatches = function (fileName, bundleDir, recursive, path) {
+
     if (!fileName.startsWith(bundleDir)) return '#';
     if (!fileName.endsWithAny(['.js', '.coffee', '.ls', '.ts', '.mustache'])) return '#';
-    if (fileName.endsWithAny(['.min.js'])) return '#';
+    if (fileName.endsWith('.min.js')) return '#';
     if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
     return fileName.substring(bundleDir.length + 1);
 };
 
 BundleFiles.prototype.cssMatches = function(fileName, bundleDir, recursive, path) {
+
     if (!fileName.startsWith(bundleDir)) return '#';
     if (!fileName.endsWithAny(['.css', '.less', '.sass', '.scss', '.styl'])) return '#';
-    if (fileName.endsWithAny(['.min.css'])) return '#';
+    if (fileName.endsWith('.min.css')) return '#';
     if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
     return fileName.substring(bundleDir.length + 1);
 };
@@ -65,14 +84,17 @@ BundleFiles.prototype.getBundles = function (fileType) {
     }
 };
 
-BundleFiles.prototype.getFilesInDirectory = function (fileType, currentItem, name) {
+BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, currentDir) {
     var _this = this,
         matcher = fileType == exports.BundleType.Javascript ? _this.jsMatches : _this.cssMatches,
         output = [];
 
+    bundleDir = bundleDir.NormalizeSlash();
+    currentDir = currentDir.NormalizeSlash();
+
     _this.files.map(function (fileName) {
-        var match = matcher(fileName, currentItem, true);
-        return name + '/' + match;
+        var match = matcher(fileName, bundleDir, true);
+        return currentDir + '/' + match;
     })
     .forEach(function (name) {
 
