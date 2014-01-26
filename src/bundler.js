@@ -375,7 +375,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                     });
                 } else if(isMustache){
                     readTextFile(filePath, function(mustacheText){
-                        getOrCreateJsMustache(options, mustacheText, filePath, jsPath, next);
+                        getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
                     });  
                 }
                 else {
@@ -466,7 +466,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 var next = this;
                 if (isLess) {
                     readTextFile(filePath, function (lessText) {
-                        getOrCreateLessCss(options, lessText, filePath, cssPath, next);
+                        getOrCreateLessCss(options, lessText, filePath, cssPathOutput, next);
                     });
                 } else if (isSass) {
                     readTextFile(filePath, function (sassText) {

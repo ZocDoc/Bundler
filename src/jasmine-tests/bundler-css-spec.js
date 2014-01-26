@@ -70,4 +70,10 @@ describe("Css Bundling:", function() {
       testCase.RunBundlerAndVerifyOutput();
   });
 
+  it("If an output directory is specified, then the un-minified less files as .css are put in there..", function () {
+      var testCase = getTestCase("output-directory-less", "/folder-output/");
+      testCase.SetUpCacheFileTest(true, ["less1.min", "less2.min", "less1", "less2"]);
+      testCase.RunBundlerAndVerifyOutput();
+  });
+
 });
