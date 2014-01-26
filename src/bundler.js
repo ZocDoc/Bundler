@@ -154,6 +154,8 @@ function getOutputFilePath(filename, options) {
 
 function scanDir(allFiles, cb) {
 
+    allFiles.Index();
+
     var jsBundles  = allFiles.getBundles(bundlefiles.BundleType.Javascript);
     var cssBundles = allFiles.getBundles(bundlefiles.BundleType.Css);
 

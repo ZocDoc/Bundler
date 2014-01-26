@@ -56,6 +56,8 @@ describe("BundleFiles.", function () {
       files.addFiles(cssBundle);
       files.addFile(jsFile);
       files.addFile(cssFile);
+
+      files.Index();
   });
 
   describe("getBundles: ", function () {
