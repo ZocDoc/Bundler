@@ -86,7 +86,7 @@ var fs = require("fs"),
     CleanCss = require('clean-css'),
     Step = require('step'),
     startedAt = Date.now(),
-    hashingRequire = require('./bundle-hash.js'),
+    hashingRequire = require('./bundle-stats.js'),
     bundlefiles = require('./bundle-files.js'),
     bundleStatsCollector = new hashingRequire.BundleStatsCollector();
 

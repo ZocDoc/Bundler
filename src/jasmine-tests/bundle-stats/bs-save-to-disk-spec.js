@@ -1,15 +1,15 @@
 var exec = require('child_process').exec,
       fs = require('fs'),
-      bundleHasher = require('../../bundle-hash.js');
+      bundleStats = require('../../bundle-stats.js');
 
-describe("Bundle Hashing Save Hashes To Disk: ", function() {
+describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
 
     var getHasher,
       fileSystem,
       objectOnDisk = { bundle1: "hash1", bundle2: "hash2" },
       outputdirectory = 'folder/folder/2',
       expectedContents = JSON.stringify(objectOnDisk),
-      expectedFile = outputdirectory + '/' + bundleHasher.FILE_NAME;
+      expectedFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME;
 
   beforeEach(function () {
 
@@ -18,7 +18,7 @@ describe("Bundle Hashing Save Hashes To Disk: ", function() {
 
       getHasher = function () {
           spyOn(fileSystem, 'writeFileSync').andCallThrough();
-          var hash = new bundleHasher.BundleHasher(fileSystem);
+          var hash = new bundleStats.BundleStatsCollector(fileSystem);
           hash.HashCollection = objectOnDisk;
           return hash;
       };
@@ -26,13 +26,13 @@ describe("Bundle Hashing Save Hashes To Disk: ", function() {
 
   it("Saves the file to the correct location.", function() {
       var hasher = getHasher();
-      hasher.SaveFileHashesToDisk(outputdirectory);
+      hasher.SaveStatsToDisk(outputdirectory);
       expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedFile, expectedContents)
   });
 
   it("Correctly handles trailing slash for output file.", function () {
       var hasher = getHasher();
-      hasher.SaveFileHashesToDisk(outputdirectory + '/');
+      hasher.SaveStatsToDisk(outputdirectory + '/');
       expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedFile, expectedContents)
   });
 
@@ -44,7 +44,7 @@ describe("Bundle Hashing Save Hashes To Disk: ", function() {
 
       var hasher = getHasher();
       try {
-          hasher.SaveFileHashesToDisk(outputdirectory);
+          hasher.SaveStatsToDisk(outputdirectory);
           throw "fail";
       }
       catch(err) {

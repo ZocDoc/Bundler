@@ -1,14 +1,14 @@
 var exec = require('child_process').exec,
       fs = require('fs'),
-      bundleHasher = require('../../bundle-hash.js');
+      bundleStats = require('../../bundle-stats.js');
 
-describe("Bundle Hashing Load Hashes From Disk: ", function() {
+describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
 
     var getHasher,
       fileSystem,
       objectOnDisk = { bundle1: "hash1", bundle2: "hash2" },
       outputdirectory = 'folder/folder/2',
-      expectedFile = outputdirectory + '/' + bundleHasher.FILE_NAME;
+      expectedFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME;
 
   beforeEach(function () {
 
@@ -19,25 +19,25 @@ describe("Bundle Hashing Load Hashes From Disk: ", function() {
 
       getHasher = function () {
           spyOn(fileSystem, 'readFileSync').andCallThrough();
-          return new bundleHasher.BundleHasher(fileSystem);
+          return new bundleStats.BundleStatsCollector(fileSystem);
       };
   });
 
   it("Reads the file from the correct location.", function() {
       var hasher = getHasher();
-      hasher.LoadFileHashFromDisk(outputdirectory);
+      hasher.LoadStatsFromDisk(outputdirectory);
       expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedFile, 'utf8')
   });
 
   it("Correctly handles trailing slash for input file.", function () {
       var hasher = getHasher();
-      hasher.LoadFileHashFromDisk(outputdirectory + '/');
+      hasher.LoadStatsFromDisk(outputdirectory + '/');
       expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedFile, 'utf8')
   });
 
   it("Parses the input file into json.", function () {
       var hasher = getHasher();
-      hasher.LoadFileHashFromDisk(outputdirectory);
+      hasher.LoadStatsFromDisk(outputdirectory);
       
       expect(hasher.HashCollection.bundle1).toBe(objectOnDisk.bundle1);
       expect(hasher.HashCollection.bundle2).toBe(objectOnDisk.bundle2);
@@ -50,7 +50,7 @@ describe("Bundle Hashing Load Hashes From Disk: ", function() {
       };
 
       var hasher = getHasher();
-      hasher.LoadFileHashFromDisk(outputdirectory);
+      hasher.LoadStatsFromDisk(outputdirectory);
 
       expect(hasher.HashCollection.bundle1).toBe(undefined);
       expect(hasher.HashCollection.bundle2).toBe(undefined);
