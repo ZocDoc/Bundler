@@ -62,7 +62,7 @@ var defaultOptions = {};
 commandLineOptions.forEach(function (option) {
     while (ArgumentisOptional(option)) { option = option.substring(1); }
     var parts = option.split(':');
-    defaultOptions[parts[0].toLowerCase()] = parts.length > 1 ? parts[1] : true;
+    defaultOptions[parts.splice(0,1)[0].toLowerCase()] = parts.length > 0 ? parts.join(':') : true;
 });
 
 var SCAN_ROOT_DIRS = commandLineArgs.filter(function (arg) { return !ArgumentisOptional(arg); });
@@ -115,6 +115,12 @@ var walk = function (dir, done) {
     });
 };
 
+
+if(defaultOptions.computefilehashes) {
+    bundleHasher.Console = console;
+    bundleHasher.LoadFileHashFromDisk(defaultOptions.outputdirectory ||  process.cwd());
+}
+
 var scanIndex = 0;
 (function scanNext() {
     if (scanIndex < SCAN_ROOT_DIRS.length) {
@@ -136,7 +142,7 @@ var scanIndex = 0;
             bundleHasher.SaveFileHashesToDisk(defaultOptions.outputdirectory ||  process.cwd());
         }
 
-        console.log("\nDone. " + (Date.now() - startedAt) + "ms");
+        console.log("\nDone. #" + (Date.now() - startedAt) + "#ms");
     }
 })();
 
@@ -158,11 +164,6 @@ function scanDir(allFiles, cb) {
 
     var jsBundles  = allFiles.getBundles(bundlefiles.BundleType.Javascript);
     var cssBundles = allFiles.getBundles(bundlefiles.BundleType.Css);
-
-    if(defaultOptions.computefilehashes) {
-        bundleHasher.Console = console;
-        bundleHasher.LoadFileHashFromDisk(defaultOptions.outputdirectory ||  process.cwd());
-    }
 
     function getOptions(fileLines) {
         var options = clone(defaultOptions);
@@ -299,11 +300,6 @@ function getMinFileName(fileName) {
 function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) {
 
     var processedFiles = {};
-    console.log("\nprocessing " + jsBundle + ":");
-    
-    for (var optionKey in options) {
-        console.log("option: " + optionKey + " -> " + options[optionKey]);
-    }
 
     var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
     var whenDone = function () {
@@ -311,8 +307,6 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
             setTimeout(cb, 0);
             return;
         }
-
-        console.log("writing " + bundleName + "...");
 
         var allJs = "", allMinJs = "";
         for (var i = 0; i < allJsArr.length; i++) {
@@ -322,7 +316,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         var afterBundle = options.skipmin ? cb : function (_) {
             var minFileName = getMinFileName(bundleName);
-            console.log(options.computefilehashes);
+			
             if(options.computefilehashes) {
                 bundleHasher.AddFileHash(bundleName, allMinJs);
             }
@@ -374,6 +368,8 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                         getOrCreateJsLiveScript(options, livescriptText, filePath, jsPath, next);
                     });
                 } else if(isMustache){
+
+                    jsPath = jsPathOutput;
                     readTextFile(filePath, function(mustacheText){
                         getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
                     });  
@@ -402,10 +398,6 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 }
 
 function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, cb) {
-    console.log("\nprocessing " + cssBundle + ":");
-    for (var optionKey in options) {
-        console.log("option: " + optionKey + " -> " + options[optionKey]);
-    }
 
     var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
     var whenDone = function () {
@@ -413,8 +405,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             setTimeout(cb, 0);
             return;
         }
-
-        console.log("writing " + bundleName + "...");
 
         var allCss = "", allMinCss = "";
         for (var i = 0; i < allCssArr.length; i++) {
@@ -512,7 +502,8 @@ function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*c
 }
 
 function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)*/) {
-    compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
+    
+	compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
             var templateName = path.basename(mPath, path.extname(mPath)); 
             var templateFn = hogan.compile(mustacheText, { asString: true });
             var compiledTemplate = "JST = JST || {};" 
@@ -576,20 +567,23 @@ function getOrCreateMinCss(options, css, cssPath, minCssPath, cb /*cb(minCss)*/)
 
 function compileAsync(options, mode, compileFn /*compileFn(text, textPath, cb(compiledText))*/,
     text, textPath, compileTextPath, cb /*cb(compiledText)*/) {
+	
     Step(
         function () {
             fs.exists(compileTextPath, this);
         },
         function (exists) {
+
             var next = this;
             if (!exists)
                 next(!exists);
-            else
+            else {
                 fs.stat(textPath, function (_, textStat) {
                     fs.stat(compileTextPath, function (_, minTextStat) {
                         next(minTextStat.mtime.getTime() < textStat.mtime.getTime());
                     });
                 });
+            }
         },
         function (doCompile) {
             if (doCompile) {
