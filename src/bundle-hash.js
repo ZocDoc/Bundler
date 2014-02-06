@@ -55,7 +55,6 @@ BundleHasher.prototype.LoadFileHashFromDisk = function (outputdirectory) {
         this.HashCollection = JSON.parse(file);
     }
     catch (err) {
-        _this.Console.log(err);
         this.HashCollection = {};
     }
 };
@@ -74,6 +73,8 @@ BundleHasher.prototype.SaveFileHashesToDisk = function (outputdirectory) {
 BundleHasher.prototype.AddFileHash = function (bundleName, bundleContents) {
     
     var _this = this;
-    var hash = _this.GenerateHash(bundleContents);
-    this.HashCollection[bundleName] = hash;
+    var hash = _this.GenerateHash(bundleContents),
+        bundleShortName = bundleName.split('/').pop();
+
+    this.HashCollection[bundleShortName] = hash;
 }
