@@ -142,7 +142,7 @@ var scanIndex = 0;
             bundleHasher.SaveFileHashesToDisk(defaultOptions.outputdirectory ||  process.cwd());
         }
 
-        console.log("\nDone. #" + (Date.now() - startedAt) + "#ms");
+        console.log("Bundling took: " + (Date.now() - startedAt) + "ms");
     }
 })();
 

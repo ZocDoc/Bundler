@@ -65,8 +65,6 @@ BundleHasher.prototype.SaveFileHashesToDisk = function (outputdirectory) {
         hashFile = _this.GetOutputFile(outputdirectory),
         fileContents = JSON.stringify(_this.HashCollection);
 
-    _this.Console.log('Writing bundle hash file to: ' + hashFile);
-
     _this.FileSystem.writeFileSync(hashFile, fileContents);
 }
 
