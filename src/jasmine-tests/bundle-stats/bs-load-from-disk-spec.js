@@ -8,7 +8,8 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
       fileSystem,
       objectOnDisk = { bundle1: "hash1", bundle2: "hash2" },
       outputdirectory = 'folder/folder/2',
-      expectedFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME;
+      expectedHashFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME,
+      expectedDebugFile = outputdirectory + '/' + bundleStats.DEBUG_FILE_NAME;
 
   beforeEach(function () {
 
@@ -23,16 +24,23 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
       };
   });
 
-  it("Reads the file from the correct location.", function() {
+  it("Reads the hash file from the correct location.", function() {
       var hasher = getHasher();
       hasher.LoadStatsFromDisk(outputdirectory);
-      expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedFile, 'utf8')
+      expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedHashFile, 'utf8')
   });
+
+   it("Reads the debug file from the correct location.", function() {
+        var hasher = getHasher();
+        hasher.LoadStatsFromDisk(outputdirectory);
+        expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedDebugFile, 'utf8')
+    });
+
 
   it("Correctly handles trailing slash for input file.", function () {
       var hasher = getHasher();
       hasher.LoadStatsFromDisk(outputdirectory + '/');
-      expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedFile, 'utf8')
+      expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedHashFile, 'utf8')
   });
 
   it("Parses the input file into json.", function () {

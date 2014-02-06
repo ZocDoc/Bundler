@@ -7,9 +7,12 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
     var getHasher,
       fileSystem,
       objectOnDisk = { bundle1: "hash1", bundle2: "hash2" },
+      debugOnDisk = { bundle1: [ 'file1'], bundle2: [ 'file2'] },
       outputdirectory = 'folder/folder/2',
       expectedContents = JSON.stringify(objectOnDisk),
-      expectedFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME;
+      expectedDebugContents = JSON.stringify(debugOnDisk),
+      expectedHashFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME,
+      expectedDebugFile = outputdirectory + '/' + bundleStats.DEBUG_FILE_NAME;
 
   beforeEach(function () {
 
@@ -20,20 +23,28 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
           spyOn(fileSystem, 'writeFileSync').andCallThrough();
           var hash = new bundleStats.BundleStatsCollector(fileSystem);
           hash.HashCollection = objectOnDisk;
+          hash.DebugCollection = debugOnDisk;
           return hash;
       };
   });
 
-  it("Saves the file to the correct location.", function() {
-      var hasher = getHasher();
-      hasher.SaveStatsToDisk(outputdirectory);
-      expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedFile, expectedContents)
-  });
+  it("Saves the hash file to the correct location.", function() {
+        var hasher = getHasher();
+        hasher.SaveStatsToDisk(outputdirectory);
+        expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedHashFile, expectedContents)
+    });
+
+    it("Saves the debug file to the correct location.", function() {
+        var hasher = getHasher();
+        hasher.SaveStatsToDisk(outputdirectory);
+        expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedDebugFile, expectedDebugContents)
+    });
+
 
   it("Correctly handles trailing slash for output file.", function () {
       var hasher = getHasher();
       hasher.SaveStatsToDisk(outputdirectory + '/');
-      expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedFile, expectedContents)
+      expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedHashFile, expectedContents)
   });
 
   it("On file error, the error is thrown", function () {
