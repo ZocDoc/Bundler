@@ -88,7 +88,7 @@ var fs = require("fs"),
     startedAt = Date.now(),
     hashingRequire = require('./bundle-hash.js'),
     bundlefiles = require('./bundle-files.js'),
-    bundleHasher = new hashingRequire.BundleHasher();
+    bundleStatsCollector = new hashingRequire.BundleStatsCollector();
 
 
 var walk = function (dir, done) {
@@ -117,8 +117,8 @@ var walk = function (dir, done) {
 
 
 if(defaultOptions.computefilehashes) {
-    bundleHasher.Console = console;
-    bundleHasher.LoadFileHashFromDisk(defaultOptions.outputdirectory ||  process.cwd());
+    bundleStatsCollector.Console = console;
+    bundleStatsCollector.LoadStatsFromDisk(defaultOptions.outputdirectory ||  process.cwd());
 }
 
 var scanIndex = 0;
@@ -139,7 +139,7 @@ var scanIndex = 0;
     } else {
 
         if(defaultOptions.computefilehashes) {
-            bundleHasher.SaveFileHashesToDisk(defaultOptions.outputdirectory ||  process.cwd());
+            bundleStatsCollector.SaveStatsToDisk(defaultOptions.outputdirectory ||  process.cwd());
         }
 
         console.log("Bundling took: " + (Date.now() - startedAt) + "ms");
@@ -318,7 +318,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
             var minFileName = getMinFileName(bundleName);
 			
             if(options.computefilehashes) {
-                bundleHasher.AddFileHash(bundleName, allMinJs);
+                bundleStatsCollector.AddFileHash(bundleName, allMinJs);
             }
 
             fs.writeFile(minFileName, allMinJs, cb);
@@ -419,7 +419,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
         if (!options.bundleminonly) {
             if(options.computefilehashes) {
-                bundleHasher.AddFileHash(bundleName, allMinCss);
+                bundleStatsCollector.AddFileHash(bundleName, allMinCss);
             }
             fs.writeFile(bundleName, allCss, afterBundle);
         } else {

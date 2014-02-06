@@ -22,9 +22,9 @@ SOFTWARE.
 
 var fs = require("fs"),
     hasher = require('crypto'),
-    FILE_NAME = 'bundle-hashes.json';
+    HASH_FILE_NAME = 'bundle-hashes.json';
 
-function BundleHasher(fileSystem) {
+function BundleStatsCollector(fileSystem) {
 
     this.FileSystem = fileSystem || fs;
     this.GenerateHash = function (fileText) {
@@ -34,21 +34,21 @@ function BundleHasher(fileSystem) {
     this.Console = { log: function () { } };
 }
 
-exports.BundleHasher = BundleHasher;
-exports.FILE_NAME = FILE_NAME;
+exports.BundleStatsCollector = BundleStatsCollector;
+exports.HASH_FILE_NAME = HASH_FILE_NAME;
 
-BundleHasher.prototype.GetOutputFile = function (outputdirectory) {
+BundleStatsCollector.prototype.GetOutputFile = function (outputdirectory, filename) {
     var seperator = '/';
     if (outputdirectory[outputdirectory.length - 1] == seperator) {
         seperator = '';
     }
-    return outputdirectory + seperator + FILE_NAME
+    return outputdirectory + seperator + filename;
 }
 
-BundleHasher.prototype.LoadFileHashFromDisk = function (outputdirectory) {
+BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
 
     var _this = this,
-        hashFile = _this.GetOutputFile(outputdirectory);
+        hashFile = _this.GetOutputFile(outputdirectory, HASH_FILE_NAME);
 
     try {
         var file = _this.FileSystem.readFileSync(hashFile, 'utf8')
@@ -59,16 +59,16 @@ BundleHasher.prototype.LoadFileHashFromDisk = function (outputdirectory) {
     }
 };
 
-BundleHasher.prototype.SaveFileHashesToDisk = function (outputdirectory) {
+BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
 
     var _this = this,
-        hashFile = _this.GetOutputFile(outputdirectory),
+        hashFile = _this.GetOutputFile(outputdirectory, HASH_FILE_NAME),
         fileContents = JSON.stringify(_this.HashCollection);
 
     _this.FileSystem.writeFileSync(hashFile, fileContents);
 }
 
-BundleHasher.prototype.AddFileHash = function (bundleName, bundleContents) {
+BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContents) {
     
     var _this = this;
     var hash = _this.GenerateHash(bundleContents),
