@@ -24,7 +24,7 @@ BundleFileUtility = {};
 
 exports.BundleFileUtility = BundleFileUtility;
 
-BundleFileUtility.getOutputFilePath = function(filename, options) {
+BundleFileUtility.getOutputFilePath = function(bundleName, filename, options) {
 
     if(options.outputdirectory) {
         var split = filename.indexOf('/') < 0 ? '\\' : '/';

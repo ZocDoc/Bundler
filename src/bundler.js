@@ -120,18 +120,6 @@ var scanIndex = 0;
     }
 })();
 
-function getOutputFilePath(filename, options) {
-        
-    if(options.outputdirectory) {
-        var split = filename.indexOf('/') < 0 ? '\\' : '/';
-        var splitBundle = filename.split(split);
-        var bundleFileName = splitBundle[splitBundle.length - 1];
-        return options.outputdirectory + split + bundleFileName;
-    }
-
-    return filename;
-}
-
 function scanDir(allFiles, cb) {
 
     allFiles.Index();
@@ -157,7 +145,7 @@ function scanDir(allFiles, cb) {
                     var jsFiles = removeCR(data).split("\n");
                     var options = bundlerOptions.getOptionsForBundle(jsFiles);
 
-                    bundleName = bundleFileUtility.getOutputFilePath(bundleName, options);
+                    bundleName = bundleFileUtility.getOutputFilePath(bundleName, bundleName, options);
 
                     if(options.directory !== undefined) {
                         var tmpFiles = [];
@@ -212,7 +200,7 @@ function scanDir(allFiles, cb) {
                     var cssFiles = removeCR(data).split("\n");
                     var options = bundlerOptions.getOptionsForBundle(cssFiles);
 
-                    bundleName = bundleFileUtility.getOutputFilePath(bundleName, options);
+                    bundleName = bundleFileUtility.getOutputFilePath(bundleName, bundleName, options);
 
                     if(options.directory !== undefined) {
                         var tmpFiles = [];
@@ -308,7 +296,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         var filePath = path.join(bundleDir, file),
               jsPath = path.join(bundleDir, jsFile),
-              jsPathOutput = bundleFileUtility.getOutputFilePath(jsPath, options),
+              jsPathOutput = bundleFileUtility.getOutputFilePath(bundleName, jsPath, options),
               minJsPath = bundleFileUtility.getMinFileName(jsPathOutput);
         
         var i = index++;
@@ -408,7 +396,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
         var filePath = path.join(bundleDir, file),
             cssPath = path.join(bundleDir, cssFile),
-            cssPathOutput = bundleFileUtility.getOutputFilePath(cssPath, options),
+            cssPathOutput = bundleFileUtility.getOutputFilePath(bundleName, cssPath, options),
             minCssPath = bundleFileUtility.getMinFileName(cssPathOutput);
 
         var i = index++;

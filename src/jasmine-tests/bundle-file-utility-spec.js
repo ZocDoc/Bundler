@@ -4,10 +4,11 @@ var exec = require('child_process').exec,
 
 describe("BundleFileUtility - ", function() {
 
-    var filePath, _options;
+    var filePath, _options, bundleName;
 
     beforeEach(function () {
         filePath = '/folder1/file1.js';
+        bundleName = "bundle.js";
         _options = {};
     });
 
@@ -60,7 +61,7 @@ describe("BundleFileUtility - ", function() {
         givenNoOutputDirectory = function() { };
 
         getOutputFilePath = function() {
-            _outputFilePath = bundleFileUtility.getOutputFilePath(filePath, _options);
+            _outputFilePath = bundleFileUtility.getOutputFilePath(bundleName, filePath, _options);
         };
 
         verifyOutputFilePath = function(expected) {
