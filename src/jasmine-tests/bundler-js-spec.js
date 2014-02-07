@@ -37,6 +37,15 @@ describe("Javascript Bundling: ", function() {
       runTestCase("combines-mustache");
   });
 
+  it("An error is thrown for invalid mustache.", function () {
+      var testCase = getTestCase("invalid-mustache");
+      testCase.VerifyBundle = function () {
+          var hasError = testCase.StdError.indexOf("Error: missing closing tag: i") >= 0;
+          expect(hasError).toBe(true);
+      };
+      testCase.RunBundlerAndVerifyOutput();
+  });
+
   it("Compiles and Concatenates .mustache files with js files", function() {
       runTestCase("combines-mustache-and-js");
   });
