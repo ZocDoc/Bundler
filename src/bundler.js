@@ -31,6 +31,8 @@ process.on("uncaughtException", function (err) {
     process.exit(1);
 });
 
+var ext = require('./string-extensions.js');
+
 function clone(o) {
   var ret = {};
   Object.keys(o).forEach(function (val) {
@@ -38,16 +40,6 @@ function clone(o) {
   });
   return ret;
 }
-String.prototype.startsWith = function (str){
-    return this.indexOf(str) === 0;
-};
-String.prototype.endsWith = function (suffix) {
-    return this.indexOf(suffix, this.length - suffix.length) !== -1;
-};
-String.prototype.endsWithAny = function (endings) {
-    var str = this;
-    return endings.some(function (ending) { return str.endsWith(ending); });
-};
 
 function ArgumentisOptional(arg) {
     return arg.startsWith('#') || arg.startsWith('-');
