@@ -73,4 +73,10 @@ describe("Javascript Bundling: ", function() {
       testCase.RunBundlerAndVerifyOutput();
   });
 
+  it("If an output directory is specified, then the un-minified mustache files as .js are put in there..", function () {
+      var testCase = getTestCase("output-directory-mustache", "/folder-output/");
+      testCase.SetUpCacheFileTest(true, ["mustache1.min", "mustache2.min", "mustache1", "mustache2"]);
+      testCase.RunBundlerAndVerifyOutput();
+  });
+
 });

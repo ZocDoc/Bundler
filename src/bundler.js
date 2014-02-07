@@ -62,7 +62,7 @@ var defaultOptions = {};
 commandLineOptions.forEach(function (option) {
     while (ArgumentisOptional(option)) { option = option.substring(1); }
     var parts = option.split(':');
-    defaultOptions[parts[0].toLowerCase()] = parts.length > 1 ? parts[1] : true;
+    defaultOptions[parts.splice(0,1)[0].toLowerCase()] = parts.length > 0 ? parts.join(':') : true;
 });
 
 var SCAN_ROOT_DIRS = commandLineArgs.filter(function (arg) { return !ArgumentisOptional(arg); });
@@ -87,11 +87,12 @@ var fs = require("fs"),
     Step = require('step'),
     startedAt = Date.now(),
     hashingRequire = require('./bundle-hash.js'),
+    bundlefiles = require('./bundle-files.js'),
     bundleHasher = new hashingRequire.BundleHasher();
 
 
 var walk = function (dir, done) {
-    var results = [];
+    var results = new bundlefiles.BundleFiles();
     fs.readdir(dir, function (err, list) {
         if (err) throw err;
         var i = 0;
@@ -102,17 +103,23 @@ var walk = function (dir, done) {
             fs.stat(file, function (_, stat) {
                 if (stat && stat.isDirectory()) {
                     walk(file, function (_, res) {
-                        results = results.concat(res);
+                        results.addFiles(res.files);
                         next();
                     });
                 } else {
-                    results.push(file);
+                    results.addFile(file);
                     next();
                 }
             });
         })();
     });
 };
+
+
+if(defaultOptions.computefilehashes) {
+    bundleHasher.Console = console;
+    bundleHasher.LoadFileHashFromDisk(defaultOptions.outputdirectory ||  process.cwd());
+}
 
 var scanIndex = 0;
 (function scanNext() {
@@ -129,13 +136,14 @@ var scanIndex = 0;
                 scanNext();
             }
         });
-    } else
+    } else {
 
         if(defaultOptions.computefilehashes) {
             bundleHasher.SaveFileHashesToDisk(defaultOptions.outputdirectory ||  process.cwd());
         }
 
-        console.log("\nDone. " + (Date.now() - startedAt) + "ms");
+        console.log("Bundling took: " + (Date.now() - startedAt) + "ms");
+    }
 })();
 
 function getOutputFilePath(filename, options) {
@@ -152,29 +160,10 @@ function getOutputFilePath(filename, options) {
 
 function scanDir(allFiles, cb) {
 
-    var jsBundles  = allFiles.filter(function (file) { return file.endsWith(".js.bundle"); });
-    var cssBundles = allFiles.filter(function (file) { return file.endsWith(".css.bundle"); });
+    allFiles.Index();
 
-    if(defaultOptions.computefilehashes) {
-        bundleHasher.Console = console;
-        bundleHasher.LoadFileHashFromDisk(defaultOptions.outputdirectory ||  process.cwd());
-    }
-
-    function jsMatches(fileName, bundleDir, recursive, path) {
-        if (!fileName.startsWith(bundleDir)) return '#';
-        if (!fileName.endsWithAny(['.js', '.coffee', '.ls', '.ts', '.mustache'])) return '#';
-        if (fileName.endsWithAny(['.min.js'])) return '#';
-        if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
-        return fileName.substring(bundleDir.length + 1);
-    } 
-
-    function cssMatches(fileName, bundleDir, recursive, path) {
-        if (!fileName.startsWith(bundleDir)) return '#';
-        if (!fileName.endsWithAny(['.css', '.less', '.sass', '.scss', '.styl'])) return '#';
-        if (fileName.endsWithAny(['.min.css'])) return '#';
-        if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
-        return fileName.substring(bundleDir.length + 1);
-    }
+    var jsBundles  = allFiles.getBundles(bundlefiles.BundleType.Javascript);
+    var cssBundles = allFiles.getBundles(bundlefiles.BundleType.Css);
 
     function getOptions(fileLines) {
         var options = clone(defaultOptions);
@@ -222,16 +211,13 @@ function scanDir(allFiles, cb) {
                             }
                             else if(currentItem != bundleDir + '/'){
                                 
-                                allFiles.map(function(fileName) {
-                                    var match = jsMatches(fileName, currentItem, true);
-                                    return name + '/' + match;
-                                })
-                                .forEach(function(name) {
-
-                                    if(!name.endsWith('#')){
-                                        tmpFiles.push(name);
-                                    }
-                                });
+                                tmpFiles = tmpFiles.concat(
+                                    allFiles.getFilesInDirectory(
+                                        bundlefiles.BundleType.Javascript,
+                                        currentItem,
+                                        name
+                                    )
+                                );
                             }
                         });
 
@@ -240,9 +226,7 @@ function scanDir(allFiles, cb) {
                     else if (options.folder !== undefined) {
                         options.nobundle = !options.forcebundle;
                         var recursive = options.folder === 'recursive';
-                        jsFiles = allFiles.map(function(fileName) {
-                            return jsMatches(fileName, bundleDir, recursive, path);
-                        });
+                        jsFiles = allFiles.getFilesInFolder(bundlefiles.BundleType.Javascript, bundleDir, recursive, path);
                     }
                     processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, nextBundle);
                 });
@@ -282,16 +266,13 @@ function scanDir(allFiles, cb) {
                             }
                             else if(currentItem != bundleDir + '/'){
                                 
-                                allFiles.map(function(fileName) {
-                                    var match = cssMatches(fileName, currentItem, true);
-                                    return name + '/' + match;
-                                })
-                                .forEach(function(name) {
-
-                                    if(!name.endsWith('#')){
-                                        tmpFiles.push(name);
-                                    }
-                                });
+                                tmpFiles = tmpFiles.concat(
+                                    allFiles.getFilesInDirectory(
+                                        bundlefiles.BundleType.Css,
+                                        currentItem,
+                                        name
+                                    )
+                                );
                             }
                         });
 
@@ -300,9 +281,7 @@ function scanDir(allFiles, cb) {
                     else if (options.folder !== undefined) {
                         options.nobundle = !options.forcebundle;
                         var recursive = options.folder === 'recursive';
-                        cssFiles = allFiles.map(function(fileName) {
-                            return cssMatches(fileName, bundleDir, recursive, path);
-                        });
+                        cssFiles = allFiles.getFilesInFolder(bundlefiles.BundleType.Css, bundleDir, recursive, path);
                     }
                     processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, nextBundle);
                 });
@@ -321,11 +300,6 @@ function getMinFileName(fileName) {
 function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) {
 
     var processedFiles = {};
-    console.log("\nprocessing " + jsBundle + ":");
-    
-    for (var optionKey in options) {
-        console.log("option: " + optionKey + " -> " + options[optionKey]);
-    }
 
     var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
     var whenDone = function () {
@@ -333,8 +307,6 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
             setTimeout(cb, 0);
             return;
         }
-
-        console.log("writing " + bundleName + "...");
 
         var allJs = "", allMinJs = "";
         for (var i = 0; i < allJsArr.length; i++) {
@@ -344,7 +316,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         var afterBundle = options.skipmin ? cb : function (_) {
             var minFileName = getMinFileName(bundleName);
-            console.log(options.computefilehashes);
+			
             if(options.computefilehashes) {
                 bundleHasher.AddFileHash(bundleName, allMinJs);
             }
@@ -396,8 +368,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                         getOrCreateJsLiveScript(options, livescriptText, filePath, jsPath, next);
                     });
                 } else if(isMustache){
+
+                    jsPath = jsPathOutput;
                     readTextFile(filePath, function(mustacheText){
-                        getOrCreateJsMustache(options, mustacheText, filePath, jsPath, next);
+                        getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
                     });  
                 }
                 else {
@@ -424,10 +398,6 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 }
 
 function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, cb) {
-    console.log("\nprocessing " + cssBundle + ":");
-    for (var optionKey in options) {
-        console.log("option: " + optionKey + " -> " + options[optionKey]);
-    }
 
     var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
     var whenDone = function () {
@@ -435,8 +405,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             setTimeout(cb, 0);
             return;
         }
-
-        console.log("writing " + bundleName + "...");
 
         var allCss = "", allMinCss = "";
         for (var i = 0; i < allCssArr.length; i++) {
@@ -488,7 +456,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 var next = this;
                 if (isLess) {
                     readTextFile(filePath, function (lessText) {
-                        getOrCreateLessCss(options, lessText, filePath, cssPath, next);
+                        getOrCreateLessCss(options, lessText, filePath, cssPathOutput, next);
                     });
                 } else if (isSass) {
                     readTextFile(filePath, function (sassText) {
@@ -534,7 +502,8 @@ function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*c
 }
 
 function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)*/) {
-    compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
+    
+	compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
             var templateName = path.basename(mPath, path.extname(mPath)); 
             var templateFn = hogan.compile(mustacheText, { asString: true });
             var compiledTemplate = "JST = JST || {};" 
@@ -598,20 +567,23 @@ function getOrCreateMinCss(options, css, cssPath, minCssPath, cb /*cb(minCss)*/)
 
 function compileAsync(options, mode, compileFn /*compileFn(text, textPath, cb(compiledText))*/,
     text, textPath, compileTextPath, cb /*cb(compiledText)*/) {
+	
     Step(
         function () {
             fs.exists(compileTextPath, this);
         },
         function (exists) {
+
             var next = this;
             if (!exists)
                 next(!exists);
-            else
+            else {
                 fs.stat(textPath, function (_, textStat) {
                     fs.stat(compileTextPath, function (_, minTextStat) {
                         next(minTextStat.mtime.getTime() < textStat.mtime.getTime());
                     });
                 });
+            }
         },
         function (doCompile) {
             if (doCompile) {
