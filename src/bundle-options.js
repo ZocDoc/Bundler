@@ -20,187 +20,64 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-String.prototype.endsWith = function (suffix) {
-    return this.indexOf(suffix, this.length - suffix.length) !== -1;
-};
-String.prototype.startsWith = function (str) {
-    return this.indexOf(str) === 0;
-};
-String.prototype.endsWithAny = function (endings) {
-    var str = this;
-    return endings.some(function (ending) { return str.endsWith(ending); });
-};
-String.prototype.NormalizeSlash = function (addInitialSlash, removeFinalSlash) {
+var ext = require('./string-extensions.js');
 
-    var ret = this;
-    if (addInitialSlash && !ret.startsWith('/')) {
-        ret = "/" + ret;
+function BundlerOptions() {
+    this.DefaultOptions = {};
+    this.Directories = [];
+
+};
+
+exports.BundlerOptions = BundlerOptions;
+
+function ArgumentisOptional(arg) {
+    return arg.startsWith('#') || arg.startsWith('-');
+}
+
+BundlerOptions.prototype.ParseCommandLineArgs = function(commandLineArgs) {
+
+    var _this = this;
+    var commandLineOptions = commandLineArgs.filter(function (arg) { return ArgumentisOptional(arg); });
+
+    commandLineOptions.forEach(function (option) {
+        while (ArgumentisOptional(option)) { option = option.substring(1); }
+        var parts = option.split(':');
+        _this.DefaultOptions[parts.splice(0,1)[0].toLowerCase()] = parts.length > 0 ? parts.join(':') : true;
+    });
+
+    _this.Directories = commandLineArgs.filter(function (arg) { return !ArgumentisOptional(arg); });
+
+};
+
+BundlerOptions.prototype.getOptionsForBundle = function(fileLines) {
+
+    var _this = this,
+        options = clone(_this.DefaultOptions);
+
+    if (fileLines.length === 0)  {
+        return options;
+    }
+    var optionsString = fileLines[0];
+    if (!optionsString.startsWith('#options ')) {
+        return options;
     }
 
-    if (removeFinalSlash && ret.endsWith("/")) {
-        ret = ret.substring(0, this.length - 1);
-    }
+    optionsString.substring(9).split(',').forEach(function (option) {
+        var parts = option.split(':');
+        options[parts[0].toLowerCase()] = parts.length > 1 ? parts[1] : true;
+    });
+
+    return options;
+
+};
+
+function clone(o) {
+    var ret = {};
+    Object.keys(o).forEach(function (val) {
+        ret[val] = o[val];
+    });
     return ret;
-};
-
-function BundleFiles() {
-    this.files = [];
-    this.indexed = false;
-};
-
-exports.BundleFiles = BundleFiles;
-exports.BundleType = { Javascript: "Javascript", Css: "Css" };
-
-String.prototype.isJs = function () {
-    if (this.endsWith('.min.js')) return false;
-    if (this.endsWithAny(['.js', '.coffee', '.ls', '.ts', '.mustache'])) return true;
-    return false;
 }
 
-String.prototype.isCss = function () {
-    if (this.endsWith('.min.css')) return false;
-    if (this.endsWithAny(['.css', '.less', '.sass', '.scss', '.styl'])) return true;
-    return false;
-}
 
-BundleFiles.prototype.jsMatches = function (fileName, bundleDir, recursive, path) {
-
-    if (!fileName.isJs()) return '#';
-
-    if (!fileName.startsWith(bundleDir)) return '#';
-    if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
-    return fileName.substring(bundleDir.length + 1);
-};
-
-BundleFiles.prototype.addDirectories = function (file, directoryDictionary) {
-
-    var directories = ['/'];
-    var combined = null;
-
-    var tokens = file.split('/');
-    tokens.pop();
-
-    tokens.forEach(function (token) {
-        
-        if (token == '') { return; }
-
-        if (!combined) {
-            combined = '/' + token;
-        }
-        else {
-            combined = combined + '/' + token;
-        }
-
-        directories.push(combined);
-
-    });
-
-    directories.forEach(function (directory) {
-
-        if (!directoryDictionary[directory]) {
-            directoryDictionary[directory] = [];
-        }
-
-        directoryDictionary[directory].push(file);
-
-    });
-}
-
-BundleFiles.prototype.cssMatches = function(fileName, bundleDir, recursive, path) {
-
-    if (!fileName.isCss()) return '#';
-    if (!fileName.startsWith(bundleDir)) return '#';
-    if (!recursive && (path.dirname(fileName) !== bundleDir)) return '#';
-    return fileName.substring(bundleDir.length + 1);
-};
-
-
-BundleFiles.prototype.addFiles = function (filesToAdd) {
-    var _this = this;
-    _this.files = _this.files.concat(filesToAdd);
-};
-
-BundleFiles.prototype.addFile = function (fileToAdd) {
-    var _this = this;
-    _this.files.push(fileToAdd);
-};
-
-BundleFiles.prototype.Index = function () {
-    var _this = this;
-    _this.indexed = true;
-
-    _this._jsBundles = [];
-    _this._jsDirectories = {};
-    _this._cssBundles = [];
-    _this._cssDirectories = {};
-
-    _this.files.forEach(function (file) {
-
-        if (file.endsWith(".js.bundle")) {
-            _this._jsBundles.push(file);
-            return;
-        }
-
-        if (file.endsWith(".css.bundle")) {
-            _this._cssBundles.push(file);
-            return;
-        }
-
-        if (file.isJs()) {
-            _this.addDirectories(file, _this._jsDirectories);
-        }
-
-        if (file.isCss()) {
-            _this.addDirectories(file, _this._cssDirectories);
-        }
-
-    });
-
-}
-
-BundleFiles.prototype.getBundles = function (fileType) {
-    var _this = this;
-
-    if (!_this.indexed) { throw new Error("Files are not indexed!") };
-
-    if (fileType == exports.BundleType.Javascript) {
-        return _this._jsBundles;
-    }
-    else {
-        return _this._cssBundles;
-    }
-};
-
-BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, currentDir) {
-    var _this = this,
-        matcher = fileType == exports.BundleType.Javascript ? _this.jsMatches : _this.cssMatches,
-        dictionary = fileType == exports.BundleType.Javascript ? _this._jsDirectories : _this._cssDirectories
-        output = [];
-
-    if (!_this.indexed) { throw new Error("Files are not indexed!") };
-
-    var dictEntry = bundleDir.NormalizeSlash(true, true);
-    bundleDir = bundleDir.NormalizeSlash(false, true);
-    currentDir = currentDir.NormalizeSlash(false, true);
-
-    (dictionary[dictEntry] || []).forEach(function (name) {
-
-        var match = currentDir + '/' + matcher(name, bundleDir, true);
-
-        if (!match.endsWith('#')) {
-            output.push(match);
-        }
-    });
-
-    return output;
-};
-
-BundleFiles.prototype.getFilesInFolder = function (fileType, bundleDir, recursive, path) {
-    var _this = this,
-        matcher = fileType == exports.BundleType.Javascript ? _this.jsMatches : _this.cssMatches;
-
-    return _this.files.map(function (fileName) {
-        return matcher(fileName, bundleDir, recursive, path);
-    });
-}
 

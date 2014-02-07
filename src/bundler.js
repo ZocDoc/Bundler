@@ -31,34 +31,18 @@ process.on("uncaughtException", function (err) {
     process.exit(1);
 });
 
-var ext = require('./string-extensions.js');
+var optionsRequire = require('./bundle-options.js'),
+    bundlerOptions = new optionsRequire.BundlerOptions(),
+    ext = require('./string-extensions.js');
 
-function clone(o) {
-  var ret = {};
-  Object.keys(o).forEach(function (val) {
-    ret[val] = o[val];
-  });
-  return ret;
-}
 
 function ArgumentisOptional(arg) {
     return arg.startsWith('#') || arg.startsWith('-');
 }
 
-//recursively scans the directory below for *.js.bundle and *.css.bundle files
-var commandLineArgs = process.argv.splice(2); //directories specified in bundler.cmd
+bundlerOptions.ParseCommandLineArgs(process.argv.splice(2));
 
-var commandLineOptions = commandLineArgs.filter(function (arg) { return ArgumentisOptional(arg); });
-
-var defaultOptions = {};
-commandLineOptions.forEach(function (option) {
-    while (ArgumentisOptional(option)) { option = option.substring(1); }
-    var parts = option.split(':');
-    defaultOptions[parts.splice(0,1)[0].toLowerCase()] = parts.length > 0 ? parts.join(':') : true;
-});
-
-var SCAN_ROOT_DIRS = commandLineArgs.filter(function (arg) { return !ArgumentisOptional(arg); });
-if (!SCAN_ROOT_DIRS.length) {
+if (!bundlerOptions.Directories.length) {
     console.log("No directories were specified.");
     console.log("Usage: bundler.js [#option:value] ../Content [../Scripts]");
     return;
@@ -108,15 +92,15 @@ var walk = function (dir, done) {
 };
 
 
-if(defaultOptions.outputbundlestats) {
+if(bundlerOptions.DefaultOptions.outputbundlestats) {
     bundleStatsCollector.Console = console;
-    bundleStatsCollector.LoadStatsFromDisk(defaultOptions.outputdirectory ||  process.cwd());
+    bundleStatsCollector.LoadStatsFromDisk(bundlerOptions.DefaultOptions.outputdirectory ||  process.cwd());
 }
 
 var scanIndex = 0;
 (function scanNext() {
-    if (scanIndex < SCAN_ROOT_DIRS.length) {
-        var rootDir = SCAN_ROOT_DIRS[scanIndex++];
+    if (scanIndex < bundlerOptions.Directories.length) {
+        var rootDir = bundlerOptions.Directories[scanIndex++];
         fs.exists(rootDir, function(exists) {
             if (exists) {
                 walk(rootDir, function(err, allFiles) {
@@ -130,8 +114,8 @@ var scanIndex = 0;
         });
     } else {
 
-        if(defaultOptions.outputbundlestats) {
-            bundleStatsCollector.SaveStatsToDisk(defaultOptions.outputdirectory ||  process.cwd());
+        if(bundlerOptions.DefaultOptions.outputbundlestats) {
+            bundleStatsCollector.SaveStatsToDisk(bundlerOptions.DefaultOptions.outputdirectory ||  process.cwd());
         }
 
         console.log("Bundling took: " + (Date.now() - startedAt) + "ms");
@@ -157,18 +141,6 @@ function scanDir(allFiles, cb) {
     var jsBundles  = allFiles.getBundles(bundlefiles.BundleType.Javascript);
     var cssBundles = allFiles.getBundles(bundlefiles.BundleType.Css);
 
-    function getOptions(fileLines) {
-        var options = clone(defaultOptions);
-        if (fileLines.length === 0) return options;
-        var optionsString = fileLines[0];
-        if (!optionsString.startsWith('#options ')) return options;
-        optionsString.substring(9).split(',').forEach(function (option) {
-            var parts = option.split(':');
-            options[parts[0].toLowerCase()] = parts.length > 1 ? parts[1] : true;
-        });
-        return options;
-    };
-
     Step(
         function () {
             var next = this;
@@ -185,7 +157,7 @@ function scanDir(allFiles, cb) {
 
                 readTextFile(jsBundle, function (data) {
                     var jsFiles = removeCR(data).split("\n");
-                    var options = getOptions(jsFiles);
+                    var options = bundlerOptions.getOptionsForBundle(jsFiles);
 
                     bundleName = getOutputFilePath(bundleName, options);
 
@@ -240,7 +212,7 @@ function scanDir(allFiles, cb) {
 
                 readTextFile(cssBundle, function (data) {
                     var cssFiles = removeCR(data).split("\n");
-                    var options = getOptions(cssFiles);
+                    var options = bundlerOptions.getOptionsForBundle(cssFiles);
 
                     bundleName = getOutputFilePath(bundleName, options);
 
