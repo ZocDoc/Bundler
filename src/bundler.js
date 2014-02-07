@@ -31,23 +31,6 @@ process.on("uncaughtException", function (err) {
     process.exit(1);
 });
 
-var optionsRequire = require('./bundle-options.js'),
-    bundlerOptions = new optionsRequire.BundlerOptions(),
-    ext = require('./string-extensions.js');
-
-
-function ArgumentisOptional(arg) {
-    return arg.startsWith('#') || arg.startsWith('-');
-}
-
-bundlerOptions.ParseCommandLineArgs(process.argv.splice(2));
-
-if (!bundlerOptions.Directories.length) {
-    console.log("No directories were specified.");
-    console.log("Usage: bundler.js [#option:value] ../Content [../Scripts]");
-    return;
-}
-
 var fs = require("fs"),
     path = require("path"),
     jsp = require("uglify-js").parser,
@@ -64,8 +47,28 @@ var fs = require("fs"),
     startedAt = Date.now(),
     hashingRequire = require('./bundle-stats.js'),
     bundlefiles = require('./bundle-files.js'),
-    bundleStatsCollector = new hashingRequire.BundleStatsCollector();
+    bundleStatsCollector = new hashingRequire.BundleStatsCollector(),
+    optionsRequire = require('./bundle-options.js'),
+    bundlerOptions = new optionsRequire.BundlerOptions(),
+    ext = require('./string-extensions.js');
 
+
+function ArgumentisOptional(arg) {
+    return arg.startsWith('#') || arg.startsWith('-');
+}
+
+bundlerOptions.ParseCommandLineArgs(process.argv.splice(2));
+
+if (!bundlerOptions.Directories.length) {
+    console.log("No directories were specified.");
+    console.log("Usage: bundler.js [#option:value] ../Content [../Scripts]");
+    return;
+}
+
+if(bundlerOptions.DefaultOptions.outputbundlestats) {
+    bundleStatsCollector.Console = console;
+    bundleStatsCollector.LoadStatsFromDisk(bundlerOptions.DefaultOptions.outputdirectory ||  process.cwd());
+}
 
 var walk = function (dir, done) {
     var results = new bundlefiles.BundleFiles();
@@ -90,12 +93,6 @@ var walk = function (dir, done) {
         })();
     });
 };
-
-
-if(bundlerOptions.DefaultOptions.outputbundlestats) {
-    bundleStatsCollector.Console = console;
-    bundleStatsCollector.LoadStatsFromDisk(bundlerOptions.DefaultOptions.outputdirectory ||  process.cwd());
-}
 
 var scanIndex = 0;
 (function scanNext() {
