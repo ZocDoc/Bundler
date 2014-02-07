@@ -49,6 +49,7 @@ var fs = require("fs"),
     bundlefiles = require('./bundle-files.js'),
     bundleStatsCollector = new hashingRequire.BundleStatsCollector(),
     optionsRequire = require('./bundle-options.js'),
+    bundleFileUtility = require('./bundle-file-utility.js').BundleFileUtility,
     bundlerOptions = new optionsRequire.BundlerOptions(),
     ext = require('./string-extensions.js');
 
@@ -156,7 +157,7 @@ function scanDir(allFiles, cb) {
                     var jsFiles = removeCR(data).split("\n");
                     var options = bundlerOptions.getOptionsForBundle(jsFiles);
 
-                    bundleName = getOutputFilePath(bundleName, options);
+                    bundleName = bundleFileUtility.getOutputFilePath(bundleName, options);
 
                     if(options.directory !== undefined) {
                         var tmpFiles = [];
@@ -211,7 +212,7 @@ function scanDir(allFiles, cb) {
                     var cssFiles = removeCR(data).split("\n");
                     var options = bundlerOptions.getOptionsForBundle(cssFiles);
 
-                    bundleName = getOutputFilePath(bundleName, options);
+                    bundleName = bundleFileUtility.getOutputFilePath(bundleName, options);
 
                     if(options.directory !== undefined) {
                         var tmpFiles = [];
@@ -312,7 +313,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         var filePath = path.join(bundleDir, file),
               jsPath = path.join(bundleDir, jsFile),
-              jsPathOutput = getOutputFilePath(jsPath, options),
+              jsPathOutput = bundleFileUtility.getOutputFilePath(jsPath, options),
               minJsPath = getMinFileName(jsPathOutput);
         
         var i = index++;
@@ -412,7 +413,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
         var filePath = path.join(bundleDir, file),
             cssPath = path.join(bundleDir, cssFile),
-            cssPathOutput = getOutputFilePath(cssPath, options),
+            cssPathOutput = bundleFileUtility.getOutputFilePath(cssPath, options),
             minCssPath = getMinFileName(cssPathOutput);
 
         var i = index++;
