@@ -1,5 +1,5 @@
 
-describe("Integration Tests for Bundle Hashing: ", function() {
+describe("Integration Tests for Bundle Stats Collecting - ", function() {
 
   var exec = require('child_process').exec,
     fs = require('fs'),
@@ -15,22 +15,40 @@ describe("Integration Tests for Bundle Hashing: ", function() {
           fs
       );
       if (bundle) {
-          test.CommandOptions = ' -computefilehashes:true -outputdirectory:test-cases/bundle-hashing/folder-output';
+          test.CommandOptions = ' -outputbundlestats:true -outputdirectory:test-cases/' + directory + '/folder-output';
       }
 
       return test;
     };
 
-  it("No hash is computed if the option is not specified.", function () {
-      var test = getTestCase("bundle-hashing", "/folder-output/", false);
-      test.SetUpHashTest(false);
-      test.RunBundlerAndVerifyOutput();
-  });
+    describe("Hashing: ", function() {
 
-  it("The hash options computes a hash for all bundles and puts it in the output directory.", function () {
-      var test = getTestCase("bundle-hashing", "/folder-output/", true);
-      test.SetUpHashTest(true);
-      test.RunBundlerAndVerifyOutput();
-  });
+          it(" hashes not computed if the option is not specified.", function () {
+              var test = getTestCase("bundle-hashing", "/folder-output/", false);
+              test.SetUpHashTest(false);
+              test.RunBundlerAndVerifyOutput();
+          });
+
+          it("The stats option computes a hash for all bundles and puts it in the output directory.", function () {
+              var test = getTestCase("bundle-hashing", "/folder-output/", true);
+              test.SetUpHashTest(true);
+              test.RunBundlerAndVerifyOutput();
+          });
+    });
+
+    describe("Debug Files: ", function() {
+
+        it("No debug files are computed if the option is not specified.", function () {
+            var test = getTestCase("bundle-debug-files", "/folder-output/", false);
+            test.SetUpDebugFileTest(false);
+            test.RunBundlerAndVerifyOutput();
+        });
+
+        it("The stats option computes a collection of files for all bundles and puts it in the output directory.", function () {
+            var test = getTestCase("bundle-debug-files", "/folder-output/", true);
+            test.SetUpDebugFileTest(true);
+            test.RunBundlerAndVerifyOutput();
+        });
+    });
 
 });

@@ -174,6 +174,22 @@ BundlerTestCase.prototype.SetUpHashTest = function (shouldHash) {
     }
 }
 
+BundlerTestCase.prototype.SetUpDebugFileTest = function (shouldHash) {
+    var _this = this,
+        directory =  "test-cases/" + _this.TestDirectory + _this.OutputDirectory;
+    if (shouldHash) {
+        _this.TestFile = directory + '/bundle-debug.json';
+    }
+    else {
+
+        _this.VerifyBundle = function () {
+            var file = directory + 'bundle-debug.json';
+            _this.Console.log('Debug files file should not be present: ' + file)
+            _this.VerifyFileState([file], false);
+        };
+    }
+}
+
 BundlerTestCase.prototype.CleanDirectory = function() {
     var _this = this, finished = true;
 
@@ -184,6 +200,7 @@ BundlerTestCase.prototype.CleanDirectory = function() {
                 || file == 'test.js'
                 || file == 'test.css'
                 || file == 'bundle-hashes.json'
+                || file == 'bundle-debug.json'
                 || (file.startsWith('mustache') && file.endsWith('.js'))
                 || (file.startsWith('less') && file.endsWith('.css'))) {
                 _this.FileSystem.unlinkSync(currentDir + '/' + file);

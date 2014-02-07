@@ -116,7 +116,7 @@ var walk = function (dir, done) {
 };
 
 
-if(defaultOptions.computefilehashes) {
+if(defaultOptions.outputbundlestats) {
     bundleStatsCollector.Console = console;
     bundleStatsCollector.LoadStatsFromDisk(defaultOptions.outputdirectory ||  process.cwd());
 }
@@ -138,7 +138,7 @@ var scanIndex = 0;
         });
     } else {
 
-        if(defaultOptions.computefilehashes) {
+        if(defaultOptions.outputbundlestats) {
             bundleStatsCollector.SaveStatsToDisk(defaultOptions.outputdirectory ||  process.cwd());
         }
 
@@ -317,7 +317,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var afterBundle = options.skipmin ? cb : function (_) {
             var minFileName = getMinFileName(bundleName);
 			
-            if(options.computefilehashes) {
+            if(options.outputbundlestats) {
                 bundleStatsCollector.AddFileHash(bundleName, allMinJs);
             }
 
@@ -377,6 +377,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 else {
                     readTextFile(jsPath, next);
                 }
+
+                if(options.outputbundlestats) {
+                    bundleStatsCollector.AddDebugFile(jsBundle, jsPath);
+                }
             },
             function (js) {
                 allJsArr[i] = js;
@@ -385,6 +389,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     if (! --pending) whenDone();
                 };
+
                 if (options.skipmin) {
                     withMin('');
                 } else if (/(\.min\.|\.pack\.)/.test(file) && options.skipremin) {
@@ -418,7 +423,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         };
 
         if (!options.bundleminonly) {
-            if(options.computefilehashes) {
+            if(options.outputbundlestats) {
                 bundleStatsCollector.AddFileHash(bundleName, allMinCss);
             }
             fs.writeFile(bundleName, allCss, afterBundle);
@@ -455,6 +460,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             function () {
                 var next = this;
                 if (isLess) {
+                    cssPath = cssPathOutput;
                     readTextFile(filePath, function (lessText) {
                         getOrCreateLessCss(options, lessText, filePath, cssPathOutput, next);
                     });
@@ -469,6 +475,11 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 } else {
                     readTextFile(cssPath, next);
                 }
+
+                if(options.outputbundlestats) {
+                    bundleStatsCollector.AddDebugFile(cssBundle, cssPath);
+                }
+
             },
             function (css) {
                 allCssArr[i] = css;
@@ -477,6 +488,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                     if (! --pending) whenDone();
                 };
+
                 if (options.skipmin) {
                     withMin('');
                 } else if (/(\.min\.|\.pack\.)/.test(file) && options.skipremin) {
@@ -587,7 +599,7 @@ function compileAsync(options, mode, compileFn /*compileFn(text, textPath, cb(co
         },
         function (doCompile) {
             if (doCompile) {
-                console.log(mode + " " + compileTextPath + "...");
+                //console.log(mode + " " + compileTextPath + "...");
                 var onAfterCompiled = function(minText) {
                     if (options.outputbundleonly) {
                         cb(minText);
