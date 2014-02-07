@@ -35,3 +35,8 @@ BundleFileUtility.getOutputFilePath = function(filename, options) {
 
     return filename;
 };
+
+BundleFileUtility.getMinFileName = function(fileName) {
+    var extension = fileName.substring(fileName.lastIndexOf('.'));
+    return fileName.substring(0, fileName.length - extension.length) + ".min" + extension;
+}

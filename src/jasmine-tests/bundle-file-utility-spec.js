@@ -13,8 +13,7 @@ describe("BundleFileUtility - ", function() {
 
     describe("getOutputFilePath: ", function() {
 
-        var givenCommandLineArg,
-            _outputFilePath,
+        var _outputFilePath,
             getOutputFilePath,
             givenOutputDirectory,
             givenFilePath,
@@ -61,12 +60,51 @@ describe("BundleFileUtility - ", function() {
         givenNoOutputDirectory = function() { };
 
         getOutputFilePath = function() {
-            _outputFilePath = bundleFileUtility.getOutputFilePath(filePath, _options)
+            _outputFilePath = bundleFileUtility.getOutputFilePath(filePath, _options);
         };
 
         verifyOutputFilePath = function(expected) {
-
             expect(_outputFilePath).toBe(expected);
         }
+    });
+
+    describe("getMinFileName: ", function() {
+
+        var _path,
+            _minPath,
+            getMinFileName,
+            givenFilePath,
+            verifyMinFileName;
+
+        it("Swaps out the extension with min.extension ", function() {
+
+            givenFilePath('/folder1/file1.js');
+
+            getMinFileName();
+
+            verifyMinFileName('/folder1/file1.min.js');
+        });
+
+        it("Handles file paths with multiple periods ", function() {
+
+            givenFilePath('/fol.der1/file1.sauce.css');
+
+            getMinFileName();
+
+            verifyMinFileName('/fol.der1/file1.sauce.min.css');
+        });
+
+        getMinFileName = function() {
+            _minPath = bundleFileUtility.getMinFileName(_path);
+        };
+
+        givenFilePath = function(path) {
+            _path = path;
+        };
+
+        verifyMinFileName = function(expected) {
+            expect(_minPath).toBe(expected);
+        };
+
     });
 });

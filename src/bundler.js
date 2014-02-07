@@ -254,11 +254,6 @@ function scanDir(allFiles, cb) {
     );
 }
 
-function getMinFileName(fileName) {
-    var extension = fileName.substring(fileName.lastIndexOf('.'));
-    return fileName.substring(0, fileName.length - extension.length) + ".min" + extension;
-}
-
 function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) {
 
     var processedFiles = {};
@@ -277,7 +272,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         }
 
         var afterBundle = options.skipmin ? cb : function (_) {
-            var minFileName = getMinFileName(bundleName);
+            var minFileName = bundleFileUtility.getMinFileName(bundleName);
 			
             if(options.outputbundlestats) {
                 bundleStatsCollector.AddFileHash(bundleName, allMinJs);
@@ -314,7 +309,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var filePath = path.join(bundleDir, file),
               jsPath = path.join(bundleDir, jsFile),
               jsPathOutput = bundleFileUtility.getOutputFilePath(jsPath, options),
-              minJsPath = getMinFileName(jsPathOutput);
+              minJsPath = bundleFileUtility.getMinFileName(jsPathOutput);
         
         var i = index++;
         pending++;
@@ -380,7 +375,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         }
 
         var afterBundle = options.skipmin ? cb : function (_) {
-            var minFileName = getMinFileName(bundleName);
+            var minFileName = bundleFileUtility.getMinFileName(bundleName);
             fs.writeFile(minFileName, allMinCss, cb);
         };
 
@@ -414,7 +409,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         var filePath = path.join(bundleDir, file),
             cssPath = path.join(bundleDir, cssFile),
             cssPathOutput = bundleFileUtility.getOutputFilePath(cssPath, options),
-            minCssPath = getMinFileName(cssPathOutput);
+            minCssPath = bundleFileUtility.getMinFileName(cssPathOutput);
 
         var i = index++;
         pending++;
