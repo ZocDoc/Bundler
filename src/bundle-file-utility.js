@@ -20,23 +20,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-BundleFileUtility = {};
+var ext = require('./string-extensions.js');
+
+function BundleFileUtility(fs) {
+    this.FileSystem = fs;
+}
+
 
 exports.BundleFileUtility = BundleFileUtility;
 
-BundleFileUtility.getOutputFilePath = function(bundleName, filename, options) {
+getSplit = function(fileName) {
+    return fileName.indexOf('/') < 0 ? '\\' : '/';
+};
 
-    if(options.outputdirectory) {
-        var split = filename.indexOf('/') < 0 ? '\\' : '/';
-        var splitBundle = filename.split(split);
-        var bundleFileName = splitBundle[splitBundle.length - 1];
-        return options.outputdirectory + split + bundleFileName;
+getStagingDirectory = function(fs, bundleName, filename, options) {
+
+    var split = getSplit(bundleName);
+    var splitBundle = bundleName.split(split);
+    var outputDir =  options.stagingdirectory + split + splitBundle.pop().replace('.','');
+
+    var fileSplit = getSplit(filename);
+    var stagingFileName = filename.split(fileSplit).pop();
+
+    if(!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir);
+    }
+
+    return outputDir + split + stagingFileName;
+};
+
+getOutputDirectory = function(bundleName, filename, options) {
+    var split = getSplit(filename);
+    var bundleFileName = filename.split(split).pop();
+    return options.outputdirectory + split + bundleFileName;
+};
+
+BundleFileUtility.prototype.getOutputFilePath = function(bundleName, filename, options) {
+
+    if(options.stagingdirectory
+        && bundleName != filename) {
+
+        return getStagingDirectory(this.FileSystem, bundleName, filename, options);
+    }
+    else if(options.outputdirectory) {
+        return getOutputDirectory(bundleName, filename, options);
     }
 
     return filename;
 };
 
-BundleFileUtility.getMinFileName = function(fileName) {
+BundleFileUtility.prototype.getMinFileName = function(fileName) {
     var extension = fileName.substring(fileName.lastIndexOf('.'));
     return fileName.substring(0, fileName.length - extension.length) + ".min" + extension;
 }

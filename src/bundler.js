@@ -49,10 +49,12 @@ var fs = require("fs"),
     bundlefiles = require('./bundle-files.js'),
     bundleStatsCollector = new hashingRequire.BundleStatsCollector(),
     optionsRequire = require('./bundle-options.js'),
-    bundleFileUtility = require('./bundle-file-utility.js').BundleFileUtility,
+    bundleFileUtilityRequire = require('./bundle-file-utility.js'),
+    bundleFileUtility,
     bundlerOptions = new optionsRequire.BundlerOptions(),
     ext = require('./string-extensions.js');
 
+bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
 
 function ArgumentisOptional(arg) {
     return arg.startsWith('#') || arg.startsWith('-');

@@ -132,8 +132,10 @@ BundlerTestCase.prototype.CheckIfFileExists = function(directory, file, shouldEx
     var _this = this;
 
     var isThere = _this.FileSystem.existsSync(directory + file + _this.Extension);
-    var intendedStatus = shouldExist ? ' and should be there' : ' and should not be there.';
-    _this.Console.log(file + " is " + (isThere ? "there" : "not there") + intendedStatus);
+    if(isThere != shouldExist) {
+        var intendedStatus = shouldExist ? ' and should be there' : ' and should not be there.';
+        _this.Console.log(directory + file + " is " + (isThere ? "there" : "not there") + intendedStatus);
+    }
     expect(isThere).toBe(shouldExist);
 }
 
@@ -164,15 +166,15 @@ BundlerTestCase.prototype.SetUpHashTest = function (shouldHash) {
         _this.VerifyBundle = function () {
             var file = directory + 'bundle-hashes.json';
             _this.Console.log('Hash file should not be present: ' + file)
-            _this.VerifyFileState([file], false);
+            _this.VerifyFileState([file], false, true);
         };
     }
 }
 
-BundlerTestCase.prototype.SetUpDebugFileTest = function (shouldHash) {
+BundlerTestCase.prototype.SetUpDebugFileTest = function (shouldDebug) {
     var _this = this,
         directory =  "test-cases/" + _this.TestDirectory + _this.OutputDirectory;
-    if (shouldHash) {
+    if (shouldDebug) {
         _this.TestFile = directory + '/bundle-debug.json';
     }
     else {
@@ -185,6 +187,52 @@ BundlerTestCase.prototype.SetUpDebugFileTest = function (shouldHash) {
     }
 }
 
+BundlerTestCase.prototype.SetUpStagingDirectoryTest = function(isStaging) {
+
+    var _this = this,
+        stagingDirectory =  "test-cases/staging-directory/folder-staging/folder-",
+        outputDirectory = "test-cases/staging-directory/folder-output/";
+
+    _this.Extension = '';
+
+
+    _this.VerifyBundle = function () {
+        _this.Console.log('Verifying! ' + (isStaging?" should put in staging directory" : "should not use staging"));
+
+        var checkExists = function(directory, files, shouldExist) {
+
+            for (var i = 0; i < files.length; i++) {
+                _this.CheckIfFileExists(directory, files[i], shouldExist);
+            }
+        }
+
+        checkExists(stagingDirectory, [
+            'testjs/file1.min.js',
+            'testjs/mustache1.js',
+            'testjs/mustache1.min.js',
+            'testcss/file1.min.css',
+            'testcss/less1.css',
+            'testcss/less1.min.css'
+        ], isStaging);
+
+        checkExists(outputDirectory, [
+            'file1.min.js',
+            'mustache1.js',
+            'mustache1.min.js',
+            'file1.min.css',
+            'less1.css',
+            'less1.min.css'
+        ], !isStaging);
+
+        checkExists(outputDirectory, [
+            'folder-test.min.js',
+            'folder-test.js',
+            'folder-test.min.css',
+            'folder-test.css',
+        ], true);
+    };
+};
+
 BundlerTestCase.prototype.CleanDirectory = function() {
     var _this = this, finished = true;
 
@@ -192,18 +240,19 @@ BundlerTestCase.prototype.CleanDirectory = function() {
         var unlinkFiles = function (file, currentDir) {
 
             if (file.match(/min/g)
-                || file == 'test.js'
-                || file == 'test.css'
+                || file.endsWith('test.js')
+                || file.endsWith('test.css')
                 || file == 'bundle-hashes.json'
                 || file == 'bundle-debug.json'
                 || (file.startsWith('mustache') && file.endsWith('.js'))
                 || (file.startsWith('less') && file.endsWith('.css'))) {
                 _this.FileSystem.unlinkSync(currentDir + '/' + file);
 
-                _this.Console.log(file + ' has been removed.');
+                _this.Console.log(currentDir + "/" + file + ' has been removed.');
             }
-            else if (file.startsWith('folder')) {
+            else if (file.startsWith('folder') && !file.endsWith('.bundle')) {
                 var subdirectory = currentDir + "/" + file;
+
                 _this.FileSystem
                         .readdirSync(subdirectory)
                         .forEach(function (file) { unlinkFiles(file, subdirectory) });
