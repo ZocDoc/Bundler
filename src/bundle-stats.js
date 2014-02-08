@@ -77,8 +77,8 @@ BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
         hashFile = _this.GetOutputFile(outputdirectory, HASH_FILE_NAME),
         debugFile = _this.GetOutputFile(outputdirectory, DEBUG_FILE_NAME);
 
-    _this.FileSystem.writeFileSync(hashFile, JSON.stringify(_this.HashCollection));
-    _this.FileSystem.writeFileSync(debugFile, JSON.stringify(_this.DebugCollection));
+    _this.FileSystem.writeFileSync(hashFile, JSON.stringify(_this.HashCollection, null, 4));
+    _this.FileSystem.writeFileSync(debugFile, JSON.stringify(_this.DebugCollection, null, 4));
 }
 
 BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContents) {

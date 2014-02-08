@@ -9,8 +9,8 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
       objectOnDisk = { bundle1: "hash1", bundle2: "hash2" },
       debugOnDisk = { bundle1: [ 'file1'], bundle2: [ 'file2'] },
       outputdirectory = 'folder/folder/2',
-      expectedContents = JSON.stringify(objectOnDisk),
-      expectedDebugContents = JSON.stringify(debugOnDisk),
+      expectedContents = JSON.stringify(objectOnDisk, null, 4),
+      expectedDebugContents = JSON.stringify(debugOnDisk, null, 4),
       expectedHashFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME,
       expectedDebugFile = outputdirectory + '/' + bundleStats.DEBUG_FILE_NAME;
 
