@@ -43,6 +43,22 @@ describe("BundleStatsCollector - Adds files to the debug collection: ", function
       validateBundle(bundle1, [ file1, file2, file3 ]);
   });
 
+    it("Duplicate files are not added.", function() {
+
+        stats.AddDebugFile(bundle1, file1);
+
+        validateBundle(bundle1, [ file1 ]);
+
+        stats.AddDebugFile(bundle1, file1);
+
+        validateBundle(bundle1, [ file1 ]);
+
+        stats.AddDebugFile(bundle1, file1);
+
+        validateBundle(bundle1, [ file1 ]);
+    });
+
+
     it("Files added are isolated to their collection.", function() {
 
         stats.AddDebugFile(bundle1, file1);

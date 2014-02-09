@@ -100,5 +100,7 @@ BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
         _this.DebugCollection[bundleShortName] = [];
     }
 
-     _this.DebugCollection[bundleShortName].push(fileName);
+    if(_this.DebugCollection[bundleShortName].indexOf(fileName) < 0) {
+        _this.DebugCollection[bundleShortName].push(fileName);
+    }
 }
