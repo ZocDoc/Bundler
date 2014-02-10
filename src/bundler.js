@@ -277,6 +277,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         }
     };
 
+    if(options.outputbundlestats) {
+        bundleStatsCollector.ClearDebugFiles(jsBundle);
+    }
+
     jsFiles.forEach(function (file) {
         // Skip blank lines/files beginning with '.' or '#', but allow ../relative paths
 
@@ -378,6 +382,10 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             afterBundle();
         }
     };
+
+    if(options.outputbundlestats) {
+        bundleStatsCollector.ClearDebugFiles(cssBundle);
+    }
 
     cssFiles.forEach(function (file) {
         if (!(file = file.trim())

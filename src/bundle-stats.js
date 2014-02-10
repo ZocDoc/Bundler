@@ -67,6 +67,8 @@ BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
         hashFile = _this.GetOutputFile(outputdirectory, HASH_FILE_NAME),
         debugFile = _this.GetOutputFile(outputdirectory, DEBUG_FILE_NAME);
 
+
+
     _this.HashCollection = _this.LoadFromDisk(hashFile);
     _this.DebugCollection = _this.LoadFromDisk(debugFile);
 };
@@ -89,6 +91,17 @@ BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContent
 
     _this.HashCollection[bundleShortName] = hash;
 }
+
+BundleStatsCollector.prototype.ClearDebugFiles = function(bundleName) {
+
+    var _this = this,
+        bundleShortName = bundleName.split('/').pop();
+
+    if(_this.DebugCollection[bundleShortName])
+    {
+        _this.DebugCollection[bundleShortName] = [];
+    }
+};
 
 BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
     
