@@ -162,14 +162,16 @@ function scanDir(allFiles, cb) {
                                 tmpFiles.push(name);
                             }
                             else if(currentItem != bundleDir + '/'){
-                                
-                                tmpFiles = tmpFiles.concat(
-                                    allFiles.getFilesInDirectory(
-                                        bundlefiles.BundleType.Javascript,
-                                        currentItem,
-                                        name
-                                    )
-                                );
+
+                                var filesInDir = allFiles.getFilesInDirectory(
+                                                    bundlefiles.BundleType.Javascript,
+                                                    currentItem,
+                                                    name
+                                                );
+                                var mustacheInDirectory = filesInDir.filter(function(a) { return a.endsWith(".mustache")});
+                                var jsInDirectory = filesInDir.filter(function(a) { return a.endsWith(".js")});
+
+                                tmpFiles = tmpFiles.concat(mustacheInDirectory).concat(jsInDirectory);
                             }
                         });
 
