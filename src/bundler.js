@@ -474,13 +474,12 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)
     
 	compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
             var templateName = path.basename(mPath, path.extname(mPath)); 
-            var templateFn = hogan.compile(mustacheText, { asString: true });
+            var templateObject = "{ code: " + hogan.compile(mustacheText, { asString: true })
+                            + ", partials: {}, subs: {} }";
             var compiledTemplate = "window[\"JST\"] = window[\"JST\"] || {};"
-                        + " JST['" 
-                        + templateName 
-                        + "'] = new Hogan.Template("
-			+ templateFn 
-                        + ");";
+                        + " JST['"
+                        + templateName
+                        + "'] = new Hogan.Template("+ templateObject + ");";
             cb(compiledTemplate);
         }, mustacheText, mPath, jsPath, cb);
 }
