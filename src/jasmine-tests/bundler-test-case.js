@@ -136,6 +136,11 @@ BundlerTestCase.prototype.CheckIfFileExists = function(directory, file, shouldEx
         var intendedStatus = shouldExist ? ' and should be there' : ' and should not be there.';
         _this.Console.log(directory + file + " is " + (isThere ? "there" : "not there") + intendedStatus);
     }
+
+    if(isThere != shouldExist) {
+        console.log(directory + file + _this.Extension)
+    }
+
     expect(isThere).toBe(shouldExist);
 }
 
@@ -195,7 +200,6 @@ BundlerTestCase.prototype.SetUpStagingDirectoryTest = function(isStaging) {
 
     _this.Extension = '';
 
-
     _this.VerifyBundle = function () {
         _this.Console.log('Verifying! ' + (isStaging?" should put in staging directory" : "should not use staging"));
 
@@ -212,7 +216,9 @@ BundlerTestCase.prototype.SetUpStagingDirectoryTest = function(isStaging) {
             'testjs/mustache1.min.js',
             'testcss/file1.min.css',
             'testcss/less1.css',
-            'testcss/less1.min.css'
+            'testcss/less1.min.css',
+            'testjs/folder-test.js',
+            'testcss/folder-test.css'
         ], isStaging);
 
         checkExists(outputDirectory, [
@@ -221,14 +227,14 @@ BundlerTestCase.prototype.SetUpStagingDirectoryTest = function(isStaging) {
             'mustache1.min.js',
             'file1.min.css',
             'less1.css',
-            'less1.min.css'
+            'less1.min.css',
+            'folder-test.js',
+            'folder-test.css'
         ], !isStaging);
 
         checkExists(outputDirectory, [
             'folder-test.min.js',
-            'folder-test.js',
             'folder-test.min.css',
-            'folder-test.css',
         ], true);
     };
 };

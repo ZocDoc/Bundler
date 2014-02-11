@@ -264,7 +264,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         }
 
         var afterBundle = options.skipmin ? cb : function (_) {
-            var minFileName = bundleFileUtility.getMinFileName(bundleName);
+            var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
 			
             if(options.outputbundlestats) {
                 bundleStatsCollector.AddFileHash(bundleName, allMinJs);
@@ -305,7 +305,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var filePath = path.join(bundleDir, file),
               jsPath = path.join(bundleDir, jsFile),
               jsPathOutput = bundleFileUtility.getOutputFilePath(bundleName, jsPath, options),
-              minJsPath = bundleFileUtility.getMinFileName(jsPathOutput);
+              minJsPath = bundleFileUtility.getMinFileName(bundleName, jsPathOutput,  options);
         
         var i = index++;
         pending++;
@@ -371,7 +371,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         }
 
         var afterBundle = options.skipmin ? cb : function (_) {
-            var minFileName = bundleFileUtility.getMinFileName(bundleName);
+            var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
             fs.writeFile(minFileName, allMinCss, cb);
         };
 
@@ -409,7 +409,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         var filePath = path.join(bundleDir, file),
             cssPath = path.join(bundleDir, cssFile),
             cssPathOutput = bundleFileUtility.getOutputFilePath(bundleName, cssPath, options),
-            minCssPath = bundleFileUtility.getMinFileName(cssPathOutput);
+            minCssPath = bundleFileUtility.getMinFileName(bundleName, cssPathOutput, options);
 
         var i = index++;
         pending++;

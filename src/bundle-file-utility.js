@@ -57,8 +57,7 @@ getOutputDirectory = function(bundleName, filename, options) {
 
 BundleFileUtility.prototype.getOutputFilePath = function(bundleName, filename, options) {
 
-    if(options.stagingdirectory
-        && bundleName != filename) {
+    if(options.stagingdirectory) {
 
         return getStagingDirectory(this.FileSystem, bundleName, filename, options);
     }
@@ -69,7 +68,13 @@ BundleFileUtility.prototype.getOutputFilePath = function(bundleName, filename, o
     return filename;
 };
 
-BundleFileUtility.prototype.getMinFileName = function(fileName) {
+BundleFileUtility.prototype.getMinFileName = function(bundleName, fileName, options) {
+
+    if(options.outputdirectory &&
+        bundleName == fileName) {
+        fileName = getOutputDirectory(bundleName, fileName, options);
+    }
+
     var extension = fileName.substring(fileName.lastIndexOf('.'));
     return fileName.substring(0, fileName.length - extension.length) + ".min" + extension;
 }
