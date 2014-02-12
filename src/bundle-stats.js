@@ -23,7 +23,8 @@ SOFTWARE.
 var fs = require("fs"),
     hasher = require('crypto'),
     HASH_FILE_NAME = 'bundle-hashes.json',
-    DEBUG_FILE_NAME = 'bundle-debug.json';
+    DEBUG_FILE_NAME = 'bundle-debug.json',
+    LOCALIZATION_FILE_NAME = 'bundle-localization-strings.json';
 
 function BundleStatsCollector(fileSystem) {
 
@@ -40,6 +41,7 @@ function BundleStatsCollector(fileSystem) {
 exports.BundleStatsCollector = BundleStatsCollector;
 exports.HASH_FILE_NAME = HASH_FILE_NAME;
 exports.DEBUG_FILE_NAME = DEBUG_FILE_NAME;
+exports.LOCALIZATION_FILE_NAME = LOCALIZATION_FILE_NAME;
 
 var GetOutputFile = function (outputdirectory, filename) {
     var seperator = '/';
@@ -67,6 +69,7 @@ BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
     }
     _this.HashCollection = loadFromDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME);
     _this.DebugCollection = loadFromDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME);
+    _this.LocalizedStrings = loadFromDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME);
 };
 
 BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
@@ -79,6 +82,7 @@ BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
 
     saveToDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME, _this.HashCollection);
     saveToDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME, _this.DebugCollection);
+    saveToDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME, _this.LocalizedStrings);
 }
 
 BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContents) {
@@ -113,5 +117,32 @@ BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
 
     if(_this.DebugCollection[bundleShortName].indexOf(fileName) < 0) {
         _this.DebugCollection[bundleShortName].push(fileName);
+    }
+}
+
+
+BundleStatsCollector.prototype.ClearLocalizedStrings = function(bundleName) {
+
+    var _this = this,
+        bundleShortName = bundleName.split('/').pop();
+
+    if(_this.LocalizedStrings[bundleShortName])
+    {
+        _this.LocalizedStrings[bundleShortName] = [];
+    }
+};
+
+BundleStatsCollector.prototype.AddLocalizedString = function (bundleName, localizedString) {
+
+    var _this = this,
+        bundleShortName = bundleName.split('/').pop();
+
+    if(!_this.LocalizedStrings[bundleShortName])
+    {
+        _this.LocalizedStrings[bundleShortName] = [];
+    }
+
+    if(_this.LocalizedStrings[bundleShortName].indexOf(localizedString) < 0) {
+        _this.LocalizedStrings[bundleShortName].push(localizedString);
     }
 }
