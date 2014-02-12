@@ -35,6 +35,7 @@ function BundleStatsCollector(fileSystem) {
     this.HashCollection = { };
     this.DebugCollection = { };
     this.LocalizedStrings = { };
+    this.LocalizationRegex = new RegExp("\{\{# i18n }}[^\{]*\{\{/ i18n }}", "gim");
     this.Console = { log: function () { } };
 }
 
@@ -134,7 +135,15 @@ BundleStatsCollector.prototype.ClearLocalizedStrings = function(bundleName) {
     clearCollection(bundleName, _this.LocalizedStrings);
 };
 
-BundleStatsCollector.prototype.AddLocalizedString = function (bundleName, localizedString) {
+BundleStatsCollector.prototype.AddLocalizedString = function (bundleName, mustacheText) {
     var _this = this;
-    addToCollection(bundleName, _this.LocalizedStrings, localizedString);
+
+    var localizedStrings = [];
+    (mustacheText.match(this.LocalizationRegex) || []).forEach(function(item) {
+        localizedStrings.push(item.replace('{{# i18n }}','').replace('{{/ i18n }}', ''));
+    });
+
+    for(var i=0; i <localizedStrings.length; i++) {
+        addToCollection(bundleName, _this.LocalizedStrings, localizedStrings[i]);
+    }
 };

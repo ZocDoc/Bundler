@@ -5,12 +5,18 @@ var exec = require('child_process').exec,
 describe("BundleStatsCollector - Adds localized strings to the localizedStrings collection: ", function() {
 
     var validateBundle,
+        getLocalizedString = function(ls) {
+            return '{{# i18n }}' + ls+ '{{/ i18n }}';
+        },
         bundle1 = 'bundle1',
-        string1 = 'This is the first string!.',
+        string1 = 'A localized string',
+        ls1 = getLocalizedString(string1),
         bundle2 = 'bundle2',
         string2 = 'A different string.',
+        ls2 = getLocalizedString(string2),
         bundle3 = 'bundle3',
         string3 = 'A third string.',
+        ls3 = getLocalizedString(string3),
         stats;
 
   beforeEach(function () {
@@ -29,23 +35,29 @@ describe("BundleStatsCollector - Adds localized strings to the localizedStrings 
 
   it("Adds files to the collection.", function() {
 
-      stats.AddLocalizedString(bundle1, string1);
+      stats.AddLocalizedString(bundle1, ls1);
 
       validateBundle(bundle1, [ string1 ]);
 
-      stats.AddLocalizedString(bundle1, string2);
+      stats.AddLocalizedString(bundle1, ls2);
 
       validateBundle(bundle1, [ string1, string2 ]);
 
-      stats.AddLocalizedString(bundle1, string3);
+      stats.AddLocalizedString(bundle1, ls3);
 
       validateBundle(bundle1, [ string1, string2, string3 ]);
   });
 
+    it("Text with multiple localized strings adds them all.", function() {
+
+        stats.AddLocalizedString(bundle1, ls1 + ls2 + ls3);
+        validateBundle(bundle1, [ string1, string2, string3 ]);
+    });
+
     it("Clearing a bundle removes all LocalizedStrings.", function() {
 
-        stats.AddLocalizedString(bundle1, string1);
-        stats.AddLocalizedString(bundle1, string2);
+        stats.AddLocalizedString(bundle1, ls1);
+        stats.AddLocalizedString(bundle1, ls2);
 
         validateBundle(bundle1, [ string1, string2 ]);
 
@@ -57,15 +69,15 @@ describe("BundleStatsCollector - Adds localized strings to the localizedStrings 
 
     it("Duplicate LocalizedStrings are not added.", function() {
 
-        stats.AddLocalizedString(bundle1, string1);
+        stats.AddLocalizedString(bundle1, ls1);
 
         validateBundle(bundle1, [ string1 ]);
 
-        stats.AddLocalizedString(bundle1, string1);
+        stats.AddLocalizedString(bundle1, ls1);
 
         validateBundle(bundle1, [ string1 ]);
 
-        stats.AddLocalizedString(bundle1, string1);
+        stats.AddLocalizedString(bundle1, ls1);
 
         validateBundle(bundle1, [ string1 ]);
     });
@@ -73,9 +85,9 @@ describe("BundleStatsCollector - Adds localized strings to the localizedStrings 
 
     it("LocalizedStrings added are isolated to their collection.", function() {
 
-            stats.AddLocalizedString(bundle1, string1);
-        stats.AddLocalizedString(bundle2, string2);
-        stats.AddLocalizedString(bundle3, string3);
+        stats.AddLocalizedString(bundle1, ls1);
+        stats.AddLocalizedString(bundle2, ls2);
+        stats.AddLocalizedString(bundle3, ls3);
 
         validateBundle(bundle1, [ string1 ]);
         validateBundle(bundle2, [ string2 ]);
