@@ -43,6 +43,19 @@ describe("BundleStatsCollector - Adds files to the debug collection: ", function
       validateBundle(bundle1, [ file1, file2, file3 ]);
   });
 
+    it("Clearing a bundle removes all debug files.", function() {
+
+        stats.AddDebugFile(bundle1, file1);
+        stats.AddDebugFile(bundle1, file2);
+
+        validateBundle(bundle1, [ file1, file2 ]);
+
+        stats.ClearDebugFiles(bundle1);
+
+        validateBundle(bundle1, [ ]);
+    });
+
+
     it("Duplicate files are not added.", function() {
 
         stats.AddDebugFile(bundle1, file1);

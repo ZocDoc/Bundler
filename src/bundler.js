@@ -27,6 +27,7 @@ SOFTWARE.
 // windows build systems
 
 process.on("uncaughtException", function (err) {
+    console.log("ERROR")
     console.error(err);
     process.exit(1);
 });
@@ -162,14 +163,16 @@ function scanDir(allFiles, cb) {
                                 tmpFiles.push(name);
                             }
                             else if(currentItem != bundleDir + '/'){
-                                
-                                tmpFiles = tmpFiles.concat(
-                                    allFiles.getFilesInDirectory(
-                                        bundlefiles.BundleType.Javascript,
-                                        currentItem,
-                                        name
-                                    )
-                                );
+
+                                var filesInDir = allFiles.getFilesInDirectory(
+                                                    bundlefiles.BundleType.Javascript,
+                                                    currentItem,
+                                                    name
+                                                );
+                                var mustacheInDirectory = filesInDir.filter(function(a) { return a.endsWith(".mustache")});
+                                var jsInDirectory = filesInDir.filter(function(a) { return a.endsWith(".js")});
+
+                                tmpFiles = tmpFiles.concat(mustacheInDirectory).concat(jsInDirectory);
                             }
                         });
 
@@ -262,7 +265,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         }
 
         var afterBundle = options.skipmin ? cb : function (_) {
-            var minFileName = bundleFileUtility.getMinFileName(bundleName);
+            var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
 			
             if(options.outputbundlestats) {
                 bundleStatsCollector.AddFileHash(bundleName, allMinJs);
@@ -276,6 +279,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
             afterBundle();
         }
     };
+
+    if(options.outputbundlestats) {
+        bundleStatsCollector.ClearDebugFiles(jsBundle);
+    }
 
     jsFiles.forEach(function (file) {
         // Skip blank lines/files beginning with '.' or '#', but allow ../relative paths
@@ -299,7 +306,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var filePath = path.join(bundleDir, file),
               jsPath = path.join(bundleDir, jsFile),
               jsPathOutput = bundleFileUtility.getOutputFilePath(bundleName, jsPath, options),
-              minJsPath = bundleFileUtility.getMinFileName(jsPathOutput);
+              minJsPath = bundleFileUtility.getMinFileName(bundleName, jsPathOutput,  options);
         
         var i = index++;
         pending++;
@@ -365,7 +372,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         }
 
         var afterBundle = options.skipmin ? cb : function (_) {
-            var minFileName = bundleFileUtility.getMinFileName(bundleName);
+            var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
             fs.writeFile(minFileName, allMinCss, cb);
         };
 
@@ -378,6 +385,10 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             afterBundle();
         }
     };
+
+    if(options.outputbundlestats) {
+        bundleStatsCollector.ClearDebugFiles(cssBundle);
+    }
 
     cssFiles.forEach(function (file) {
         if (!(file = file.trim())
@@ -399,7 +410,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         var filePath = path.join(bundleDir, file),
             cssPath = path.join(bundleDir, cssFile),
             cssPathOutput = bundleFileUtility.getOutputFilePath(bundleName, cssPath, options),
-            minCssPath = bundleFileUtility.getMinFileName(cssPathOutput);
+            minCssPath = bundleFileUtility.getMinFileName(bundleName, cssPathOutput, options);
 
         var i = index++;
         pending++;
@@ -464,13 +475,12 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)
     
 	compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
             var templateName = path.basename(mPath, path.extname(mPath)); 
-            var templateFn = hogan.compile(mustacheText, { asString: true });
-            var compiledTemplate = "JST = JST || {};" 
-                        + " JST['" 
-                        + templateName 
-                        + "'] = new Hogan.Template("
-			+ templateFn 
-                        + ");";
+            var templateObject = "{ code: " + hogan.compile(mustacheText, { asString: true })
+                            + ", partials: {}, subs: {} }";
+            var compiledTemplate = "window[\"JST\"] = window[\"JST\"] || {};"
+                        + " JST['"
+                        + templateName
+                        + "'] = new Hogan.Template("+ templateObject + ");";
             cb(compiledTemplate);
         }, mustacheText, mPath, jsPath, cb);
 }

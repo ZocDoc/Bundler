@@ -39,8 +39,7 @@ getStagingDirectory = function(fs, bundleName, filename, options) {
     var splitBundle = bundleName.split(split);
     var outputDir =  options.stagingdirectory + split + splitBundle.pop().replace('.','');
 
-    var fileSplit = getSplit(filename);
-    var stagingFileName = filename.split(fileSplit).pop();
+    var stagingFileName = getStagingFileName(bundleName, filename);
 
     if(!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir);
@@ -48,6 +47,23 @@ getStagingDirectory = function(fs, bundleName, filename, options) {
 
     return outputDir + split + stagingFileName;
 };
+
+getStagingFileName = function(bundleName, filename) {
+
+    var fileSplit = getSplit(filename);
+
+    if(bundleName == filename) {
+        return filename.split(fileSplit).pop();
+    }
+
+    var splits = filename.split(fileSplit);
+    if(splits.length > 1) {
+        splits.splice(0, 1);
+    }
+    var stagingFileName = splits.join('-');
+
+    return stagingFileName;
+}
 
 getOutputDirectory = function(bundleName, filename, options) {
     var split = getSplit(filename);
@@ -57,8 +73,7 @@ getOutputDirectory = function(bundleName, filename, options) {
 
 BundleFileUtility.prototype.getOutputFilePath = function(bundleName, filename, options) {
 
-    if(options.stagingdirectory
-        && bundleName != filename) {
+    if(options.stagingdirectory) {
 
         return getStagingDirectory(this.FileSystem, bundleName, filename, options);
     }
@@ -69,7 +84,13 @@ BundleFileUtility.prototype.getOutputFilePath = function(bundleName, filename, o
     return filename;
 };
 
-BundleFileUtility.prototype.getMinFileName = function(fileName) {
+BundleFileUtility.prototype.getMinFileName = function(bundleName, fileName, options) {
+
+    if(options.outputdirectory &&
+        bundleName == fileName) {
+        fileName = getOutputDirectory(bundleName, fileName, options);
+    }
+
     var extension = fileName.substring(fileName.lastIndexOf('.'));
     return fileName.substring(0, fileName.length - extension.length) + ".min" + extension;
 }

@@ -67,7 +67,7 @@ describe("BundleFileUtility - ", function() {
             verifyOutputFilePath('output-directory\\file1.js');
         });
 
-        it("Staging directory not used for the bundle", function() {
+        it("Staging directory used for the bundle", function() {
 
             givenFilePath(bundleName);
             givenStagingDirectory('staging-directory');
@@ -75,7 +75,7 @@ describe("BundleFileUtility - ", function() {
 
             getOutputFilePath();
 
-            verifyOutputFilePath('output-directory\\bundle.js');
+            verifyOutputFilePath('staging-directory\\bundlejs\\bundle.js');
         });
 
         it("Staging directory used for file", function() {
@@ -87,6 +87,17 @@ describe("BundleFileUtility - ", function() {
 
             verifyOutputFilePath('staging-directory\\bundlejs\\file.js');
         });
+
+        it("Staging directory incorprates the director of the file", function() {
+
+            givenFilePath('folder1/folder2/folder3/file.js');
+            givenStagingDirectory('staging-directory');
+
+            getOutputFilePath();
+
+            verifyOutputFilePath('staging-directory\\bundlejs\\folder2-folder3-file.js');
+        });
+
 
         it("Staging directory created for bundle if it does not exist", function() {
 
@@ -156,6 +167,7 @@ describe("BundleFileUtility - ", function() {
             _minPath,
             getMinFileName,
             givenFilePath,
+            givenOutputDirectory,
             verifyMinFileName;
 
         it("Swaps out the extension with min.extension ", function() {
@@ -176,8 +188,29 @@ describe("BundleFileUtility - ", function() {
             verifyMinFileName('/fol.der1/file1.sauce.min.css');
         });
 
+        it("An output directory has no affect on regular files ", function() {
+
+            givenOutputDirectory('output-directory');
+            givenFilePath('/folder1/file1.js');
+
+            getMinFileName();
+
+            verifyMinFileName('/folder1/file1.min.js');
+        });
+
+        it("An output directory changes the minified bundle ", function() {
+
+            givenOutputDirectory('output-directory');
+            givenFilePath(bundleName);
+
+            getMinFileName();
+
+            verifyMinFileName('output-directory\\bundle.min.js');
+        });
+
+
         getMinFileName = function() {
-            _minPath = getUtil().getMinFileName(_path);
+            _minPath = getUtil().getMinFileName(bundleName, _path, _options);
         };
 
         givenFilePath = function(path) {
@@ -187,6 +220,11 @@ describe("BundleFileUtility - ", function() {
         verifyMinFileName = function(expected) {
             expect(_minPath).toBe(expected);
         };
+
+        givenOutputDirectory = function(directory) {
+            _options['outputdirectory'] = directory;
+        };
+
 
     });
 });
