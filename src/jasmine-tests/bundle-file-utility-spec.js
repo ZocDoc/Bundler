@@ -88,6 +88,17 @@ describe("BundleFileUtility - ", function() {
             verifyOutputFilePath('staging-directory\\bundlejs\\file.js');
         });
 
+        it("Staging directory incorprates the director of the file", function() {
+
+            givenFilePath('folder1/folder2/folder3/file.js');
+            givenStagingDirectory('staging-directory');
+
+            getOutputFilePath();
+
+            verifyOutputFilePath('staging-directory\\bundlejs\\folder2-folder3-file.js');
+        });
+
+
         it("Staging directory created for bundle if it does not exist", function() {
 
             givenFilePath('file.js');

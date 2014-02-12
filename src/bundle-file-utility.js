@@ -39,8 +39,7 @@ getStagingDirectory = function(fs, bundleName, filename, options) {
     var splitBundle = bundleName.split(split);
     var outputDir =  options.stagingdirectory + split + splitBundle.pop().replace('.','');
 
-    var fileSplit = getSplit(filename);
-    var stagingFileName = filename.split(fileSplit).pop();
+    var stagingFileName = getStagingFileName(bundleName, filename);
 
     if(!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir);
@@ -48,6 +47,23 @@ getStagingDirectory = function(fs, bundleName, filename, options) {
 
     return outputDir + split + stagingFileName;
 };
+
+getStagingFileName = function(bundleName, filename) {
+
+    var fileSplit = getSplit(filename);
+
+    if(bundleName == filename) {
+        return filename.split(fileSplit).pop();
+    }
+
+    var splits = filename.split(fileSplit);
+    if(splits.length > 1) {
+        splits.splice(0, 1);
+    }
+    var stagingFileName = splits.join('-');
+
+    return stagingFileName;
+}
 
 getOutputDirectory = function(bundleName, filename, options) {
     var split = getSplit(filename);

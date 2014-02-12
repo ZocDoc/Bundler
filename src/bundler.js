@@ -27,6 +27,7 @@ SOFTWARE.
 // windows build systems
 
 process.on("uncaughtException", function (err) {
+    console.log("ERROR")
     console.error(err);
     process.exit(1);
 });

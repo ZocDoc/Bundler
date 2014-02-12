@@ -199,7 +199,6 @@ BundlerTestCase.prototype.SetUpStagingDirectoryTest = function(isStaging) {
         outputDirectory = "test-cases/staging-directory/folder-output/";
 
     _this.Extension = '';
-
     _this.VerifyBundle = function () {
         _this.Console.log('Verifying! ' + (isStaging?" should put in staging directory" : "should not use staging"));
 
@@ -211,12 +210,12 @@ BundlerTestCase.prototype.SetUpStagingDirectoryTest = function(isStaging) {
         }
 
         checkExists(stagingDirectory, [
-            'testjs/file1.min.js',
-            'testjs/mustache1.js',
-            'testjs/mustache1.min.js',
-            'testcss/file1.min.css',
-            'testcss/less1.css',
-            'testcss/less1.min.css',
+            'testjs/staging-directory-folder-js-file1.min.js',
+            'testjs/staging-directory-folder-js-mustache1.js',
+            'testjs/staging-directory-folder-js-mustache1.min.js',
+            'testcss/staging-directory-folder-css-file1.min.css',
+            'testcss/staging-directory-folder-css-less1.css',
+            'testcss/staging-directory-folder-css-less1.min.css',
             'testjs/folder-test.js',
             'testcss/folder-test.css'
         ], isStaging);
@@ -250,8 +249,8 @@ BundlerTestCase.prototype.CleanDirectory = function() {
                 || file.endsWith('test.css')
                 || file == 'bundle-hashes.json'
                 || file == 'bundle-debug.json'
-                || (file.startsWith('mustache') && file.endsWith('.js'))
-                || (file.startsWith('less') && file.endsWith('.css'))) {
+                || (file.indexOf('mustache') >= 0 && file.endsWith('.js'))
+                || (file.indexOf('less') >= 0 && file.endsWith('.css'))) {
                 _this.FileSystem.unlinkSync(currentDir + '/' + file);
 
                 _this.Console.log(currentDir + "/" + file + ' has been removed.');
