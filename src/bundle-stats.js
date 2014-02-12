@@ -94,55 +94,47 @@ BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContent
     _this.HashCollection[bundleShortName] = hash;
 }
 
-BundleStatsCollector.prototype.ClearDebugFiles = function(bundleName) {
-
+var clearCollection = function(bundleName, collection) {
     var _this = this,
         bundleShortName = bundleName.split('/').pop();
 
-    if(_this.DebugCollection[bundleShortName])
+    if(collection[bundleShortName])
     {
-        _this.DebugCollection[bundleShortName] = [];
+        collection[bundleShortName] = [];
     }
+};
+
+var addToCollection = function(bundleName, collection, item) {
+    var bundleShortName = bundleName.split('/').pop();
+
+    if(!collection[bundleShortName])
+    {
+        collection[bundleShortName] = [];
+    }
+
+    if(collection[bundleShortName].indexOf(item) < 0) {
+        collection[bundleShortName].push(item);
+    }
+};
+
+
+BundleStatsCollector.prototype.ClearDebugFiles = function(bundleName) {
+    var _this = this;
+    clearCollection(bundleName, _this.DebugCollection);
 };
 
 BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
-    
-    var _this = this,
-        bundleShortName = bundleName.split('/').pop();
-
-    if(!_this.DebugCollection[bundleShortName])
-    {
-        _this.DebugCollection[bundleShortName] = [];
-    }
-
-    if(_this.DebugCollection[bundleShortName].indexOf(fileName) < 0) {
-        _this.DebugCollection[bundleShortName].push(fileName);
-    }
-}
+    var _this = this;
+    addToCollection(bundleName, _this.DebugCollection, fileName);
+};
 
 
 BundleStatsCollector.prototype.ClearLocalizedStrings = function(bundleName) {
-
-    var _this = this,
-        bundleShortName = bundleName.split('/').pop();
-
-    if(_this.LocalizedStrings[bundleShortName])
-    {
-        _this.LocalizedStrings[bundleShortName] = [];
-    }
+    var _this = this;
+    clearCollection(bundleName, _this.LocalizedStrings);
 };
 
 BundleStatsCollector.prototype.AddLocalizedString = function (bundleName, localizedString) {
-
-    var _this = this,
-        bundleShortName = bundleName.split('/').pop();
-
-    if(!_this.LocalizedStrings[bundleShortName])
-    {
-        _this.LocalizedStrings[bundleShortName] = [];
-    }
-
-    if(_this.LocalizedStrings[bundleShortName].indexOf(localizedString) < 0) {
-        _this.LocalizedStrings[bundleShortName].push(localizedString);
-    }
-}
+    var _this = this;
+    addToCollection(bundleName, _this.LocalizedStrings, localizedString);
+};
