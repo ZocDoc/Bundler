@@ -35,9 +35,13 @@ function BundleStatsCollector(fileSystem) {
     this.HashCollection = { };
     this.DebugCollection = { };
     this.LocalizedStrings = { };
-    this.LocalizationRegex = new RegExp("\{\{# *i18n *}}[^\{]*\{\{/ *i18n *}}", "gim");
+    this.MustacheLocalizationRegex = new RegExp("\{\{# *i18n *}}[^\{]*\{\{/ *i18n *}}", "gim");
+    this.JsLocalizationRegex = new RegExp("(// @localize .*|i18n.t\\((\"|')[^(\"|')]*(\"|')\\))", "g");
     this.LocalizationStartRegex = new RegExp("\{\{# *i18n *}}", "gim");
     this.LocalizationEndRegex = new RegExp("\{\{/ *i18n *}}", "gim");
+    this.JsLocalizationRegexStart1 = new RegExp("// @localize ", "i");
+    this.JsLocalizationRegexStart2 = new RegExp("i18n.t\\((\"|')", "i");
+    this.JsLocalizationEndRegex = new RegExp("(\"|')\\)", "gim");
     this.Console = { log: function () { } };
 }
 
@@ -141,10 +145,26 @@ BundleStatsCollector.prototype.AddLocalizedStringFromMustache = function (bundle
     var _this = this;
 
     var localizedStrings = [];
-    (mustacheText.match(this.LocalizationRegex) || []).forEach(function(item) {
+    (mustacheText.match(this.MustacheLocalizationRegex) || []).forEach(function(item) {
         localizedStrings.push(item.replace(_this.LocalizationStartRegex,'')
-                                  .replace(_this.LocalizationEndRegex, '')
-                                  .replace(/(\r\n|\n|\r)/gim, '')
+            .replace(_this.LocalizationEndRegex, '')
+            .replace(/(\r\n|\n|\r)/gim, '')
+        );
+    });
+
+    for(var i=0; i <localizedStrings.length; i++) {
+        addToCollection(bundleName, _this.LocalizedStrings, localizedStrings[i]);
+    }
+};
+
+BundleStatsCollector.prototype.AddLocalizedStringFromJs = function (bundleName, jsText) {
+    var _this = this;
+
+    var localizedStrings = [];
+    (jsText.match(_this.JsLocalizationRegex) || []).forEach(function(item) {
+        localizedStrings.push(item.replace(_this.JsLocalizationRegexStart1,'')
+            .replace(_this.JsLocalizationRegexStart2, '')
+            .replace(_this.JsLocalizationEndRegex, '')
         );
     });
 
