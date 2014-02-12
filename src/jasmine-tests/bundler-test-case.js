@@ -176,6 +176,45 @@ BundlerTestCase.prototype.SetUpHashTest = function (shouldHash) {
     }
 }
 
+BundlerTestCase.prototype.SetUpLocalizedStringTest = function (shouldDebug) {
+    var _this = this,
+        directory =  "test-cases/" + _this.TestDirectory + _this.OutputDirectory;
+
+    if (shouldDebug) {
+        _this.VerifyBundle = function () {
+            var contains = function(array, item) {
+                return array.indexOf(item) >=0;
+            };
+
+            var file = directory + 'bundle-localization-strings.json';
+            var savedJson = JSON.parse(_this.FileSystem.readFileSync(file, 'utf8'));
+            expect(savedJson["test.js.bundle"].length).toBe(6);
+            expect(contains(savedJson["test.js.bundle"],"ls10.string")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"ls11.string")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"ls12.string")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"ls20.string")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"ls21.string")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"ls22.string")).toBe(true);
+
+            expect(savedJson["test2.js.bundle"].length).toBe(6);
+            expect(contains(savedJson["test2.js.bundle"],"ls30.string")).toBe(true);
+            expect(contains(savedJson["test2.js.bundle"],"ls31.string")).toBe(true);
+            expect(contains(savedJson["test2.js.bundle"],"ls32.string")).toBe(true);
+            expect(contains(savedJson["test2.js.bundle"],"ls40.string")).toBe(true);
+            expect(contains(savedJson["test2.js.bundle"],"ls41.string")).toBe(true);
+            expect(contains(savedJson["test2.js.bundle"],"ls42.string")).toBe(true);
+        };
+    }
+    else {
+
+        _this.VerifyBundle = function () {
+            var file = directory + 'bundle-localization-strings.json';
+            _this.Console.log('Localized strings file should not be present: ' + file)
+            _this.VerifyFileState([file], false);
+        };
+    }
+}
+
 BundlerTestCase.prototype.SetUpDebugFileTest = function (shouldDebug) {
     var _this = this,
         directory =  "test-cases/" + _this.TestDirectory + _this.OutputDirectory;
@@ -247,8 +286,7 @@ BundlerTestCase.prototype.CleanDirectory = function() {
             if (file.match(/min/g)
                 || file.endsWith('test.js')
                 || file.endsWith('test.css')
-                || file == 'bundle-hashes.json'
-                || file == 'bundle-debug.json'
+                || file.endsWith('.json')
                 || (file.indexOf('mustache') >= 0 && file.endsWith('.js'))
                 || (file.indexOf('less') >= 0 && file.endsWith('.css'))) {
                 _this.FileSystem.unlinkSync(currentDir + '/' + file);

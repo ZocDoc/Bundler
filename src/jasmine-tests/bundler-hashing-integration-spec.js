@@ -51,4 +51,19 @@ describe("Integration Tests for Bundle Stats Collecting - ", function() {
         });
     });
 
+    describe("Localization Files: ", function() {
+
+        it("No localization files are computed if the option is not specified.", function () {
+            var test = getTestCase("bundle-localization-files", "/folder-output/", false);
+            test.SetUpLocalizedStringTest(false);
+            test.RunBundlerAndVerifyOutput();
+        });
+
+        it("The stats option computes a set of localized strings for all bundles and puts it in the output directory.", function () {
+            var test = getTestCase("bundle-localization-files", "/folder-output/", true);
+            test.SetUpLocalizedStringTest(true);
+            test.RunBundlerAndVerifyOutput();
+        });
+    });
+
 });
