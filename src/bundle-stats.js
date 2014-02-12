@@ -33,6 +33,7 @@ function BundleStatsCollector(fileSystem) {
     };
     this.HashCollection = { };
     this.DebugCollection = { };
+    this.LocalizedStrings = { };
     this.Console = { log: function () { } };
 }
 
@@ -40,7 +41,7 @@ exports.BundleStatsCollector = BundleStatsCollector;
 exports.HASH_FILE_NAME = HASH_FILE_NAME;
 exports.DEBUG_FILE_NAME = DEBUG_FILE_NAME;
 
-BundleStatsCollector.prototype.GetOutputFile = function (outputdirectory, filename) {
+var GetOutputFile = function (outputdirectory, filename) {
     var seperator = '/';
     if (outputdirectory[outputdirectory.length - 1] == seperator) {
         seperator = '';
@@ -48,38 +49,34 @@ BundleStatsCollector.prototype.GetOutputFile = function (outputdirectory, filena
     return outputdirectory + seperator + filename;
 }
 
-BundleStatsCollector.prototype.LoadFromDisk = function(fileName) {
-
-    var _this = this, ret;
-    try {
-        var file = _this.FileSystem.readFileSync(fileName, 'utf8')
-        ret = JSON.parse(file);
-    }
-    catch (err) {
-        ret = {};
-    }
-    return ret;
-}
-
 BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
 
     var _this = this,
-        hashFile = _this.GetOutputFile(outputdirectory, HASH_FILE_NAME),
-        debugFile = _this.GetOutputFile(outputdirectory, DEBUG_FILE_NAME);
+        loadFromDisk = function(fs, outputdirectory, fileName) {
 
-
-
-    _this.HashCollection = _this.LoadFromDisk(hashFile);
-    _this.DebugCollection = _this.LoadFromDisk(debugFile);
+        var ret;
+        var outputFile = GetOutputFile(outputdirectory, fileName);
+        try {
+            var file = fs.readFileSync(outputFile, 'utf8')
+            ret = JSON.parse(file);
+        }
+        catch (err) {
+            ret = {};
+        }
+        return ret;
+    }
+    _this.HashCollection = loadFromDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME);
+    _this.DebugCollection = loadFromDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME);
 };
 
 BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
 
     var _this = this,
-        hashFile = _this.GetOutputFile(outputdirectory, HASH_FILE_NAME),
-        debugFile = _this.GetOutputFile(outputdirectory, DEBUG_FILE_NAME);
+        hashFile = GetOutputFile(outputdirectory, HASH_FILE_NAME),
+        debugFile = GetOutputFile(outputdirectory, DEBUG_FILE_NAME);
 
     _this.FileSystem.writeFileSync(hashFile, JSON.stringify(_this.HashCollection, null, 4));
+    _this.FileSystem.writeFileSync(debugFile, JSON.stringify(_this.DebugCollection, null, 4));
     _this.FileSystem.writeFileSync(debugFile, JSON.stringify(_this.DebugCollection, null, 4));
 }
 
