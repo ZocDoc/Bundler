@@ -72,12 +72,13 @@ BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
 BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
 
     var _this = this,
-        hashFile = GetOutputFile(outputdirectory, HASH_FILE_NAME),
-        debugFile = GetOutputFile(outputdirectory, DEBUG_FILE_NAME);
+        saveToDisk = function(fs, outputdirectory, fileName, data) {
+            var outputFile = GetOutputFile(outputdirectory, fileName);
+            fs.writeFileSync(outputFile, JSON.stringify(data, null, 4))
+        };
 
-    _this.FileSystem.writeFileSync(hashFile, JSON.stringify(_this.HashCollection, null, 4));
-    _this.FileSystem.writeFileSync(debugFile, JSON.stringify(_this.DebugCollection, null, 4));
-    _this.FileSystem.writeFileSync(debugFile, JSON.stringify(_this.DebugCollection, null, 4));
+    saveToDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME, _this.HashCollection);
+    saveToDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME, _this.DebugCollection);
 }
 
 BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContents) {
