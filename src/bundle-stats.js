@@ -137,7 +137,7 @@ BundleStatsCollector.prototype.ClearLocalizedStrings = function(bundleName) {
     clearCollection(bundleName, _this.LocalizedStrings);
 };
 
-BundleStatsCollector.prototype.AddLocalizedString = function (bundleName, mustacheText) {
+BundleStatsCollector.prototype.AddLocalizedStringFromMustache = function (bundleName, mustacheText) {
     var _this = this;
 
     var localizedStrings = [];

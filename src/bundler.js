@@ -328,7 +328,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                     readTextFile(filePath, function(mustacheText){
 
                         if(options.outputbundlestats) {
-                            bundleStatsCollector.AddLocalizedString(jsBundle,mustacheText);
+                            bundleStatsCollector.AddLocalizedStringFromMustache(jsBundle,mustacheText);
                         }
 
                         getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
