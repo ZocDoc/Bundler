@@ -63,6 +63,19 @@ describe("BundleStatsCollector - Adds localized strings to the localizedStrings 
         validateBundle(bundle1, [ string1 ]);
     });
 
+    it("Adds localized strings defined with no spaces in i18n.", function() {
+
+        stats.AddLocalizedString(bundle1, '{{#i18n}}' + string1 + '{{/i18n}}');
+        validateBundle(bundle1, [ string1 ]);
+    });
+
+    it("Doesn't break if there are no localized strings.", function() {
+
+        stats.AddLocalizedString(bundle1, '<div>This has no localized strings.</div>');
+        expect(stats.LocalizedStrings[bundle1]).toBe(undefined);
+    });
+
+
     it("Clearing a bundle removes all LocalizedStrings.", function() {
 
         stats.AddLocalizedString(bundle1, ls1);
