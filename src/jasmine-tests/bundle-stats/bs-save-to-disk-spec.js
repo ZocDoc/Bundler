@@ -8,11 +8,14 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
       fileSystem,
       objectOnDisk = { bundle1: "hash1", bundle2: "hash2" },
       debugOnDisk = { bundle1: [ 'file1'], bundle2: [ 'file2'] },
+      localizationOnDisk = { bundle1: [ 'localize1'], bundle2: [ 'localize2'] },
       outputdirectory = 'folder/folder/2',
       expectedContents = JSON.stringify(objectOnDisk, null, 4),
       expectedDebugContents = JSON.stringify(debugOnDisk, null, 4),
+      expectedLocalizationContents = JSON.stringify(localizationOnDisk, null, 4),
       expectedHashFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME,
-      expectedDebugFile = outputdirectory + '/' + bundleStats.DEBUG_FILE_NAME;
+      expectedDebugFile = outputdirectory + '/' + bundleStats.DEBUG_FILE_NAME,
+      expectedLocalizationFile = outputdirectory + '/' + bundleStats.LOCALIZATION_FILE_NAME;
 
   beforeEach(function () {
 
@@ -24,6 +27,7 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
           var hash = new bundleStats.BundleStatsCollector(fileSystem);
           hash.HashCollection = objectOnDisk;
           hash.DebugCollection = debugOnDisk;
+          hash.LocalizedStrings = localizationOnDisk;
           return hash;
       };
   });
@@ -38,6 +42,12 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
         var hasher = getHasher();
         hasher.SaveStatsToDisk(outputdirectory);
         expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedDebugFile, expectedDebugContents)
+    });
+
+    it("Saves the debug file to the correct location.", function() {
+        var hasher = getHasher();
+        hasher.SaveStatsToDisk(outputdirectory);
+        expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedLocalizationFile, expectedLocalizationContents)
     });
 
 

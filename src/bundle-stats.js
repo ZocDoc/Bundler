@@ -23,7 +23,8 @@ SOFTWARE.
 var fs = require("fs"),
     hasher = require('crypto'),
     HASH_FILE_NAME = 'bundle-hashes.json',
-    DEBUG_FILE_NAME = 'bundle-debug.json';
+    DEBUG_FILE_NAME = 'bundle-debug.json',
+    LOCALIZATION_FILE_NAME = 'bundle-localization-strings.json';
 
 function BundleStatsCollector(fileSystem) {
 
@@ -33,14 +34,17 @@ function BundleStatsCollector(fileSystem) {
     };
     this.HashCollection = { };
     this.DebugCollection = { };
+    this.LocalizedStrings = { };
+    this.LocalizationRegex = new RegExp("\{\{# i18n }}[^\{]*\{\{/ i18n }}", "gim");
     this.Console = { log: function () { } };
 }
 
 exports.BundleStatsCollector = BundleStatsCollector;
 exports.HASH_FILE_NAME = HASH_FILE_NAME;
 exports.DEBUG_FILE_NAME = DEBUG_FILE_NAME;
+exports.LOCALIZATION_FILE_NAME = LOCALIZATION_FILE_NAME;
 
-BundleStatsCollector.prototype.GetOutputFile = function (outputdirectory, filename) {
+var GetOutputFile = function (outputdirectory, filename) {
     var seperator = '/';
     if (outputdirectory[outputdirectory.length - 1] == seperator) {
         seperator = '';
@@ -48,39 +52,38 @@ BundleStatsCollector.prototype.GetOutputFile = function (outputdirectory, filena
     return outputdirectory + seperator + filename;
 }
 
-BundleStatsCollector.prototype.LoadFromDisk = function(fileName) {
-
-    var _this = this, ret;
-    try {
-        var file = _this.FileSystem.readFileSync(fileName, 'utf8')
-        ret = JSON.parse(file);
-    }
-    catch (err) {
-        ret = {};
-    }
-    return ret;
-}
-
 BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
 
     var _this = this,
-        hashFile = _this.GetOutputFile(outputdirectory, HASH_FILE_NAME),
-        debugFile = _this.GetOutputFile(outputdirectory, DEBUG_FILE_NAME);
+        loadFromDisk = function(fs, outputdirectory, fileName) {
 
-
-
-    _this.HashCollection = _this.LoadFromDisk(hashFile);
-    _this.DebugCollection = _this.LoadFromDisk(debugFile);
+        var ret;
+        var outputFile = GetOutputFile(outputdirectory, fileName);
+        try {
+            var file = fs.readFileSync(outputFile, 'utf8')
+            ret = JSON.parse(file);
+        }
+        catch (err) {
+            ret = {};
+        }
+        return ret;
+    }
+    _this.HashCollection = loadFromDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME);
+    _this.DebugCollection = loadFromDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME);
+    _this.LocalizedStrings = loadFromDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME);
 };
 
 BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
 
     var _this = this,
-        hashFile = _this.GetOutputFile(outputdirectory, HASH_FILE_NAME),
-        debugFile = _this.GetOutputFile(outputdirectory, DEBUG_FILE_NAME);
+        saveToDisk = function(fs, outputdirectory, fileName, data) {
+            var outputFile = GetOutputFile(outputdirectory, fileName);
+            fs.writeFileSync(outputFile, JSON.stringify(data, null, 4))
+        };
 
-    _this.FileSystem.writeFileSync(hashFile, JSON.stringify(_this.HashCollection, null, 4));
-    _this.FileSystem.writeFileSync(debugFile, JSON.stringify(_this.DebugCollection, null, 4));
+    saveToDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME, _this.HashCollection);
+    saveToDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME, _this.DebugCollection);
+    saveToDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME, _this.LocalizedStrings);
 }
 
 BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContents) {
@@ -92,28 +95,55 @@ BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContent
     _this.HashCollection[bundleShortName] = hash;
 }
 
-BundleStatsCollector.prototype.ClearDebugFiles = function(bundleName) {
-
+var clearCollection = function(bundleName, collection) {
     var _this = this,
         bundleShortName = bundleName.split('/').pop();
 
-    if(_this.DebugCollection[bundleShortName])
+    if(collection[bundleShortName])
     {
-        _this.DebugCollection[bundleShortName] = [];
+        collection[bundleShortName] = [];
     }
 };
 
-BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
-    
-    var _this = this,
-        bundleShortName = bundleName.split('/').pop();
+var addToCollection = function(bundleName, collection, item) {
+    var bundleShortName = bundleName.split('/').pop();
 
-    if(!_this.DebugCollection[bundleShortName])
+    if(!collection[bundleShortName])
     {
-        _this.DebugCollection[bundleShortName] = [];
+        collection[bundleShortName] = [];
     }
 
-    if(_this.DebugCollection[bundleShortName].indexOf(fileName) < 0) {
-        _this.DebugCollection[bundleShortName].push(fileName);
+    if(collection[bundleShortName].indexOf(item) < 0) {
+        collection[bundleShortName].push(item);
     }
-}
+};
+
+
+BundleStatsCollector.prototype.ClearDebugFiles = function(bundleName) {
+    var _this = this;
+    clearCollection(bundleName, _this.DebugCollection);
+};
+
+BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
+    var _this = this;
+    addToCollection(bundleName, _this.DebugCollection, fileName);
+};
+
+
+BundleStatsCollector.prototype.ClearLocalizedStrings = function(bundleName) {
+    var _this = this;
+    clearCollection(bundleName, _this.LocalizedStrings);
+};
+
+BundleStatsCollector.prototype.AddLocalizedString = function (bundleName, mustacheText) {
+    var _this = this;
+
+    var localizedStrings = [];
+    (mustacheText.match(this.LocalizationRegex) || []).forEach(function(item) {
+        localizedStrings.push(item.replace('{{# i18n }}','').replace('{{/ i18n }}', ''));
+    });
+
+    for(var i=0; i <localizedStrings.length; i++) {
+        addToCollection(bundleName, _this.LocalizedStrings, localizedStrings[i]);
+    }
+};
