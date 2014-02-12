@@ -8,6 +8,9 @@ describe("BundleStatsCollector - Adds localized strings to the localizedStrings 
         getLocalizedString = function(ls) {
             return '{{# i18n }}' + ls+ '{{/ i18n }}';
         },
+        getMultiLineLocalizedString = function(ls) {
+            return getLocalizedString('\n' + ls + '\n');
+        },
         bundle1 = 'bundle1',
         string1 = 'A localized string',
         ls1 = getLocalizedString(string1),
@@ -53,6 +56,25 @@ describe("BundleStatsCollector - Adds localized strings to the localizedStrings 
         stats.AddLocalizedString(bundle1, ls1 + ls2 + ls3);
         validateBundle(bundle1, [ string1, string2, string3 ]);
     });
+
+    it("Adds localized strings defined across multiple lines.", function() {
+
+        stats.AddLocalizedString(bundle1, getMultiLineLocalizedString(string1));
+        validateBundle(bundle1, [ string1 ]);
+    });
+
+    it("Adds localized strings defined with no spaces in i18n.", function() {
+
+        stats.AddLocalizedString(bundle1, '{{#i18n}}' + string1 + '{{/i18n}}');
+        validateBundle(bundle1, [ string1 ]);
+    });
+
+    it("Doesn't break if there are no localized strings.", function() {
+
+        stats.AddLocalizedString(bundle1, '<div>This has no localized strings.</div>');
+        expect(stats.LocalizedStrings[bundle1]).toBe(undefined);
+    });
+
 
     it("Clearing a bundle removes all LocalizedStrings.", function() {
 
