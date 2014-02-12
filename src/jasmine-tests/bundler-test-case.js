@@ -188,21 +188,27 @@ BundlerTestCase.prototype.SetUpLocalizedStringTest = function (shouldDebug) {
 
             var file = directory + 'bundle-localization-strings.json';
             var savedJson = JSON.parse(_this.FileSystem.readFileSync(file, 'utf8'));
-            expect(savedJson["test.js.bundle"].length).toBe(6);
+            expect(savedJson["test.js.bundle"].length).toBe(9);
             expect(contains(savedJson["test.js.bundle"],"ls10.string")).toBe(true);
             expect(contains(savedJson["test.js.bundle"],"ls11.string")).toBe(true);
             expect(contains(savedJson["test.js.bundle"],"ls12.string")).toBe(true);
             expect(contains(savedJson["test.js.bundle"],"ls20.string")).toBe(true);
             expect(contains(savedJson["test.js.bundle"],"ls21.string")).toBe(true);
             expect(contains(savedJson["test.js.bundle"],"ls22.string")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"js11.string")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"js12.string")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"js13.string")).toBe(true);
 
-            expect(savedJson["test2.js.bundle"].length).toBe(6);
+            expect(savedJson["test2.js.bundle"].length).toBe(9);
             expect(contains(savedJson["test2.js.bundle"],"ls30.string")).toBe(true);
             expect(contains(savedJson["test2.js.bundle"],"ls31.string")).toBe(true);
             expect(contains(savedJson["test2.js.bundle"],"ls32.string")).toBe(true);
             expect(contains(savedJson["test2.js.bundle"],"ls40.string")).toBe(true);
             expect(contains(savedJson["test2.js.bundle"],"ls41.string")).toBe(true);
             expect(contains(savedJson["test2.js.bundle"],"ls42.string")).toBe(true);
+            expect(contains(savedJson["test2.js.bundle"],"js21.string")).toBe(true);
+            expect(contains(savedJson["test2.js.bundle"],"js22.string")).toBe(true);
+            expect(contains(savedJson["test2.js.bundle"],"js23.string")).toBe(true);
         };
     }
     else {

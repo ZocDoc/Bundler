@@ -335,7 +335,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                     });  
                 }
                 else {
-                    readTextFile(jsPath, next);
+                    readTextFile(jsPath, function(jsText) {
+                        bundleStatsCollector.AddLocalizedStringFromJs(jsBundle,jsText);
+                        next(jsText);
+                    });
                 }
 
                 if(options.outputbundlestats) {
