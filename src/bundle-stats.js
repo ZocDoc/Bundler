@@ -142,7 +142,7 @@ BundleStatsCollector.prototype.AddLocalizedString = function (bundleName, mustac
     (mustacheText.match(this.LocalizationRegex) || []).forEach(function(item) {
         localizedStrings.push(item.replace('{{# i18n }}','')
                                   .replace('{{/ i18n }}', '')
-                                  .replace(/\n/g, '')
+                                  .replace(/(\r\n|\n|\r)/g, '')
         );
     });
 
