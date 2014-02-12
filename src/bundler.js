@@ -282,6 +282,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
     if(options.outputbundlestats) {
         bundleStatsCollector.ClearDebugFiles(jsBundle);
+        bundleStatsCollector.ClearLocalizedStrings(jsBundle);
     }
 
     jsFiles.forEach(function (file) {
@@ -325,6 +326,11 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     jsPath = jsPathOutput;
                     readTextFile(filePath, function(mustacheText){
+
+                        if(options.outputbundlestats) {
+                            bundleStatsCollector.AddLocalizedString(jsBundle,mustacheText);
+                        }
+
                         getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
                     });  
                 }
@@ -472,7 +478,7 @@ function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*c
 }
 
 function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)*/) {
-    
+
 	compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
             var templateName = path.basename(mPath, path.extname(mPath)); 
             var templateObject = "{ code: " + hogan.compile(mustacheText, { asString: true })
