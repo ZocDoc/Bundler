@@ -132,6 +132,20 @@ var addToCollection = function(bundleName, collection, item) {
     }
 };
 
+var parseAndAddToCollection = function(bundleName, text, collection, parseRegex, cleaningFunc) {
+
+    var parsed = [];
+    (text.match(parseRegex) || []).forEach(function(item) {
+        parsed.push(cleaningFunc(item));
+    });
+
+    for(var i=0; i <parsed.length; i++) {
+        addToCollection(bundleName, collection, parsed[i]);
+    }
+
+
+};
+
 
 BundleStatsCollector.prototype.ClearDebugFiles = function(bundleName) {
     var _this = this;
@@ -149,36 +163,36 @@ BundleStatsCollector.prototype.ClearLocalizedStrings = function(bundleName) {
     clearCollection(bundleName, _this.LocalizedStrings);
 };
 
-BundleStatsCollector.prototype.AddLocalizedStringFromMustache = function (bundleName, mustacheText) {
+BundleStatsCollector.prototype.AddLocalizedStringFromMustache = function (bundleName, text) {
     var _this = this;
 
-    var localizedStrings = [];
-    (mustacheText.match(this.MustacheLocalizationRegex) || []).forEach(function(item) {
-        localizedStrings.push(item.replace(_this.LocalizationStartRegex,'')
-            .replace(_this.LocalizationEndRegex, '')
-            .replace(/(\r\n|\n|\r)/gim, '')
-        );
-    });
-
-    for(var i=0; i <localizedStrings.length; i++) {
-        addToCollection(bundleName, _this.LocalizedStrings, localizedStrings[i]);
-    }
+    parseAndAddToCollection(
+        bundleName,
+        text,
+        _this.LocalizedStrings,
+        _this.MustacheLocalizationRegex,
+        function(item) {
+            return item.replace(_this.LocalizationStartRegex,'')
+                .replace(_this.LocalizationEndRegex, '')
+                .replace(/(\r\n|\n|\r)/gim, '');
+        }
+    );
 };
 
-BundleStatsCollector.prototype.AddLocalizedStringFromJs = function (bundleName, jsText) {
+BundleStatsCollector.prototype.AddLocalizedStringFromJs = function (bundleName, text) {
     var _this = this;
 
-    var localizedStrings = [];
-    (jsText.match(_this.JsLocalizationRegex) || []).forEach(function(item) {
-        localizedStrings.push(item.replace(_this.JsLocalizationRegexStart1,'')
-            .replace(_this.JsLocalizationRegexStart2, '')
-            .replace(_this.JsLocalizationEndRegex, '')
-        );
-    });
-
-    for(var i=0; i <localizedStrings.length; i++) {
-        addToCollection(bundleName, _this.LocalizedStrings, localizedStrings[i]);
-    }
+    parseAndAddToCollection(
+        bundleName,
+        text,
+        _this.LocalizedStrings,
+        _this.JsLocalizationRegex,
+        function(item) {
+            return item.replace(_this.JsLocalizationRegexStart1,'')
+                       .replace(_this.JsLocalizationRegexStart2, '')
+                       .replace(_this.JsLocalizationEndRegex, '');
+        }
+    );
 };
 
 BundleStatsCollector.prototype.ClearAbConfigs = function(bundleName) {
@@ -186,17 +200,17 @@ BundleStatsCollector.prototype.ClearAbConfigs = function(bundleName) {
     clearCollection(bundleName, _this.AbConfigs);
 };
 
-BundleStatsCollector.prototype.AddAbConfig = function (bundleName, jsText) {
+BundleStatsCollector.prototype.AddAbConfig = function (bundleName, text) {
     var _this = this;
 
-    var abConfigs = [];
-    (jsText.match(_this.JsAbConfigRegex) || []).forEach(function(item) {
-        abConfigs.push(item.replace(_this.JsAbConfigRegexStart, '')
-                                .replace(_this.JsLocalizationEndRegex, '')
-        );
-    });
-
-    for(var i=0; i <abConfigs.length; i++) {
-        addToCollection(bundleName, _this.AbConfigs, abConfigs[i]);
-    }
+    parseAndAddToCollection(
+        bundleName,
+        text,
+        _this.AbConfigs,
+        _this.JsAbConfigRegex,
+        function(item) {
+            return item.replace(_this.JsAbConfigRegexStart, '')
+                       .replace(_this.JsLocalizationEndRegex, '');
+        }
+    );
 };
