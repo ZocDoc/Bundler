@@ -283,6 +283,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
     if(options.outputbundlestats) {
         bundleStatsCollector.ClearDebugFiles(jsBundle);
         bundleStatsCollector.ClearLocalizedStrings(jsBundle);
+        bundleStatsCollector.ClearAbConfigs(jsBundle);
     }
 
     jsFiles.forEach(function (file) {
@@ -337,6 +338,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 else {
                     readTextFile(jsPath, function(jsText) {
                         bundleStatsCollector.AddLocalizedStringFromJs(jsBundle,jsText);
+                        bundleStatsCollector.AddAbConfig(jsBundle,jsText);
                         next(jsText);
                     });
                 }
