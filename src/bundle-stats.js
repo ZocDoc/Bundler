@@ -109,16 +109,6 @@ BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContent
     _this.HashCollection[bundleShortName] = hash;
 }
 
-var clearCollection = function(bundleName, collection) {
-    var _this = this,
-        bundleShortName = bundleName.split('/').pop();
-
-    if(collection[bundleShortName])
-    {
-        collection[bundleShortName] = [];
-    }
-};
-
 var addToCollection = function(bundleName, collection, item) {
     var bundleShortName = bundleName.split('/').pop();
 
@@ -146,10 +136,21 @@ var parseAndAddToCollection = function(bundleName, text, collection, parseRegex,
 
 };
 
+BundleStatsCollector.prototype.ClearStatsForBundle = function(bundleName) {
+    var _this = this,
+        clearCollection = function(bundleName, collection) {
+            var _this = this,
+                bundleShortName = bundleName.split('/').pop();
 
-BundleStatsCollector.prototype.ClearDebugFiles = function(bundleName) {
-    var _this = this;
+            if(collection[bundleShortName])
+            {
+                collection[bundleShortName] = [];
+            }
+        };
+
     clearCollection(bundleName, _this.DebugCollection);
+    clearCollection(bundleName, _this.LocalizedStrings);
+    clearCollection(bundleName, _this.AbConfigs);
 };
 
 BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
@@ -157,11 +158,6 @@ BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
     addToCollection(bundleName, _this.DebugCollection, fileName);
 };
 
-
-BundleStatsCollector.prototype.ClearLocalizedStrings = function(bundleName) {
-    var _this = this;
-    clearCollection(bundleName, _this.LocalizedStrings);
-};
 
 BundleStatsCollector.prototype.AddLocalizedStringFromMustache = function (bundleName, text) {
     var _this = this;
@@ -193,11 +189,6 @@ BundleStatsCollector.prototype.AddLocalizedStringFromJs = function (bundleName, 
                        .replace(_this.JsLocalizationEndRegex, '');
         }
     );
-};
-
-BundleStatsCollector.prototype.ClearAbConfigs = function(bundleName) {
-    var _this = this;
-    clearCollection(bundleName, _this.AbConfigs);
 };
 
 BundleStatsCollector.prototype.AddAbConfig = function (bundleName, text) {

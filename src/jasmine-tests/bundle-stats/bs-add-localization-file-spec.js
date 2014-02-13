@@ -86,7 +86,7 @@ describe("BundleStatsCollector - ", function() {
 
         validateBundle(bundle1, [ string1, string2 ]);
 
-        stats.ClearLocalizedStrings(bundle1);
+        stats.ClearStatsForBundle(bundle1);
 
         validateBundle(bundle1, [ ]);
     });
@@ -171,7 +171,7 @@ describe("BundleStatsCollector - ", function() {
 
             validateBundle(bundle1, [ string1, string2 ]);
 
-            stats.ClearLocalizedStrings(bundle1);
+            stats.ClearStatsForBundle(bundle1);
 
             validateBundle(bundle1, [ ]);
         });

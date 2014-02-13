@@ -50,7 +50,7 @@ describe("BundleStatsCollector - Adds files to the debug collection: ", function
 
         validateBundle(bundle1, [ file1, file2 ]);
 
-        stats.ClearDebugFiles(bundle1);
+        stats.ClearStatsForBundle(bundle1);
 
         validateBundle(bundle1, [ ]);
     });

@@ -281,9 +281,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
     };
 
     if(options.outputbundlestats) {
-        bundleStatsCollector.ClearDebugFiles(jsBundle);
-        bundleStatsCollector.ClearLocalizedStrings(jsBundle);
-        bundleStatsCollector.ClearAbConfigs(jsBundle);
+        bundleStatsCollector.ClearStatsForBundle(jsBundle);
     }
 
     jsFiles.forEach(function (file) {
@@ -398,7 +396,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     };
 
     if(options.outputbundlestats) {
-        bundleStatsCollector.ClearDebugFiles(cssBundle);
+        bundleStatsCollector.ClearStatsForBundle(cssBundle);
     }
 
     cssFiles.forEach(function (file) {
