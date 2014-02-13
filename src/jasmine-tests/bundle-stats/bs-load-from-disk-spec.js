@@ -10,6 +10,7 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
       outputdirectory = 'folder/folder/2',
       expectedHashFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME,
       expectedDebugFile = outputdirectory + '/' + bundleStats.DEBUG_FILE_NAME,
+      expectedAbConfigFile = outputdirectory + '/' + bundleStats.AB_FILE_NAME,
       expectedLocalizationFile = outputdirectory + '/' + bundleStats.LOCALIZATION_FILE_NAME;
 
   beforeEach(function () {
@@ -41,6 +42,12 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
         var hasher = getHasher();
         hasher.LoadStatsFromDisk(outputdirectory);
         expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedLocalizationFile, 'utf8')
+    });
+
+    it("Reads the ab config file from the correct location.", function() {
+        var hasher = getHasher();
+        hasher.LoadStatsFromDisk(outputdirectory);
+        expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedAbConfigFile, 'utf8')
     });
 
   it("Correctly handles trailing slash for input file.", function () {
