@@ -27,7 +27,7 @@ describe("BundleStatsCollector - ", function() {
       };
   });
 
- describe("AddAbConfig: ", function() {
+ describe("ParseJsForStats: ", function() {
 
   var getAbConfig = function(ab) {
           return "AB.isOn('" + ab + "')";
@@ -38,36 +38,36 @@ describe("BundleStatsCollector - ", function() {
 
   it("Adds ab configs to the collection.", function() {
 
-      stats.AddAbConfig(bundle1, ab1);
+      stats.ParseJsForStats(bundle1, ab1);
 
       validateBundle(bundle1, [ string1 ]);
 
-      stats.AddAbConfig(bundle1, ab2);
+      stats.ParseJsForStats(bundle1, ab2);
 
       validateBundle(bundle1, [ string1, string2 ]);
 
-      stats.AddAbConfig(bundle1, ab3);
+      stats.ParseJsForStats(bundle1, ab3);
 
       validateBundle(bundle1, [ string1, string2, string3 ]);
   });
 
     it("Text with multiple ab configs adds them all.", function() {
 
-        stats.AddAbConfig(bundle1, ab1 + ab2 + ab3);
+        stats.ParseJsForStats(bundle1, ab1 + ab2 + ab3);
         validateBundle(bundle1, [ string1, string2, string3 ]);
     });
 
     it("Doesn't break if there are no ab configs.", function() {
 
-        stats.AddAbConfig(bundle1, 'var x = "This has no ab configs"; \n x = x + "l";');
+        stats.ParseJsForStats(bundle1, 'var x = "This has no ab configs"; \n x = x + "l";');
         expect(stats.AbConfigs[bundle1]).toBe(undefined);
     });
 
 
     it("Clearing a bundle removes all ab configs.", function() {
 
-        stats.AddAbConfig(bundle1, ab1);
-        stats.AddAbConfig(bundle1, ab2);
+        stats.ParseJsForStats(bundle1, ab1);
+        stats.ParseJsForStats(bundle1, ab2);
 
         validateBundle(bundle1, [ string1, string2 ]);
 
@@ -79,15 +79,15 @@ describe("BundleStatsCollector - ", function() {
 
     it("Duplicate ab configs are not added.", function() {
 
-        stats.AddAbConfig(bundle1, ab1);
+        stats.ParseJsForStats(bundle1, ab1);
 
         validateBundle(bundle1, [ string1 ]);
 
-        stats.AddAbConfig(bundle1, ab1);
+        stats.ParseJsForStats(bundle1, ab1);
 
         validateBundle(bundle1, [ string1 ]);
 
-        stats.AddAbConfig(bundle1, ab1);
+        stats.ParseJsForStats(bundle1, ab1);
 
         validateBundle(bundle1, [ string1 ]);
     });
@@ -95,9 +95,9 @@ describe("BundleStatsCollector - ", function() {
 
     it("ab configs added are isolated to their collection.", function() {
 
-        stats.AddAbConfig(bundle1, ab1);
-        stats.AddAbConfig(bundle2, ab2);
-        stats.AddAbConfig(bundle3, ab3);
+        stats.ParseJsForStats(bundle1, ab1);
+        stats.ParseJsForStats(bundle2, ab2);
+        stats.ParseJsForStats(bundle3, ab3);
 
         validateBundle(bundle1, [ string1 ]);
         validateBundle(bundle2, [ string2 ]);

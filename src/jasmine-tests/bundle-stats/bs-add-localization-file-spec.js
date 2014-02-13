@@ -27,7 +27,7 @@ describe("BundleStatsCollector - ", function() {
       };
   });
 
- describe("AddLocalizedStringFromMustache: ", function() {
+ describe("ParseMustacheForStats: ", function() {
 
   var getLocalizedString = function(ls) {
           return '{{# i18n }}' + ls+ '{{/ i18n }}';
@@ -41,48 +41,48 @@ describe("BundleStatsCollector - ", function() {
 
   it("Adds files to the collection.", function() {
 
-      stats.AddLocalizedStringFromMustache(bundle1, ls1);
+      stats.ParseMustacheForStats(bundle1, ls1);
 
       validateBundle(bundle1, [ string1 ]);
 
-      stats.AddLocalizedStringFromMustache(bundle1, ls2);
+      stats.ParseMustacheForStats(bundle1, ls2);
 
       validateBundle(bundle1, [ string1, string2 ]);
 
-      stats.AddLocalizedStringFromMustache(bundle1, ls3);
+      stats.ParseMustacheForStats(bundle1, ls3);
 
       validateBundle(bundle1, [ string1, string2, string3 ]);
   });
 
     it("Text with multiple localized strings adds them all.", function() {
 
-        stats.AddLocalizedStringFromMustache(bundle1, ls1 + ls2 + ls3);
+        stats.ParseMustacheForStats(bundle1, ls1 + ls2 + ls3);
         validateBundle(bundle1, [ string1, string2, string3 ]);
     });
 
     it("Adds localized strings defined across multiple lines.", function() {
 
-        stats.AddLocalizedStringFromMustache(bundle1, getMultiLineLocalizedString(string1));
+        stats.ParseMustacheForStats(bundle1, getMultiLineLocalizedString(string1));
         validateBundle(bundle1, [ string1 ]);
     });
 
     it("Adds localized strings defined with no spaces in i18n.", function() {
 
-        stats.AddLocalizedStringFromMustache(bundle1, '{{#i18n}}' + string1 + '{{/i18n}}');
+        stats.ParseMustacheForStats(bundle1, '{{#i18n}}' + string1 + '{{/i18n}}');
         validateBundle(bundle1, [ string1 ]);
     });
 
     it("Doesn't break if there are no localized strings.", function() {
 
-        stats.AddLocalizedStringFromMustache(bundle1, '<div>This has no localized strings.</div>');
+        stats.ParseMustacheForStats(bundle1, '<div>This has no localized strings.</div>');
         expect(stats.LocalizedStrings[bundle1]).toBe(undefined);
     });
 
 
     it("Clearing a bundle removes all LocalizedStrings.", function() {
 
-        stats.AddLocalizedStringFromMustache(bundle1, ls1);
-        stats.AddLocalizedStringFromMustache(bundle1, ls2);
+        stats.ParseMustacheForStats(bundle1, ls1);
+        stats.ParseMustacheForStats(bundle1, ls2);
 
         validateBundle(bundle1, [ string1, string2 ]);
 
@@ -94,15 +94,15 @@ describe("BundleStatsCollector - ", function() {
 
     it("Duplicate LocalizedStrings are not added.", function() {
 
-        stats.AddLocalizedStringFromMustache(bundle1, ls1);
+        stats.ParseMustacheForStats(bundle1, ls1);
 
         validateBundle(bundle1, [ string1 ]);
 
-        stats.AddLocalizedStringFromMustache(bundle1, ls1);
+        stats.ParseMustacheForStats(bundle1, ls1);
 
         validateBundle(bundle1, [ string1 ]);
 
-        stats.AddLocalizedStringFromMustache(bundle1, ls1);
+        stats.ParseMustacheForStats(bundle1, ls1);
 
         validateBundle(bundle1, [ string1 ]);
     });
@@ -110,9 +110,9 @@ describe("BundleStatsCollector - ", function() {
 
     it("LocalizedStrings added are isolated to their collection.", function() {
 
-        stats.AddLocalizedStringFromMustache(bundle1, ls1);
-        stats.AddLocalizedStringFromMustache(bundle2, ls2);
-        stats.AddLocalizedStringFromMustache(bundle3, ls3);
+        stats.ParseMustacheForStats(bundle1, ls1);
+        stats.ParseMustacheForStats(bundle2, ls2);
+        stats.ParseMustacheForStats(bundle3, ls3);
 
         validateBundle(bundle1, [ string1 ]);
         validateBundle(bundle2, [ string2 ]);
@@ -121,7 +121,7 @@ describe("BundleStatsCollector - ", function() {
 
  });
 
-    describe("AddLocalizedStringFromJs: ", function() {
+    describe("ParseJsForStats: ", function() {
 
         var getLocalizedString = function(ls) {
                 return "i18n.t('" + ls+ "');";
@@ -132,42 +132,42 @@ describe("BundleStatsCollector - ", function() {
 
         it("Adds localized strings to the collection.", function() {
 
-            stats.AddLocalizedStringFromJs(bundle1, ls1);
+            stats.ParseJsForStats(bundle1, ls1);
 
             validateBundle(bundle1, [ string1 ]);
 
-            stats.AddLocalizedStringFromJs(bundle1, ls2);
+            stats.ParseJsForStats(bundle1, ls2);
 
             validateBundle(bundle1, [ string1, string2 ]);
 
-            stats.AddLocalizedStringFromJs(bundle1, ls3);
+            stats.ParseJsForStats(bundle1, ls3);
 
             validateBundle(bundle1, [ string1, string2, string3 ]);
         });
 
         it("Text with multiple localized strings adds them all.", function() {
 
-            stats.AddLocalizedStringFromJs(bundle1, ls1 + "\n" + ls2 + "\n" + ls3);
+            stats.ParseJsForStats(bundle1, ls1 + "\n" + ls2 + "\n" + ls3);
             validateBundle(bundle1, [ string1, string2, string3 ]);
         });
 
         it("Adds localized strings defined @localize syntax.", function() {
 
-            stats.AddLocalizedStringFromJs(bundle1, '// @localize ' + string1);
+            stats.ParseJsForStats(bundle1, '// @localize ' + string1);
             validateBundle(bundle1, [ string1 ]);
         });
 
         it("Doesn't break if there are no localized strings.", function() {
 
-            stats.AddLocalizedStringFromJs(bundle1, 'var x = "There are no localized strings here";"');
+            stats.ParseJsForStats(bundle1, 'var x = "There are no localized strings here";"');
             expect(stats.LocalizedStrings[bundle1]).toBe(undefined);
         });
 
 
         it("Clearing a bundle removes all LocalizedStrings.", function() {
 
-            stats.AddLocalizedStringFromJs(bundle1, ls1);
-            stats.AddLocalizedStringFromJs(bundle1, ls2);
+            stats.ParseJsForStats(bundle1, ls1);
+            stats.ParseJsForStats(bundle1, ls2);
 
             validateBundle(bundle1, [ string1, string2 ]);
 
@@ -179,15 +179,15 @@ describe("BundleStatsCollector - ", function() {
 
         it("Duplicate LocalizedStrings are not added.", function() {
 
-            stats.AddLocalizedStringFromJs(bundle1, ls1);
+            stats.ParseJsForStats(bundle1, ls1);
 
             validateBundle(bundle1, [ string1 ]);
 
-            stats.AddLocalizedStringFromJs(bundle1, ls1);
+            stats.ParseJsForStats(bundle1, ls1);
 
             validateBundle(bundle1, [ string1 ]);
 
-            stats.AddLocalizedStringFromJs(bundle1, ls1);
+            stats.ParseJsForStats(bundle1, ls1);
 
             validateBundle(bundle1, [ string1 ]);
         });
@@ -195,9 +195,9 @@ describe("BundleStatsCollector - ", function() {
 
         it("LocalizedStrings added are isolated to their collection.", function() {
 
-            stats.AddLocalizedStringFromJs(bundle1, ls1);
-            stats.AddLocalizedStringFromJs(bundle2, ls2);
-            stats.AddLocalizedStringFromJs(bundle3, ls3);
+            stats.ParseJsForStats(bundle1, ls1);
+            stats.ParseJsForStats(bundle2, ls2);
+            stats.ParseJsForStats(bundle3, ls3);
 
             validateBundle(bundle1, [ string1 ]);
             validateBundle(bundle2, [ string2 ]);

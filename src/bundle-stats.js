@@ -159,7 +159,7 @@ BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
 };
 
 
-BundleStatsCollector.prototype.AddLocalizedStringFromMustache = function (bundleName, text) {
+BundleStatsCollector.prototype.ParseMustacheForStats = function (bundleName, text) {
     var _this = this;
 
     parseAndAddToCollection(
@@ -175,7 +175,7 @@ BundleStatsCollector.prototype.AddLocalizedStringFromMustache = function (bundle
     );
 };
 
-BundleStatsCollector.prototype.AddLocalizedStringFromJs = function (bundleName, text) {
+BundleStatsCollector.prototype.ParseJsForStats = function (bundleName, text) {
     var _this = this;
 
     parseAndAddToCollection(
@@ -189,10 +189,6 @@ BundleStatsCollector.prototype.AddLocalizedStringFromJs = function (bundleName, 
                        .replace(_this.JsLocalizationEndRegex, '');
         }
     );
-};
-
-BundleStatsCollector.prototype.AddAbConfig = function (bundleName, text) {
-    var _this = this;
 
     parseAndAddToCollection(
         bundleName,
@@ -201,7 +197,8 @@ BundleStatsCollector.prototype.AddAbConfig = function (bundleName, text) {
         _this.JsAbConfigRegex,
         function(item) {
             return item.replace(_this.JsAbConfigRegexStart, '')
-                       .replace(_this.JsLocalizationEndRegex, '');
+                .replace(_this.JsLocalizationEndRegex, '');
         }
     );
+
 };

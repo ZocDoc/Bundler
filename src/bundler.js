@@ -327,7 +327,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                     readTextFile(filePath, function(mustacheText){
 
                         if(options.outputbundlestats) {
-                            bundleStatsCollector.AddLocalizedStringFromMustache(jsBundle,mustacheText);
+                            bundleStatsCollector.ParseMustacheForStats(jsBundle,mustacheText);
                         }
 
                         getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
@@ -335,8 +335,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 }
                 else {
                     readTextFile(jsPath, function(jsText) {
-                        bundleStatsCollector.AddLocalizedStringFromJs(jsBundle,jsText);
-                        bundleStatsCollector.AddAbConfig(jsBundle,jsText);
+                        if(options.outputbundlestats) {
+                            bundleStatsCollector.ParseJsForStats(jsBundle,jsText);
+                        }
                         next(jsText);
                     });
                 }
