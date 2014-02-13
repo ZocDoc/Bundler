@@ -281,8 +281,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
     };
 
     if(options.outputbundlestats) {
-        bundleStatsCollector.ClearDebugFiles(jsBundle);
-        bundleStatsCollector.ClearLocalizedStrings(jsBundle);
+        bundleStatsCollector.ClearStatsForBundle(jsBundle);
     }
 
     jsFiles.forEach(function (file) {
@@ -328,7 +327,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                     readTextFile(filePath, function(mustacheText){
 
                         if(options.outputbundlestats) {
-                            bundleStatsCollector.AddLocalizedStringFromMustache(jsBundle,mustacheText);
+                            bundleStatsCollector.ParseMustacheForStats(jsBundle,mustacheText);
                         }
 
                         getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
@@ -336,7 +335,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 }
                 else {
                     readTextFile(jsPath, function(jsText) {
-                        bundleStatsCollector.AddLocalizedStringFromJs(jsBundle,jsText);
+                        if(options.outputbundlestats) {
+                            bundleStatsCollector.ParseJsForStats(jsBundle,jsText);
+                        }
                         next(jsText);
                     });
                 }
@@ -396,7 +397,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     };
 
     if(options.outputbundlestats) {
-        bundleStatsCollector.ClearDebugFiles(cssBundle);
+        bundleStatsCollector.ClearStatsForBundle(cssBundle);
     }
 
     cssFiles.forEach(function (file) {

@@ -24,7 +24,8 @@ var fs = require("fs"),
     hasher = require('crypto'),
     HASH_FILE_NAME = 'bundle-hashes.json',
     DEBUG_FILE_NAME = 'bundle-debug.json',
-    LOCALIZATION_FILE_NAME = 'bundle-localization-strings.json';
+    LOCALIZATION_FILE_NAME = 'bundle-localization-strings.json',
+    AB_FILE_NAME = 'bundle-ab-configs.json';
 
 function BundleStatsCollector(fileSystem) {
 
@@ -35,13 +36,16 @@ function BundleStatsCollector(fileSystem) {
     this.HashCollection = { };
     this.DebugCollection = { };
     this.LocalizedStrings = { };
+    this.AbConfigs = { };
     this.MustacheLocalizationRegex = new RegExp("\{\{# *i18n *}}[^\{]*\{\{/ *i18n *}}", "gim");
     this.JsLocalizationRegex = new RegExp("(// @localize .*|i18n.t\\((\"|')[^(\"|')]*(\"|')\\))", "g");
+    this.JsAbConfigRegex = new RegExp("AB.isOn\\((\"|')[^(\"|')]*(\"|')\\)", "g");
     this.LocalizationStartRegex = new RegExp("\{\{# *i18n *}}", "gim");
     this.LocalizationEndRegex = new RegExp("\{\{/ *i18n *}}", "gim");
     this.JsLocalizationRegexStart1 = new RegExp("// @localize ", "i");
     this.JsLocalizationRegexStart2 = new RegExp("i18n.t\\((\"|')", "i");
     this.JsLocalizationEndRegex = new RegExp("(\"|')\\)", "gim");
+    this.JsAbConfigRegexStart = new RegExp("AB.isOn\\((\"|')", "i");
     this.Console = { log: function () { } };
 }
 
@@ -49,6 +53,7 @@ exports.BundleStatsCollector = BundleStatsCollector;
 exports.HASH_FILE_NAME = HASH_FILE_NAME;
 exports.DEBUG_FILE_NAME = DEBUG_FILE_NAME;
 exports.LOCALIZATION_FILE_NAME = LOCALIZATION_FILE_NAME;
+exports.AB_FILE_NAME = AB_FILE_NAME;
 
 var GetOutputFile = function (outputdirectory, filename) {
     var seperator = '/';
@@ -74,9 +79,11 @@ BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
         }
         return ret;
     }
+
     _this.HashCollection = loadFromDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME);
     _this.DebugCollection = loadFromDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME);
     _this.LocalizedStrings = loadFromDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME);
+    _this.AbConfigs = loadFromDisk(_this.FileSystem, outputdirectory, AB_FILE_NAME);
 };
 
 BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
@@ -90,6 +97,7 @@ BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
     saveToDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME, _this.HashCollection);
     saveToDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME, _this.DebugCollection);
     saveToDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME, _this.LocalizedStrings);
+    saveToDisk(_this.FileSystem, outputdirectory, AB_FILE_NAME, _this.AbConfigs);
 }
 
 BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContents) {
@@ -100,16 +108,6 @@ BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContent
 
     _this.HashCollection[bundleShortName] = hash;
 }
-
-var clearCollection = function(bundleName, collection) {
-    var _this = this,
-        bundleShortName = bundleName.split('/').pop();
-
-    if(collection[bundleShortName])
-    {
-        collection[bundleShortName] = [];
-    }
-};
 
 var addToCollection = function(bundleName, collection, item) {
     var bundleShortName = bundleName.split('/').pop();
@@ -124,10 +122,35 @@ var addToCollection = function(bundleName, collection, item) {
     }
 };
 
+var parseAndAddToCollection = function(bundleName, text, collection, parseRegex, cleaningFunc) {
 
-BundleStatsCollector.prototype.ClearDebugFiles = function(bundleName) {
-    var _this = this;
+    var parsed = [];
+    (text.match(parseRegex) || []).forEach(function(item) {
+        parsed.push(cleaningFunc(item));
+    });
+
+    for(var i=0; i <parsed.length; i++) {
+        addToCollection(bundleName, collection, parsed[i]);
+    }
+
+
+};
+
+BundleStatsCollector.prototype.ClearStatsForBundle = function(bundleName) {
+    var _this = this,
+        clearCollection = function(bundleName, collection) {
+            var _this = this,
+                bundleShortName = bundleName.split('/').pop();
+
+            if(collection[bundleShortName])
+            {
+                collection[bundleShortName] = [];
+            }
+        };
+
     clearCollection(bundleName, _this.DebugCollection);
+    clearCollection(bundleName, _this.LocalizedStrings);
+    clearCollection(bundleName, _this.AbConfigs);
 };
 
 BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
@@ -136,39 +159,46 @@ BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
 };
 
 
-BundleStatsCollector.prototype.ClearLocalizedStrings = function(bundleName) {
+BundleStatsCollector.prototype.ParseMustacheForStats = function (bundleName, text) {
     var _this = this;
-    clearCollection(bundleName, _this.LocalizedStrings);
+
+    parseAndAddToCollection(
+        bundleName,
+        text,
+        _this.LocalizedStrings,
+        _this.MustacheLocalizationRegex,
+        function(item) {
+            return item.replace(_this.LocalizationStartRegex,'')
+                .replace(_this.LocalizationEndRegex, '')
+                .replace(/(\r\n|\n|\r)/gim, '');
+        }
+    );
 };
 
-BundleStatsCollector.prototype.AddLocalizedStringFromMustache = function (bundleName, mustacheText) {
+BundleStatsCollector.prototype.ParseJsForStats = function (bundleName, text) {
     var _this = this;
 
-    var localizedStrings = [];
-    (mustacheText.match(this.MustacheLocalizationRegex) || []).forEach(function(item) {
-        localizedStrings.push(item.replace(_this.LocalizationStartRegex,'')
-            .replace(_this.LocalizationEndRegex, '')
-            .replace(/(\r\n|\n|\r)/gim, '')
-        );
-    });
+    parseAndAddToCollection(
+        bundleName,
+        text,
+        _this.LocalizedStrings,
+        _this.JsLocalizationRegex,
+        function(item) {
+            return item.replace(_this.JsLocalizationRegexStart1,'')
+                       .replace(_this.JsLocalizationRegexStart2, '')
+                       .replace(_this.JsLocalizationEndRegex, '');
+        }
+    );
 
-    for(var i=0; i <localizedStrings.length; i++) {
-        addToCollection(bundleName, _this.LocalizedStrings, localizedStrings[i]);
-    }
-};
+    parseAndAddToCollection(
+        bundleName,
+        text,
+        _this.AbConfigs,
+        _this.JsAbConfigRegex,
+        function(item) {
+            return item.replace(_this.JsAbConfigRegexStart, '')
+                .replace(_this.JsLocalizationEndRegex, '');
+        }
+    );
 
-BundleStatsCollector.prototype.AddLocalizedStringFromJs = function (bundleName, jsText) {
-    var _this = this;
-
-    var localizedStrings = [];
-    (jsText.match(_this.JsLocalizationRegex) || []).forEach(function(item) {
-        localizedStrings.push(item.replace(_this.JsLocalizationRegexStart1,'')
-            .replace(_this.JsLocalizationRegexStart2, '')
-            .replace(_this.JsLocalizationEndRegex, '')
-        );
-    });
-
-    for(var i=0; i <localizedStrings.length; i++) {
-        addToCollection(bundleName, _this.LocalizedStrings, localizedStrings[i]);
-    }
 };

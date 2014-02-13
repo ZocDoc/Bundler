@@ -176,6 +176,38 @@ BundlerTestCase.prototype.SetUpHashTest = function (shouldHash) {
     }
 }
 
+BundlerTestCase.prototype.SetUpAbConfigTest = function (shouldDebug) {
+    var _this = this,
+        directory =  "test-cases/" + _this.TestDirectory + _this.OutputDirectory;
+
+    if (shouldDebug) {
+        _this.VerifyBundle = function () {
+            var contains = function(array, item) {
+                return array.indexOf(item) >=0;
+            };
+
+            var file = directory + 'bundle-ab-configs.json';
+            var savedJson = JSON.parse(_this.FileSystem.readFileSync(file, 'utf8'));
+            expect(savedJson["test.js.bundle"].length).toBe(3);
+            expect(contains(savedJson["test.js.bundle"],"ab.config.1")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"ab.config.2")).toBe(true);
+            expect(contains(savedJson["test.js.bundle"],"ab.config.3")).toBe(true);
+
+            expect(savedJson["test2.js.bundle"].length).toBe(2);
+            expect(contains(savedJson["test2.js.bundle"],"ab.config.4")).toBe(true);
+            expect(contains(savedJson["test2.js.bundle"],"ab.config.5")).toBe(true);
+        };
+    }
+    else {
+
+        _this.VerifyBundle = function () {
+            var file = directory + 'bundle-ab-configs.json';
+            _this.Console.log('Ab configs file should not be present: ' + file)
+            _this.VerifyFileState([file], false);
+        };
+    }
+}
+
 BundlerTestCase.prototype.SetUpLocalizedStringTest = function (shouldDebug) {
     var _this = this,
         directory =  "test-cases/" + _this.TestDirectory + _this.OutputDirectory;
