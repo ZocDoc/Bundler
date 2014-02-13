@@ -66,4 +66,19 @@ describe("Integration Tests for Bundle Stats Collecting - ", function() {
         });
     });
 
+    describe("Ab Congig Files: ", function() {
+
+        it("No ab config files are computed if the option is not specified.", function () {
+            var test = getTestCase("bundle-ab-files", "/folder-output/", false);
+            test.SetUpAbConfigTest(false);
+            test.RunBundlerAndVerifyOutput();
+        });
+
+        it("The stats option computes a set of localized strings for all bundles and puts it in the output directory.", function () {
+            var test = getTestCase("bundle-ab-files", "/folder-output/", true);
+            test.SetUpAbConfigTest(true);
+            test.RunBundlerAndVerifyOutput();
+        });
+    });
+
 });
