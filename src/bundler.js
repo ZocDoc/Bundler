@@ -77,7 +77,6 @@ if(bundlerOptions.DefaultOptions.rewriteimagefileroot && bundlerOptions.DefaultO
         bundlerOptions.DefaultOptions.rewriteimageoutputroot,
         bundlerOptions.DefaultOptions.rewriteimagefileroot
     );
-    console.log("is Versioning images");
 }
 
 if(bundlerOptions.DefaultOptions.outputbundlestats) {
@@ -395,7 +394,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         var afterBundle = options.skipmin ? cb : function (_) {
 
             if(imageVersioning) {
-                console.log("hitting the version imager");
                 allMinCss = imageVersioning.VersionImages(allMinCss);
             }
 
