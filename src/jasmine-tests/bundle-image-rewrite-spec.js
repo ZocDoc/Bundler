@@ -84,6 +84,16 @@ describe("BundleImageRewriter - ", function () {
             verifyOutputTextIs(".s { background: url('combined/version-18458d2016656fdb823ed3ef01b8f8da/img/another-image.jpg') center no-repeat; }");
         });
 
+        it("Extra slashes are not added if one already exists.", function () {
+
+            givenImageFile('/img/another-image.jpg', fileContents1);
+            givenCssFileText('.s { background: url(/img/another-image.jpg) center no-repeat; }');
+
+            versionImages();
+
+            verifyOutputTextIs(".s { background: url('combined/version-18458d2016656fdb823ed3ef01b8f8da/img/another-image.jpg') center no-repeat; }");
+        });
+
         it("Multiple images in a single file are all versioned.", function () {
 
             givenImageFile('img/an-image.jpg', fileContents1);
