@@ -61,7 +61,7 @@ describe("BundleImageRewriter - ", function () {
 
             versionImages();
 
-            verifyOutputTextIs(".s { background: url('combined/version-18458d2016656fdb823ed3ef01b8f8da/img/an-image.jpg') center no-repeat; }");
+            verifyOutputTextIs(".s { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg') center no-repeat; }");
         });
 
         it("Image urls with double quotes are parsed correctly.", function () {
@@ -71,7 +71,7 @@ describe("BundleImageRewriter - ", function () {
 
             versionImages();
 
-            verifyOutputTextIs(".s { background: url('combined/version-18458d2016656fdb823ed3ef01b8f8da/img/an-image.jpg') center no-repeat; }");
+            verifyOutputTextIs(".s { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg') center no-repeat; }");
         });
 
         it("Image urls with no quotes are parsed correctly.", function () {
@@ -81,7 +81,7 @@ describe("BundleImageRewriter - ", function () {
 
             versionImages();
 
-            verifyOutputTextIs(".s { background: url('combined/version-18458d2016656fdb823ed3ef01b8f8da/img/another-image.jpg') center no-repeat; }");
+            verifyOutputTextIs(".s { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/another-image.jpg') center no-repeat; }");
         });
 
         it("Extra slashes are not added if one already exists.", function () {
@@ -91,7 +91,7 @@ describe("BundleImageRewriter - ", function () {
 
             versionImages();
 
-            verifyOutputTextIs(".s { background: url('combined/version-18458d2016656fdb823ed3ef01b8f8da/img/another-image.jpg') center no-repeat; }");
+            verifyOutputTextIs(".s { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/another-image.jpg') center no-repeat; }");
         });
 
         it("Multiple images in a single file are all versioned.", function () {
@@ -104,9 +104,9 @@ describe("BundleImageRewriter - ", function () {
 
             versionImages();
 
-            verifyOutputTextIs(".a { background: url('combined/version-570e1018fd20af9e8e22c860a43d0ac3/img/another-image.jpg') center no-repeat; }\n"
-                            + ".b { background: url('combined/version-18458d2016656fdb823ed3ef01b8f8da/img/an-image.jpg') center no-repeat; }\n"
-                            + ".c { background: url('combined/version-570e1018fd20af9e8e22c860a43d0ac3/img/another-image.jpg') no-repeat; }\n");
+            verifyOutputTextIs(".a { background: url('combined/version__570e1018fd20af9e8e22c860a43d0ac3__/img/another-image.jpg') center no-repeat; }\n"
+                            + ".b { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg') center no-repeat; }\n"
+                            + ".c { background: url('combined/version__570e1018fd20af9e8e22c860a43d0ac3__/img/another-image.jpg') no-repeat; }\n");
         });
 
 

@@ -56,12 +56,12 @@ function BundleImageRewriter(
 
         var hash = generateHashOfFile(filepath);
         
-		var seperator = '/';
+		var seperator = '__/';
 		if(cleanedUrl.startsWith('/')) {
-			seperator = '';
+			seperator = '__';
 		}
 		
-        return outputRoot + 'version-' + hash + seperator + cleanedUrl;
+        return outputRoot + 'version__' + hash + seperator + cleanedUrl;
     }
 
     this.imageUrlRegex = new RegExp(/url\(.*?g['"]?\)/ig)
