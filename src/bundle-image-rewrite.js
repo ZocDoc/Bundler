@@ -39,7 +39,6 @@ function BundleImageRewriter(
         rootPath = rootPath + '/';
     }
 
-
     var generateHashOfFile = function (filepath)
     {
         var fileText = fileSystem.readFileSync(filepath);
