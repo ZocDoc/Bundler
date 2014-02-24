@@ -53,7 +53,9 @@ var fs = require("fs"),
     bundleFileUtilityRequire = require('./bundle-file-utility.js'),
     bundleFileUtility,
     bundlerOptions = new optionsRequire.BundlerOptions(),
-    ext = require('./string-extensions.js');
+    imageVersioningRequire = require('./bundle-image-rewrite.js'),
+    ext = require('./string-extensions.js'),
+    imageVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
 
@@ -67,6 +69,14 @@ if (!bundlerOptions.Directories.length) {
     console.log("No directories were specified.");
     console.log("Usage: bundler.js [#option:value] ../Content [../Scripts]");
     return;
+}
+
+if(bundlerOptions.DefaultOptions.rewriteimagefileroot && bundlerOptions.DefaultOptions.rewriteimageoutputroot) {
+    imageVersioning = new imageVersioningRequire.BundleImageRewriter(
+        fs,
+        bundlerOptions.DefaultOptions.rewriteimageoutputroot,
+        bundlerOptions.DefaultOptions.rewriteimagefileroot
+    );
 }
 
 if(bundlerOptions.DefaultOptions.outputbundlestats) {
@@ -382,6 +392,11 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         }
 
         var afterBundle = options.skipmin ? cb : function (_) {
+
+            if(imageVersioning) {
+                allMinCss = imageVersioning.VersionImages(allMinCss);
+            }
+
             var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
             fs.writeFile(minFileName, allMinCss, cb);
         };

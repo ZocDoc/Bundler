@@ -1,30 +1,32 @@
 
 describe("Css Bundling:", function() {
 
-  var exec = require('child_process').exec,
-    fs = require('fs'),
-    testCase = require('./bundler-test-case.js'),
-    getTestCase = function(directory, outputDirectory) { 
-      return  new testCase.BundlerTestCase(
+    var exec = require('child_process').exec,
+      fs = require('fs'),
+      testCase = require('./bundler-test-case.js'),
+      getTestCase = function(directory, outputDirectory) { 
+          return  new testCase.BundlerTestCase(
+              directory,
+              ".css",
+              outputDirectory,
+              exec,
+              runs,
+              waitsFor,
+              fs
+          );
+      },
+      runTestCase = function (
           directory,
-          ".css",
           outputDirectory,
-          exec,
-          runs,
-          waitsFor,
-          fs
-      );
-    },
-    runTestCase = function (
-        directory,
-        outputDirectory,
-        logToConsole
-    ) {
+          logToConsole,
+          additionaloptions
+      ) {
         var testCase = getTestCase(directory, outputDirectory);
 
         if (logToConsole) {
             testCase.Console = console;
         }
+        testCase.CommandOptions += (additionaloptions || '');
 
         testCase.RunBundlerAndVerifyOutput();
     };
@@ -35,6 +37,10 @@ describe("Css Bundling:", function() {
 
   it("Compiles and Concatenates .less files", function() {
       runTestCase("combines-less");
+  });
+
+  it("Optionally versions images in the minified file", function () {
+      runTestCase("image-versioning-css", null, false, " -rewriteimagefileroot:test-cases/image-versioning-css -rewriteimageoutputroot:combined");
   });
 
   it("An error is thrown for invalid less.", function () {
