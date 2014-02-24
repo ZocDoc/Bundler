@@ -46,9 +46,9 @@ function BundleImageRewriter(
     };
 
     this.rewriteUrl = function (url) {
-         
         var cleanedUrl = url.replace("url(", "").replace(")", "").replace(/'/g, "").replace(/"/g, "");
-        var filepath = rootPath + cleanedUrl;
+		var filepath = rootPath + cleanedUrl;
+		
         var exists = fileSystem.existsSync(filepath);
         if (!exists) {
             return cleanedUrl;
@@ -64,10 +64,11 @@ function BundleImageRewriter(
         return outputRoot + 'version__' + hash + seperator + cleanedUrl;
     }
 
-    this.imageUrlRegex = new RegExp(/url\(.*?g['"]?\)/ig)
+    this.imageUrlRegex = new RegExp(/url\(.*?[gf]['"]?\)/ig)
 }
 
 exports.BundleImageRewriter = BundleImageRewriter;
+
 
 BundleImageRewriter.prototype.VersionImages = function (cssFileText) {
     var _this = this;
