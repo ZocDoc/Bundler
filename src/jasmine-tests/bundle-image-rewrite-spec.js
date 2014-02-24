@@ -63,6 +63,36 @@ describe("BundleImageRewriter - ", function () {
 
             verifyOutputTextIs(".s { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg') center no-repeat; }");
         });
+		
+		it("Gifs should work.", function () {
+
+			givenImageFile('img/an-image.gif', fileContents1);
+            givenCssFileText("url(img/an-image.gif) url(img/an-image.gif)");
+
+            versionImages();
+
+            verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.gif') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.gif')");
+        });
+		
+		it("Pngs should work.", function () {
+
+			givenImageFile('img/an-image.png', fileContents1);
+            givenCssFileText("url(img/an-image.png) url(img/an-image.png)");
+
+            versionImages();
+
+            verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.png') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.png')");
+        });
+			
+		it("Jpgs should work.", function () {
+
+			givenImageFile('img/an-image.jpg', fileContents1);
+            givenCssFileText("url(img/an-image.jpg) url(img/an-image.jpg)");
+
+            versionImages();
+
+            verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg')");
+        });
 
         it("Image urls with double quotes are parsed correctly.", function () {
 
