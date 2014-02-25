@@ -27,7 +27,6 @@ SOFTWARE.
 // windows build systems
 
 process.on("uncaughtException", function (err) {
-    console.log("ERROR")
     console.error(err);
     process.exit(1);
 });
@@ -128,8 +127,6 @@ var scanIndex = 0;
         if(bundlerOptions.DefaultOptions.outputbundlestats) {
             bundleStatsCollector.SaveStatsToDisk(bundlerOptions.DefaultOptions.outputdirectory ||  process.cwd());
         }
-
-        console.log("Bundling took: " + (Date.now() - startedAt) + "ms");
     }
 })();
 
