@@ -22,14 +22,17 @@ SOFTWARE.
 
 var fs = require("fs"),
     hasher = require('crypto'),
+    path = require('path'),
     HASH_FILE_NAME = 'bundle-hashes.json',
     DEBUG_FILE_NAME = 'bundle-debug.json',
     LOCALIZATION_FILE_NAME = 'bundle-localization-strings.json',
     LESS_IMPORTS_FILE = 'bundle-less-imports.json',
     AB_FILE_NAME = 'bundle-ab-configs.json';
 
-function BundleStatsCollector(fileSystem) {
-
+function BundleStatsCollector(
+    fileSystem
+) {
+    this.Path = path;
     this.FileSystem = fileSystem || fs;
     this.GenerateHash = function (fileText) {
         return hasher.createHash('md5').update(fileText).digest('hex');
@@ -142,6 +145,8 @@ var parseAndAddToCollection = function(bundleName, text, collection, parseRegex,
     for(var i=0; i <parsed.length; i++) {
         addToCollection(bundleName, collection, parsed[i]);
     }
+
+    return parsed;
 };
 
 var clearCollection = function(name, collection) {
@@ -159,12 +164,6 @@ BundleStatsCollector.prototype.ClearStatsForBundle = function(bundleName) {
     clearCollection(bundleName, _this.DebugCollection);
     clearCollection(bundleName, _this.LocalizedStrings);
     clearCollection(bundleName, _this.AbConfigs);
-};
-
-BundleStatsCollector.prototype.ClearStatsForFile = function (fileName) {
-    var _this = this;
-
-    clearCollection(fileName, _this.LessImports);
 };
 
 BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
@@ -189,10 +188,9 @@ BundleStatsCollector.prototype.ParseMustacheForStats = function (bundleName, tex
     );
 };
 
-BundleStatsCollector.prototype.ParseLessForImports = function (fileName, text) {
-    var _this = this;
+var parseLessForImports = function (_this, fileName, text) {
 
-    parseAndAddToCollection(
+    return parseAndAddToCollection(
         fileName,
         text,
         _this.LessImports,
@@ -202,6 +200,45 @@ BundleStatsCollector.prototype.ParseLessForImports = function (fileName, text) {
                        .replace(_this.LessImportRegexEnd, '');
         }
     );
+};
+
+BundleStatsCollector.prototype.SearchForLessImports = function (fileName, text) {
+
+    var _this = this,
+        originalFile = fileName;
+
+    var depth = 0;
+    var parsed = [{ file: fileName, imports: parseLessForImports(_this, originalFile, text) }];
+    var importList = [];
+
+    //search for nested imports up to 10 levels deep.
+    while (parsed.length > 0) {
+
+        if (depth == 10) {
+            throw new Error("Found import with 10 levels of nesting.  This is likely a circular nesting.")
+        }
+
+        var nextLevel = [];
+        for (var j = 0; j < parsed.length; j++) {
+            for (var i = 0; i < parsed[j].imports.length; i++) {
+
+                var dirName = _this.Path.dirname(parsed[j].file);
+                var resolvedImport = _this.Path.resolve(dirName, parsed[j].imports[i]);
+                text = _this.FileSystem.readFileSync(resolvedImport, 'utf8');
+
+                importList.push(resolvedImport);
+                nextLevel.push({ file: resolvedImport, imports: parseLessForImports(_this, originalFile, text) || [] });
+            }
+        }
+
+        parsed = nextLevel;
+        depth++;
+    }
+
+    clearCollection(fileName, _this.LessImports);
+    for (var i = 0; i < importList.length; i++) {
+        addToCollection(fileName, _this.LessImports, importList[i]);
+    }
 };
 
 BundleStatsCollector.prototype.GetImportsForFile = function (fileName) {

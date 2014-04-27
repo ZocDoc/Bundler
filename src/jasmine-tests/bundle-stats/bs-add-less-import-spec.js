@@ -1,21 +1,32 @@
-var exec = require('child_process').exec,
-      fs = require('fs'),
-      fileNameStats = require('../../bundle-stats.js');
+var fileNameStats = require('../../bundle-stats.js');
 
 describe("fileNameStatsCollector - ", function() {
 
     var verifyImportsForFile,
-        fileName1 = 'fileName1',
-        import1 = 'A localized import',
-        fileName2 = 'fileName2',
-        import2 = 'A different import.',
-        fileName3 = 'fileName3',
-        import3 = 'A third import.',
-        stats;
+        fileName1 = 'c:\\src\\styles\\area1\\less1.less',
+        fullPathImport = 'c:\\src\\styles\\imports\\fullPathImport.less',
+        fullPathImport2 = 'c:\\src\\styles\\imports\\fullPathImport2.less',
+        fullPathImport3 = 'c:\\src\\styles\\imports\\fullPathImport3.less',
+        fileName2 = 'c:\\src\\styles\\area1\\less2.less',
+        relativeImport = '..\\imports\\relativeImport.less',
+        fullPathOfRelativeImport = 'c:\\src\\styles\\imports\\relativeImport.less',
+        fileName3 = 'c:\\src\\styles\\area2\\less3.less',
+        importRelativeToImports = './importRelative.less',
+        fullPathOfImportRelativeToImports = 'c:\\src\\styles\\imports\\importRelative.less',
+        stats,
+        fileSystem,
+        fileSystemProxy;
 
   beforeEach(function () {
 
-      stats = new fileNameStats.BundleStatsCollector(null);
+      fileSystemProxy = {};
+      fileSystem = {
+          readFileSync: function (path) {
+              return fileSystemProxy[path] || '';
+          }
+      };
+
+      stats = new fileNameStats.BundleStatsCollector(fileSystem);
       stats.LessImports = {};
       verifyImportsForFile = function(file, imports)
       {
@@ -32,80 +43,97 @@ describe("fileNameStatsCollector - ", function() {
   var getLessImport = function(i) {
       return "@import url('" + i+ '")\n style1 { color1: @importedColor; }';
       },
-      ls1 = getLessImport(import1),
-      ls2 = getLessImport(import2),
-      lessDoubleQuote = '@import url("' + import3 + '")';
+      fullPathImportLessFile = getLessImport(fullPathImport),
+      relativeLessImport = getLessImport(relativeImport),
+      lessDoubleQuote = '@import url("' + fullPathImport + '")';
 
   it("Adds imports to the collection.", function() {
 
-      stats.ParseLessForImports(fileName1, ls1);
+      searchForImports(fileName1, fullPathImportLessFile);
 
-      verifyImportsForFile(fileName1, [ import1 ]);
-
-      stats.ParseLessForImports(fileName1, ls2);
-
-      verifyImportsForFile(fileName1, [ import1, import2 ]);
-
-      stats.ParseLessForImports(fileName1, lessDoubleQuote);
-
-      verifyImportsForFile(fileName1, [ import1, import2, import3 ]);
+      verifyImportsForFile(fileName1, [ fullPathImport ]);
   });
 
     it("Less with multiple imports adds them all.", function() {
 
-        stats.ParseLessForImports(fileName1, ls1 + ls2 + lessDoubleQuote);
-        verifyImportsForFile(fileName1, [ import1, import2, import3 ]);
+        searchForImports(fileName1, fullPathImportLessFile + relativeLessImport);
+        verifyImportsForFile(fileName1, [fullPathImport, fullPathOfRelativeImport]);
+    });
+
+    it("Checks for imports multiple levels deep.", function () {
+
+        givenImportedFileHasImport(fullPathImport, fullPathImport2);
+        givenImportedFileHasImport(fullPathImport2, fullPathImport3);
+        givenImportedFileHasImport(fullPathOfRelativeImport, fullPathImport2);
+
+        searchForImports(fileName1, fullPathImportLessFile + relativeLessImport);
+
+        verifyImportsForFile(fileName1, [fullPathImport, fullPathOfRelativeImport, fullPathImport2, fullPathImport3]);
+    });
+     
+    it("Nested file resolves are relative to the nested import.", function () {
+
+        givenImportedFileHasImport(fullPathImport, importRelativeToImports);
+
+        searchForImports(fileName1, fullPathImportLessFile);
+
+        verifyImportsForFile(fileName1, [fullPathImport, fullPathOfImportRelativeToImports]);
+    });
+    
+    it("Imports with infinite nesting throw",  function () {
+
+        givenImportedFileHasImport(fullPathImport, fullPathImport);
+
+        expect(function () {
+            searchForImports(fileName1, fullPathImportLessFile);
+        }).toThrow();
     });
 
     it("Double quotes are can be used in the import url", function () {
 
-        stats.ParseLessForImports(fileName1, lessDoubleQuote);
-        verifyImportsForFile(fileName1, [import3]);
+        searchForImports(fileName1, lessDoubleQuote);
+        verifyImportsForFile(fileName1, [fullPathImport]);
     });
 
     it("A file with no imports returns an empty array", function () {
 
-        stats.ParseLessForImports(fileName1, '.thisHasNoImports { color: red; }\n');
+        searchForImports(fileName1, '.thisHasNoImports { color: red; }\n');
         expect(stats.GetImportsForFile(fileName1).length).toBe(0);
-    });
-
-    it("Clearing a fileName removes all Imports.", function() {
-
-        stats.ParseLessForImports(fileName1, ls1);
-        stats.ParseLessForImports(fileName1, ls2);
-
-        verifyImportsForFile(fileName1, [ import1, import2 ]);
-
-        stats.ClearStatsForFile(fileName1);
-
-        verifyImportsForFile(fileName1, [ ]);
     });
 
     it("Duplicate Imports are not added.", function () {
 
-        stats.ParseLessForImports(fileName1, ls1);
+        searchForImports(fileName1, fullPathImportLessFile);
 
-        verifyImportsForFile(fileName1, [ import1 ]);
+        verifyImportsForFile(fileName1, [ fullPathImport ]);
 
-        stats.ParseLessForImports(fileName1, ls1);
+        searchForImports(fileName1, fullPathImportLessFile);
 
-        verifyImportsForFile(fileName1, [ import1 ]);
+        verifyImportsForFile(fileName1, [ fullPathImport ]);
 
-        stats.ParseLessForImports(fileName1, ls1);
+        searchForImports(fileName1, fullPathImportLessFile);
 
-        verifyImportsForFile(fileName1, [ import1 ]);
+        verifyImportsForFile(fileName1, [ fullPathImport ]);
     });
 
     it("Imports added are isolated to their collection.", function() {
 
-        stats.ParseLessForImports(fileName1, ls1);
-        stats.ParseLessForImports(fileName2, ls2);
-        stats.ParseLessForImports(fileName3, lessDoubleQuote);
+        searchForImports(fileName1, fullPathImportLessFile);
+        searchForImports(fileName2, relativeLessImport);
+        searchForImports(fileName3, fullPathImportLessFile);
 
-        verifyImportsForFile(fileName1, [ import1 ]);
-        verifyImportsForFile(fileName2, [ import2 ]);
-        verifyImportsForFile(fileName3, [ import3 ]);
+        verifyImportsForFile(fileName1, [ fullPathImport ]);
+        verifyImportsForFile(fileName2, [ fullPathOfRelativeImport]);
+        verifyImportsForFile(fileName3, [ fullPathImport ]);
     });
+
+    var searchForImports = function (file, text) {
+        stats.SearchForLessImports(file, text);
+    };
+
+    var givenImportedFileHasImport = function (file, importedFile) {
+        fileSystemProxy[file] = getLessImport(importedFile);
+    };
 
  });
 });
