@@ -116,7 +116,7 @@ TestUtility.prototype.VerifyFileContents = function (dir, fileName, expectedCont
 TestUtility.prototype.Bundle = function (dir, options) {
     var _this = this;
     _this.runFunc(function () {
-        _this.RunCommandSync("node ../bundler.js " + (options || "") + "./" + dir);
+        _this.RunCommandSync("node ../bundler.js ./" + dir + " " + (options || ""));
     });
 }
 
