@@ -574,7 +574,25 @@ function compileAsync(options, mode, compileFn /*compileFn(text, textPath, cb(co
             else {
                 fs.stat(textPath, function (_, textStat) {
                     fs.stat(compileTextPath, function (_, minTextStat) {
-                        next(minTextStat.mtime.getTime() < textStat.mtime.getTime());
+
+                        var shouldCompile = minTextStat.mtime.getTime() < textStat.mtime.getTime();
+
+                        if(bundlerOptions.DefaultOptions.outputbundlestats && !shouldCompile) {
+                            var imports = bundleStatsCollector.GetImportsForFile(textPath) || [];
+
+                            for(var i=0; i < imports.length; i++) {
+                                
+                                var importStat = fs.statSync(imports[i]);
+
+                                shouldCompile = minTextStat.mtime.getTime() < importStat.mtime.getTime();
+
+                                if(shouldCompile) {
+                                    break;
+                                }
+                            }
+                        };
+
+                        next(shouldCompile);
                     });
                 });
             }
@@ -606,6 +624,10 @@ function compileLess(lessCss, lessPath, cb) {
             paths: ['.', lessDir], // Specify search paths for @import directives
             filename: fileName
         };
+
+    if(bundlerOptions.DefaultOptions.outputbundlestats) {
+        bundleStatsCollector.SearchForLessImports(lessPath, lessCss);
+    }
 
     less.render(lessCss, options, function (err, css) {
         if (err) throw err;
