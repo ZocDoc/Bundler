@@ -25,6 +25,7 @@ var fs = require("fs"),
     HASH_FILE_NAME = 'bundle-hashes.json',
     DEBUG_FILE_NAME = 'bundle-debug.json',
     LOCALIZATION_FILE_NAME = 'bundle-localization-strings.json',
+    LESS_IMPORTS_FILE = 'bundle-less-imports.json',
     AB_FILE_NAME = 'bundle-ab-configs.json';
 
 function BundleStatsCollector(fileSystem) {
@@ -36,7 +37,8 @@ function BundleStatsCollector(fileSystem) {
     this.HashCollection = { };
     this.DebugCollection = { };
     this.LocalizedStrings = { };
-    this.AbConfigs = { };
+    this.AbConfigs = {};
+    this.LessImports = {};
     this.MustacheLocalizationRegex = new RegExp("\{\{# *i18n *}}[^\{]*\{\{/ *i18n *}}", "gim");
     this.JsLocalizationRegex = new RegExp("(// @localize .*|i18n.t\\((\"|')[^(\"|')]*(\"|')\\))", "g");
     this.JsAbConfigRegex = new RegExp("AB.isOn\\((\"|')[^(\"|')]*(\"|')\\)", "g");
@@ -46,6 +48,11 @@ function BundleStatsCollector(fileSystem) {
     this.JsLocalizationRegexStart2 = new RegExp("i18n.t\\((\"|')", "i");
     this.JsLocalizationEndRegex = new RegExp("(\"|')\\)", "gim");
     this.JsAbConfigRegexStart = new RegExp("AB.isOn\\((\"|')", "i");
+
+    this.LessImportRegex = new RegExp("@import url\\((\"|')[^(\"|')]*(\"|')\\)", "g");
+    this.LessImportRegexStart = new RegExp("@import url\\((\"|')", "i");
+    this.LessImportRegexEnd = new RegExp("(\"|')\\)", "gim");
+
     this.Console = { log: function () { } };
 }
 
@@ -54,6 +61,7 @@ exports.HASH_FILE_NAME = HASH_FILE_NAME;
 exports.DEBUG_FILE_NAME = DEBUG_FILE_NAME;
 exports.LOCALIZATION_FILE_NAME = LOCALIZATION_FILE_NAME;
 exports.AB_FILE_NAME = AB_FILE_NAME;
+exports.LESS_IMPORTS_FILE = LESS_IMPORTS_FILE;
 
 var GetOutputFile = function (outputdirectory, filename) {
     var seperator = '/';
@@ -84,6 +92,7 @@ BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
     _this.DebugCollection = loadFromDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME);
     _this.LocalizedStrings = loadFromDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME);
     _this.AbConfigs = loadFromDisk(_this.FileSystem, outputdirectory, AB_FILE_NAME);
+    _this.LessImports = loadFromDisk(_this.FileSystem, outputdirectory, LESS_IMPORTS_FILE);
 };
 
 BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
@@ -98,6 +107,7 @@ BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
     saveToDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME, _this.DebugCollection);
     saveToDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME, _this.LocalizedStrings);
     saveToDisk(_this.FileSystem, outputdirectory, AB_FILE_NAME, _this.AbConfigs);
+    saveToDisk(_this.FileSystem, outputdirectory, LESS_IMPORTS_FILE, _this.LessImports);
 }
 
 BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContents) {
@@ -132,25 +142,29 @@ var parseAndAddToCollection = function(bundleName, text, collection, parseRegex,
     for(var i=0; i <parsed.length; i++) {
         addToCollection(bundleName, collection, parsed[i]);
     }
+};
 
+var clearCollection = function(name, collection) {
+    var bundleShortName = name.split('/').pop();
 
+    if (collection[name])
+    {
+        collection[name] = [];
+    }
 };
 
 BundleStatsCollector.prototype.ClearStatsForBundle = function(bundleName) {
-    var _this = this,
-        clearCollection = function(bundleName, collection) {
-            var _this = this,
-                bundleShortName = bundleName.split('/').pop();
-
-            if(collection[bundleShortName])
-            {
-                collection[bundleShortName] = [];
-            }
-        };
+    var _this = this;        
 
     clearCollection(bundleName, _this.DebugCollection);
     clearCollection(bundleName, _this.LocalizedStrings);
     clearCollection(bundleName, _this.AbConfigs);
+};
+
+BundleStatsCollector.prototype.ClearStatsForFile = function (fileName) {
+    var _this = this;
+
+    clearCollection(fileName, _this.LessImports);
 };
 
 BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
@@ -173,6 +187,25 @@ BundleStatsCollector.prototype.ParseMustacheForStats = function (bundleName, tex
                 .replace(/(\r\n|\n|\r)/gim, '');
         }
     );
+};
+
+BundleStatsCollector.prototype.ParseLessForImports = function (fileName, text) {
+    var _this = this;
+
+    parseAndAddToCollection(
+        fileName,
+        text,
+        _this.LessImports,
+        _this.LessImportRegex,
+        function (item) {
+            return item.replace(_this.LessImportRegexStart, '')
+                       .replace(_this.LessImportRegexEnd, '');
+        }
+    );
+};
+
+BundleStatsCollector.prototype.GetImportsForFile = function (fileName) {
+    return this.LessImports[fileName] || [];
 };
 
 BundleStatsCollector.prototype.ParseJsForStats = function (bundleName, text) {
