@@ -44,6 +44,8 @@ BundleFiles.prototype.addDirectories = function (file, directoryDictionary) {
     var directories = ['/'];
     var combined = null;
 
+    file = file.toLowerCase();
+
     var tokens = file.split('/');
     tokens.pop();
 
@@ -144,13 +146,17 @@ BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, curre
         dictionary = fileType == exports.BundleType.Javascript ? _this._jsDirectories : _this._cssDirectories
         output = [];
 
-    if (!_this.indexed) { throw new Error("Files are not indexed!") };
+    if (!_this.indexed) { throw new Error("Files must be indexed before looking up directories.") };
 
-    var dictEntry = bundleDir.NormalizeSlash(true, true);
-    bundleDir = bundleDir.NormalizeSlash(false, true);
+    var dictEntry = bundleDir.NormalizeSlash(true, true).toLowerCase();
+    bundleDir = bundleDir.NormalizeSlash(false, true).toLowerCase();
     currentDir = currentDir.NormalizeSlash(false, true);
 
-    (dictionary[dictEntry] || []).forEach(function (name) {
+    var files = dictionary[dictEntry] || [];
+
+    if (files.length == 0) { throw new Error("No files found for directory: " + bundleDir) };
+
+    files.forEach(function (name) {
 
         var match = currentDir + '/' + matcher(name, bundleDir, true);
 
