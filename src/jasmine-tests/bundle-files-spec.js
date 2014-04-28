@@ -166,6 +166,18 @@ describe("BundleFiles.", function () {
           expect(jsFilesInDir.length).toBe(1);
           expect(jsFilesInDir.contains("output/file.js")).toBe(true);
       });
+
+      it("Throws if no files found for directory", function () {
+
+          var shouldThrow = function () {
+              files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
+                                      "/not_a_valid_directory",
+                                      "output"
+                                  );
+          };
+
+          expect(shouldThrow).toThrow();
+      });
   });
 
   describe("getFilesInDirectory: - Css: ", function () {
@@ -244,6 +256,18 @@ describe("BundleFiles.", function () {
 
           expect(cssFilesInDir.length).toBe(1);
           expect(cssFilesInDir.contains("output/file.css")).toBe(true);
+      });
+
+      it("Throws if no files found for directory", function () {
+
+          var shouldThrow = function () {
+              files.getFilesInDirectory(bundlefiles.BundleType.Css,
+                                      "/not_a_valid_directory",
+                                      "output"
+                                  );
+          };
+
+          expect(shouldThrow).toThrow();
       });
   });
 });

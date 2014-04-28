@@ -146,15 +146,17 @@ BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, curre
         dictionary = fileType == exports.BundleType.Javascript ? _this._jsDirectories : _this._cssDirectories
         output = [];
 
-    if (!_this.indexed) { throw new Error("Files are not indexed!") };
+    if (!_this.indexed) { throw new Error("Files must be indexed before looking up directories.") };
 
     var dictEntry = bundleDir.NormalizeSlash(true, true).toLowerCase();
     bundleDir = bundleDir.NormalizeSlash(false, true).toLowerCase();
     currentDir = currentDir.NormalizeSlash(false, true);
 
-    var files = 
+    var files = dictionary[dictEntry] || [];
 
-    (dictionary[dictEntry] || []).forEach(function (name) {
+    if (files.length == 0) { throw new Error("No files found for directory: " + bundleDir) };
+
+    files.forEach(function (name) {
 
         var match = currentDir + '/' + matcher(name, bundleDir, true);
 
