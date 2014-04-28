@@ -4,7 +4,7 @@ describe("Recompile Tests - ", function() {
     var exec = require('child_process').exec,
          fs = require('fs'),
          testHelper = require('./integration-test-helper.js'),
-         testUtility = new testHelper.TestUtility(exec, fs, runs, waitsFor),
+         testUtility = new testHelper.TestUtility(exec, fs, runs, waitsFor, console),
          bundle,
          bundleContents,
          testDirBase = 'recompile-test-suite',
@@ -155,9 +155,8 @@ describe("Recompile Tests - ", function() {
     };
 
     var updateFile = function (dir, fileName, contents) {
-        testUtility.CreateFile(dir, fileName, contents);
         testUtility.Wait(1000);
-        testUtility.RunCommandSync("touch " + dir + "/" + fileName);
+		testUtility.CreateFile(dir, fileName, contents);
     };
 
     var givenImport = function (fileName, contents) {
