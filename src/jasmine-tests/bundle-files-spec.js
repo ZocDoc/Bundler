@@ -38,6 +38,10 @@ describe("BundleFiles.", function () {
             "/tests/test4/test4.js.bundle",
             "/tests/test4/file.js",
         ],
+        fileSet3 = [
+            "/casing/Tests/File.js",
+            "/casing/Tests/File.css"
+        ],
         jsBundle = "/tests/test5/test5.js.bundle",
         jsFile = "/tests/test5/file.mustache",
         cssBundle = "/tests/test6/test6.css.bundle",
@@ -50,6 +54,7 @@ describe("BundleFiles.", function () {
       //add a couple sets
       files.addFiles(fileSet1);
       files.addFiles(fileSet2);
+      files.addFiles(fileSet3);
 
       //add some individually
       files.addFiles(jsBundle);
@@ -138,6 +143,29 @@ describe("BundleFiles.", function () {
           expect(jsFilesInDir.length).toBe(1);
           expect(jsFilesInDir.contains("test5/file.mustache")).toBe(true);
       });
+
+
+      it("Ignores Case", function () {
+
+          var jsFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
+                                  "/casing/tests",
+                                  "output/"
+                              );
+
+          expect(jsFilesInDir.length).toBe(1);
+          expect(jsFilesInDir.contains("output/file.js")).toBe(true);
+      });
+
+      it("Ignores trailing slash", function () {
+
+          var jsFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
+                                  "/casing/tests/",
+                                  "output"
+                              );
+
+          expect(jsFilesInDir.length).toBe(1);
+          expect(jsFilesInDir.contains("output/file.js")).toBe(true);
+      });
   });
 
   describe("getFilesInDirectory: - Css: ", function () {
@@ -194,6 +222,28 @@ describe("BundleFiles.", function () {
 
           expect(cssFilesInDir.length).toBe(1);
           expect(cssFilesInDir.contains("test3/file.css")).toBe(true);
+      });
+      
+      it("Ignores Case", function () {
+
+          var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,
+                                  "/casing/tests",
+                                  "output/"
+                              );
+
+          expect(cssFilesInDir.length).toBe(1);
+          expect(cssFilesInDir.contains("output/file.css")).toBe(true);
+      });
+
+      it("Ignores trailing slash", function () {
+
+          var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,
+                                  "/casing/tests/",
+                                  "output"
+                              );
+
+          expect(cssFilesInDir.length).toBe(1);
+          expect(cssFilesInDir.contains("output/file.css")).toBe(true);
       });
   });
 });

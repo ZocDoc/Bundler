@@ -44,6 +44,8 @@ BundleFiles.prototype.addDirectories = function (file, directoryDictionary) {
     var directories = ['/'];
     var combined = null;
 
+    file = file.toLowerCase();
+
     var tokens = file.split('/');
     tokens.pop();
 
@@ -146,9 +148,11 @@ BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, curre
 
     if (!_this.indexed) { throw new Error("Files are not indexed!") };
 
-    var dictEntry = bundleDir.NormalizeSlash(true, true);
-    bundleDir = bundleDir.NormalizeSlash(false, true);
+    var dictEntry = bundleDir.NormalizeSlash(true, true).toLowerCase();
+    bundleDir = bundleDir.NormalizeSlash(false, true).toLowerCase();
     currentDir = currentDir.NormalizeSlash(false, true);
+
+    var files = 
 
     (dictionary[dictEntry] || []).forEach(function (name) {
 
