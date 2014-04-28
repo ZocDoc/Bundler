@@ -7,20 +7,24 @@ describe("Recompile Tests - ", function() {
          testUtility = new testHelper.TestUtility(exec, fs, runs, waitsFor),
          bundle,
          bundleContents,
-         testDir = 'recompile-test-suite',
+         testDirBase = 'recompile-test-suite',
+         testDir = testDirBase + '/test',
+         importDirectory = testDirBase + '/import',
          runType;
 
     beforeEach(function () {
 
         bundleContents = "";
+        testUtility.CreateDirectory(testDirBase);
         testUtility.CreateDirectory(testDir);
+        testUtility.CreateDirectory(importDirectory);
     });
 
     afterEach(function () {
-        testUtility.CleanDirectory(testDir);
+        testUtility.CleanDirectory(testDirBase);
     });
 
-
+    
     describe("Javascript: ", function () {
 
         beforeEach(function () {
@@ -63,43 +67,83 @@ describe("Recompile Tests - ", function() {
         });
 
     });
+
+    
     describe("Css: ", function () {
 
         beforeEach(function () {
             runType = '.css';
 
-            givenFileToBundle("file1.css", "style1 { color: red; }");
-            givenFileToBundle("file2.css", "style2 { color: blue; }");
-            givenFileToBundle("less1.less", "@theColor: white; style3 { color: @theColor; }");
+            givenImport("import1.less", "@import url('./import2.less');\n @imported1: black;");
+            givenImport("import2.less", "@imported2: black;");
+            givenFileToBundle("file1.css", ".style1 { color: red; }");
+            givenFileToBundle("file2.css", ".style2 { color: blue; }");
+            givenFileToBundle("less1.less", "@theColor: white; .style3 { color: @theColor; }");
+            givenFileToBundle("less2.less", "@import url('../import/import1.less');\n .importColor { color: @imported1; }");
+            givenFileToBundle("less3.less", "@import url('../import/import1.less');\n .deeperImportColor { color: @imported2; }");
 
             bundle();
 
-            verifyBundleIs('style1{color:red}\n'
-                         + 'style2{color:#00f}\n'
-                         + 'style3{color:#fff}\n');
+            verifyBundleIs('.style1{color:red}\n'
+                         + '.style2{color:#00f}\n'
+                         + '.style3{color:#fff}\n'
+                         + '.importColor{color:#000}\n'
+                         + '.deeperImportColor{color:#000}\n');
 
         });
-
+        
         it("An updated css file causes the contents of the bundle to change when re-bundled.", function () {
 
-            givenFileUpdate("file1.css", "newstyle1 { color: yellow; }");
+            givenFileUpdate("file1.css", ".newstyle1 { color: yellow; }");
 
             bundle();
 
-            verifyBundleIs('newstyle1{color:#ff0}\n'
-                         + 'style2{color:#00f}\n'
-                         + 'style3{color:#fff}\n');
+            verifyBundleIs('.newstyle1{color:#ff0}\n'
+                         + '.style2{color:#00f}\n'
+                         + '.style3{color:#fff}\n'
+                         + '.importColor{color:#000}\n'
+                         + '.deeperImportColor{color:#000}\n');
         });
 
         it("An updated less file causes the contents of the bundle to change when re-bundled.", function () {
 
-            givenFileUpdate("less1.less", "@theColor: green; style4 { color: @theColor; }");
+            givenFileUpdate("less1.less", "@theColor: green; .style4 { color: @theColor; }");
 
             bundle();
 
-            verifyBundleIs('style1{color:red}\n'
-                         + 'style2{color:#00f}\n'
-                         + 'style4{color:green}\n');
+            verifyBundleIs('.style1{color:red}\n'
+                         + '.style2{color:#00f}\n'
+                         + '.style4{color:green}\n'
+                         + '.importColor{color:#000}\n'
+                         + '.deeperImportColor{color:#000}\n');
+
+        });
+        
+        it("An updated import of a less file causes the contents of the bundle to change when re-bundled.", function () {
+
+            givenImportUpdate("import1.less", "@import url('./import2.less');\n @imported1: blue;");
+
+            bundle();
+
+            verifyBundleIs('.style1{color:red}\n'
+                         + '.style2{color:#00f}\n'
+                         + '.style3{color:#fff}\n'
+                         + '.importColor{color:#00f}\n'
+                         + '.deeperImportColor{color:#000}\n');
+
+        });
+
+        it("An updated nested import of a less file causes the contents of the bundle to change when re-bundled.", function () {
+
+            givenImportUpdate("import2.less", "@imported2: blue;");
+
+            bundle();
+
+            verifyBundleIs('.style1{color:red}\n'
+                         + '.style2{color:#00f}\n'
+                         + '.style3{color:#fff}\n'
+                         + '.importColor{color:#000}\n'
+                         + '.deeperImportColor{color:#00f}\n');
 
         });
 
@@ -107,9 +151,21 @@ describe("Recompile Tests - ", function() {
 
 
     var givenFileUpdate = function (fileName, contents) {
-        testUtility.CreateFile(testDir, fileName, contents);
+        updateFile(testDir, fileName, contents);
+    };
+
+    var updateFile = function (dir, fileName, contents) {
+        testUtility.CreateFile(dir, fileName, contents);
         testUtility.Wait(1000);
-        testUtility.RunCommandSync("touch " + testDir + "/" + fileName);
+        testUtility.RunCommandSync("touch " + dir + "/" + fileName);
+    };
+
+    var givenImport = function (fileName, contents) {
+        testUtility.CreateFile(importDirectory, fileName, contents);
+    };
+
+    var givenImportUpdate = function (fileName, contents) {
+        updateFile(importDirectory, fileName, contents);
     };
 
     var verifyBundleIs = function (expectedContents) {
@@ -118,7 +174,7 @@ describe("Recompile Tests - ", function() {
 
     var bundle = function () {
         testUtility.CreateFile(testDir, "test" + runType + ".bundle", bundleContents);
-        testUtility.Bundle(testDir);
+        testUtility.Bundle(testDir, " -outputbundlestats:true -outputdirectory:./" + testDir);
     };
 
     var givenFileToBundle = function (fileName, contents) {
