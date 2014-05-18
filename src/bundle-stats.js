@@ -152,9 +152,9 @@ var parseAndAddToCollection = function(bundleName, text, collection, parseRegex,
 var clearCollection = function(name, collection) {
     var bundleShortName = name.split('/').pop();
 
-    if (collection[name])
+    if (collection[bundleShortName])
     {
-        collection[name] = [];
+        collection[bundleShortName] = [];
     }
 };
 

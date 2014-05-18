@@ -78,7 +78,6 @@ describe("BundleStatsCollector - ", function() {
         expect(stats.LocalizedStrings[bundle1]).toBe(undefined);
     });
 
-
     it("Clearing a bundle removes all LocalizedStrings.", function() {
 
         stats.ParseMustacheForStats(bundle1, ls1);
@@ -91,6 +90,17 @@ describe("BundleStatsCollector - ", function() {
         validateBundle(bundle1, [ ]);
     });
 
+    it("Clearing a bundle with a path removes all LocalizedStrings.", function() {
+
+        stats.ParseMustacheForStats(bundle1, ls1);
+        stats.ParseMustacheForStats(bundle1, ls2);
+
+        validateBundle(bundle1, [ string1, string2 ]);
+
+        stats.ClearStatsForBundle("file/path/" + bundle1);
+
+        validateBundle(bundle1, [ ]);
+    });
 
     it("Duplicate LocalizedStrings are not added.", function() {
 
