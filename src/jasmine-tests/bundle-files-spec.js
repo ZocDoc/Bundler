@@ -153,7 +153,7 @@ describe("BundleFiles.", function () {
                               );
 
           expect(jsFilesInDir.length).toBe(1);
-          expect(jsFilesInDir.contains("output/file.js")).toBe(true);
+          expect(jsFilesInDir.contains("output/File.js")).toBe(true);
       });
 
       it("Ignores trailing slash", function () {
@@ -164,7 +164,7 @@ describe("BundleFiles.", function () {
                               );
 
           expect(jsFilesInDir.length).toBe(1);
-          expect(jsFilesInDir.contains("output/file.js")).toBe(true);
+          expect(jsFilesInDir.contains("output/File.js")).toBe(true);
       });
 
       it("Throws if no files found for directory", function () {
@@ -244,7 +244,7 @@ describe("BundleFiles.", function () {
                               );
 
           expect(cssFilesInDir.length).toBe(1);
-          expect(cssFilesInDir.contains("output/file.css")).toBe(true);
+          expect(cssFilesInDir.contains("output/File.css")).toBe(true);
       });
 
       it("Ignores trailing slash", function () {
@@ -255,7 +255,7 @@ describe("BundleFiles.", function () {
                               );
 
           expect(cssFilesInDir.length).toBe(1);
-          expect(cssFilesInDir.contains("output/file.css")).toBe(true);
+          expect(cssFilesInDir.contains("output/File.css")).toBe(true);
       });
 
       it("Throws if no files found for directory", function () {

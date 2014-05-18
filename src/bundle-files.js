@@ -44,9 +44,7 @@ BundleFiles.prototype.addDirectories = function (file, directoryDictionary) {
     var directories = ['/'];
     var combined = null;
 
-    file = file.toLowerCase();
-
-    var tokens = file.split('/');
+    var tokens = file.toLowerCase().split('/');
     tokens.pop();
 
     tokens.forEach(function (token) {
@@ -142,7 +140,7 @@ BundleFiles.prototype.getBundles = function (fileType) {
 
 BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, currentDir) {
     var _this = this,
-        matcher = fileType == exports.BundleType.Javascript ? _this.jsMatches : _this.cssMatches,
+        matcher = fileType == exports.BundleType.Javascript ? function(name) { return name.isJs(); } : function(name) { return name.isCss(); },
         dictionary = fileType == exports.BundleType.Javascript ? _this._jsDirectories : _this._cssDirectories
         output = [];
 
@@ -158,13 +156,16 @@ BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, curre
 
     files.forEach(function (name) {
 
-        var match = currentDir + '/' + matcher(name, bundleDir, true);
-
-        if (!match.endsWith('#')) {
-            output.push(match);
-        }
+		if(!matcher(name)) {
+			return;
+		}
+	
+        var fileName = currentDir + '/' + name.substring(bundleDir.length + 1);
+		output.push(fileName);
     });
 
+	if (output.length == 0) { throw new Error("No files found for directory: " + bundleDir) };
+	
     return output;
 };
 
