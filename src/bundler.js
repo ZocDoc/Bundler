@@ -497,7 +497,7 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)
 
 	compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
             var templateName = path.basename(mPath, path.extname(mPath)); 
-			if (options.usetemplatedirs){
+            if (options.usetemplatedirs){
                 var splitPath = mPath.replace(".mustache", "").split(path.sep);
                 var templateIndex = splitPath.indexOf("templates");
                 templateName = splitPath.slice(templateIndex + 1).join("-");
