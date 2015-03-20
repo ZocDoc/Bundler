@@ -178,7 +178,7 @@ function scanDir(allFiles, cb) {
                                                     name
                                                 );
                                 var mustacheInDirectory = filesInDir.filter(function(a) { return a.endsWith(".mustache")});
-                                var jsInDirectory = filesInDir.filter(function(a) { return a.endsWith(".js")});
+                                var jsInDirectory = filesInDir.filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx"); });
 
                                 tmpFiles = tmpFiles.concat(mustacheInDirectory).concat(jsInDirectory);
                             }
