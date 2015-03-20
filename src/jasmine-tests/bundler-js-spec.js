@@ -54,6 +54,10 @@ describe("Javascript Bundling: ", function() {
       runTestCase("combines-mustache-and-js");
   });
 
+  it('Compiles and concatenates .jsx files with .js files', function() {
+      runTestCase('combines-jsx-and-js');
+  });
+
   it("Folder option by default minifies, but does not bundle.", function() {
       var testCase = getTestCase("default-folder-option");
       testCase.SetUpCacheFileTest(false);
