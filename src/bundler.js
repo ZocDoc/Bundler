@@ -343,11 +343,12 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                         getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
                     });  
                 } else if (isJsx){
+                    jsPath = jsPathOutput;
                     readTextFile(filePath, function(jsxText) {
                         if(options.outputbundlestats) {
                             bundleStatsCollector.ParseJsForStats(jsBundle, jsxText);
                         }
-                        getOrCreateJsx(options, jsxText, filePath, jsPath, next);
+                        getOrCreateJsx(options, jsxText, filePath, jsPathOutput, next);
                     });
                 } else {
                     readTextFile(jsPath, function(jsText) {
