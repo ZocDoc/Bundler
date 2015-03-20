@@ -37,6 +37,10 @@ describe("Javascript Bundling: ", function() {
       runTestCase("combines-mustache");
   });
 
+  it('Compiles and concatenates .jsx files', function() {
+      runTestCase('combines-jsx');
+  });
+
   it("An error is thrown for invalid mustache.", function () {
       var testCase = getTestCase("invalid-mustache");
       testCase.VerifyBundle = function () {

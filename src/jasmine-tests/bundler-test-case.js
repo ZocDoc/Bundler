@@ -325,6 +325,7 @@ BundlerTestCase.prototype.CleanDirectory = function() {
                 || file.endsWith('test.js')
                 || file.endsWith('test.css')
                 || file.endsWith('.json')
+                || (file.indexOf('jsx') >= 0 && file.endsWith('.js'))
                 || (file.indexOf('mustache') >= 0 && file.endsWith('.js'))
                 || (file.indexOf('less') >= 0 && file.endsWith('.css'))) {
                 _this.FileSystem.unlinkSync(currentDir + '/' + file);
