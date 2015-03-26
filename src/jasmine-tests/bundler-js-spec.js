@@ -37,6 +37,10 @@ describe("Javascript Bundling: ", function() {
       runTestCase("combines-mustache");
   });
 
+  it('Compiles and concatenates .jsx files', function() {
+      runTestCase('combines-jsx');
+  });
+
   it("An error is thrown for invalid mustache.", function () {
       var testCase = getTestCase("invalid-mustache");
       testCase.VerifyBundle = function () {
@@ -48,6 +52,14 @@ describe("Javascript Bundling: ", function() {
 
   it("Compiles and Concatenates .mustache files with js files", function() {
       runTestCase("combines-mustache-and-js");
+  });
+
+  it('Compiles and concatenates .jsx files with .js files', function() {
+      runTestCase('combines-jsx-and-js');
+  });
+
+  it('Compiles and concatenates .jsx files with .mustache files and .js files', function() {
+      runTestCase('combines-jsx-and-mustache-and-js');
   });
 
   it("Folder option by default minifies, but does not bundle.", function() {

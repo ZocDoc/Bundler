@@ -42,6 +42,7 @@ var fs = require("fs"),
     hogan = require('hogan.js-template/lib/hogan.js'),
     coffee = require('coffee-script'),
     livescript = require('livescript'),
+    react = require('react-tools'),
     CleanCss = require('clean-css'),
     Step = require('step'),
     startedAt = Date.now(),
@@ -177,7 +178,7 @@ function scanDir(allFiles, cb) {
                                                     name
                                                 );
                                 var mustacheInDirectory = filesInDir.filter(function(a) { return a.endsWith(".mustache")});
-                                var jsInDirectory = filesInDir.filter(function(a) { return a.endsWith(".js")});
+                                var jsInDirectory = filesInDir.filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx"); });
 
                                 tmpFiles = tmpFiles.concat(mustacheInDirectory).concat(jsInDirectory);
                             }
@@ -305,9 +306,11 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var isCoffee = file.endsWith(".coffee");
         var isLiveScript = file.endsWith(".ls");
         var isMustache = file.endsWith(".mustache");
+        var isJsx = file.endsWith(".jsx");
         var jsFile = isCoffee ? file.replace(".coffee", ".js")
                    : isLiveScript ? file.replace(".ls", ".js")
                    : isMustache ? file.replace(".mustache", ".js")
+                   : isJsx ? file.replace(".jsx", ".js")
 	           : file;
 
         var filePath = path.join(bundleDir, file),
@@ -339,8 +342,15 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                         getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
                     });  
-                }
-                else {
+                } else if (isJsx){
+                    jsPath = jsPathOutput;
+                    readTextFile(filePath, function(jsxText) {
+                        if(options.outputbundlestats) {
+                            bundleStatsCollector.ParseJsForStats(jsBundle, jsxText);
+                        }
+                        getOrCreateJsx(options, jsxText, filePath, jsPathOutput, next);
+                    });
+                } else {
                     readTextFile(jsPath, function(jsText) {
                         if(options.outputbundlestats) {
                             bundleStatsCollector.ParseJsForStats(jsBundle,jsText);
@@ -491,6 +501,12 @@ function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*c
     compileAsync(options, "compiling", function (livescriptText, lsPath, cb) {
             cb(livescript.compile(livescriptText));
         }, livescriptText, lsPath, jsPath, cb);
+}
+
+function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
+    compileAsync(options, "compiling", function(jsxText, jsxPath, cb) {
+            cb(react.transform(jsxText));
+        }, jsxText, jsxPath, jsPath, cb);
 }
 
 function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)*/) {
