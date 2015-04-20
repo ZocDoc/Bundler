@@ -57,6 +57,7 @@ function BundleStatsCollector(
     this.LessImportRegexEnd = new RegExp("(\"|')\\)", "gim");
 
     this.Console = { log: function () { } };
+    this.Prefix = '';
 }
 
 exports.BundleStatsCollector = BundleStatsCollector;
@@ -73,6 +74,14 @@ var GetOutputFile = function (outputdirectory, filename) {
     }
     return outputdirectory + seperator + filename;
 }
+
+BundleStatsCollector.prototype.setFilePrefix = function(prefix) {
+    this.Prefix = prefix;
+};
+
+var getFileName = function(collector, fileName) {
+    return collector.Prefix + fileName;
+};
 
 BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
 
@@ -91,11 +100,11 @@ BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
         return ret;
     }
 
-    _this.HashCollection = loadFromDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME);
-    _this.DebugCollection = loadFromDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME);
-    _this.LocalizedStrings = loadFromDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME);
-    _this.AbConfigs = loadFromDisk(_this.FileSystem, outputdirectory, AB_FILE_NAME);
-    _this.LessImports = loadFromDisk(_this.FileSystem, outputdirectory, LESS_IMPORTS_FILE);
+    _this.HashCollection = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,HASH_FILE_NAME));
+    _this.DebugCollection = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,DEBUG_FILE_NAME));
+    _this.LocalizedStrings = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,LOCALIZATION_FILE_NAME));
+    _this.AbConfigs = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,AB_FILE_NAME));
+    _this.LessImports = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,LESS_IMPORTS_FILE));
 };
 
 BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
@@ -106,11 +115,11 @@ BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
             fs.writeFileSync(outputFile, JSON.stringify(data, null, 4))
         };
 
-    saveToDisk(_this.FileSystem, outputdirectory, HASH_FILE_NAME, _this.HashCollection);
-    saveToDisk(_this.FileSystem, outputdirectory, DEBUG_FILE_NAME, _this.DebugCollection);
-    saveToDisk(_this.FileSystem, outputdirectory, LOCALIZATION_FILE_NAME, _this.LocalizedStrings);
-    saveToDisk(_this.FileSystem, outputdirectory, AB_FILE_NAME, _this.AbConfigs);
-    saveToDisk(_this.FileSystem, outputdirectory, LESS_IMPORTS_FILE, _this.LessImports);
+    saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,HASH_FILE_NAME), _this.HashCollection);
+    saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,DEBUG_FILE_NAME), _this.DebugCollection);
+    saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,LOCALIZATION_FILE_NAME), _this.LocalizedStrings);
+    saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,AB_FILE_NAME), _this.AbConfigs);
+    saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,LESS_IMPORTS_FILE), _this.LessImports);
 }
 
 BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContents) {

@@ -4,7 +4,7 @@ var exec = require('child_process').exec,
 
 describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
 
-    var getHasher,
+    var getStatsCollector,
       fileSystem,
       objectOnDisk = { bundle1: "hash1", bundle2: "hash2" },
       debugOnDisk = { bundle1: [ 'file1'], bundle2: [ 'file2'] },
@@ -28,7 +28,7 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
       fileSystem = {};
       fileSystem.writeFileSync = function () { };
 
-      getHasher = function () {
+      getStatsCollector = function () {
           spyOn(fileSystem, 'writeFileSync').andCallThrough();
           var hash = new bundleStats.BundleStatsCollector(fileSystem);
           hash.HashCollection = objectOnDisk;
@@ -41,38 +41,38 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
   });
 
   it("Saves the hash file to the correct location.", function() {
-        var hasher = getHasher();
-        hasher.SaveStatsToDisk(outputdirectory);
+        var stats = getStatsCollector();
+        stats.SaveStatsToDisk(outputdirectory);
         expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedHashFile, expectedContents)
     });
 
     it("Saves the debug file to the correct location.", function() {
-        var hasher = getHasher();
-        hasher.SaveStatsToDisk(outputdirectory);
+        var stats = getStatsCollector();
+        stats.SaveStatsToDisk(outputdirectory);
         expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedDebugFile, expectedDebugContents)
     });
 
     it("Saves the localization file to the correct location.", function() {
-        var hasher = getHasher();
-        hasher.SaveStatsToDisk(outputdirectory);
+        var stats = getStatsCollector();
+        stats.SaveStatsToDisk(outputdirectory);
         expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedLocalizationFile, expectedLocalizationContents)
     });
 
     it("Saves the imports file to the correct location.", function () {
-        var hasher = getHasher();
-        hasher.SaveStatsToDisk(outputdirectory);
+        var stats = getStatsCollector();
+        stats.SaveStatsToDisk(outputdirectory);
         expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedLessImportFile, expectedLessImportContents)
     });
 
     it("Saves the ab config file to the correct location.", function() {
-        var hasher = getHasher();
-        hasher.SaveStatsToDisk(outputdirectory);
+        var stats = getStatsCollector();
+        stats.SaveStatsToDisk(outputdirectory);
         expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedAbConfigFile, expectedAbConfigContents)
     });
 
   it("Correctly handles trailing slash for output file.", function () {
-      var hasher = getHasher();
-      hasher.SaveStatsToDisk(outputdirectory + '/');
+      var stats = getStatsCollector();
+      stats.SaveStatsToDisk(outputdirectory + '/');
       expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedHashFile, expectedContents)
   });
 
@@ -82,14 +82,57 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
           throw exception;
       };
 
-      var hasher = getHasher();
+      var stats = getStatsCollector();
       try {
-          hasher.SaveStatsToDisk(outputdirectory);
+          stats.SaveStatsToDisk(outputdirectory);
           throw "fail";
       }
       catch(err) {
           expect(err).toBe(exception);
       }
   });
+
+    describe('given file saving with prefix', function() {
+
+        var prefix = 'a-prefix', stats = null;
+
+        beforeEach(function(){
+
+            stats = getStatsCollector();
+            stats.setFilePrefix(prefix);
+
+            expectedHashFile = outputdirectory + '/' + prefix + bundleStats.HASH_FILE_NAME;
+            expectedDebugFile = outputdirectory + '/' + prefix + bundleStats.DEBUG_FILE_NAME;
+            expectedAbConfigFile = outputdirectory + '/' + prefix + bundleStats.AB_FILE_NAME;
+            expectedLocalizationFile = outputdirectory + '/' + prefix + bundleStats.LOCALIZATION_FILE_NAME;
+            expectedLessImportFile = outputdirectory + '/' + prefix + bundleStats.LESS_IMPORTS_FILE;
+        });
+
+        it("Saves the hash file to the correct location.", function() {
+            stats.SaveStatsToDisk(outputdirectory);
+            expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedHashFile, expectedContents)
+        });
+
+        it("Saves the debug file to the correct location.", function() {
+            stats.SaveStatsToDisk(outputdirectory);
+            expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedDebugFile, expectedDebugContents)
+        });
+
+        it("Saves the localization file to the correct location.", function() {
+            stats.SaveStatsToDisk(outputdirectory);
+            expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedLocalizationFile, expectedLocalizationContents)
+        });
+
+        it("Saves the imports file to the correct location.", function () {
+            stats.SaveStatsToDisk(outputdirectory);
+            expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedLessImportFile, expectedLessImportContents)
+        });
+
+        it("Saves the ab config file to the correct location.", function() {
+            stats.SaveStatsToDisk(outputdirectory);
+            expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedAbConfigFile, expectedAbConfigContents)
+        });
+
+    });
 
 });
