@@ -71,6 +71,10 @@ if (!bundlerOptions.Directories.length) {
     return;
 }
 
+if(bundlerOptions.DefaultOptions.statsfileprefix) {
+    bundleStatsCollector.setFilePrefix(bundlerOptions.DefaultOptions.statsfileprefix);
+}
+
 if(bundlerOptions.DefaultOptions.rewriteimagefileroot && bundlerOptions.DefaultOptions.rewriteimageoutputroot) {
     imageVersioning = new imageVersioningRequire.BundleImageRewriter(
         fs,
