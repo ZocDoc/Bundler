@@ -534,7 +534,7 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)
 
 function getOrCreateMinJs(options, js, jsPath, minJsPath, cb /*cb(minJs)*/) {
     compileAsync(options, "minifying", function (js, jsPath, cb) {
-        cb(minifyjs(js));
+        cb(minifyjs(js, jsPath));
     }, js, jsPath, minJsPath, cb);
 }
 
@@ -657,12 +657,19 @@ function compileLess(lessCss, lessPath, cb) {
     });
 }
 
-function minifyjs(js) {
-    var ast = jsp.parse(js);
-    ast = pro.ast_mangle(ast);
-    ast = pro.ast_squeeze(ast);
-    var minJs = pro.gen_code(ast);
-    return minJs;
+function minifyjs(js, fileName) {
+    try {
+        var ast = jsp.parse(js);
+        ast = pro.ast_mangle(ast);
+        ast = pro.ast_squeeze(ast);
+        var minJs = pro.gen_code(ast);
+        return minJs;
+    }
+    catch(e) {
+        e.FileName = path.basename(fileName);
+        delete e.stack;
+        throw e;
+    }
 }
 
 function removeCR(text) {
