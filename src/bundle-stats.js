@@ -44,13 +44,13 @@ function BundleStatsCollector(
     this.LessImports = {};
     this.MustacheLocalizationRegex = new RegExp("\{\{# *i18n *}}[^\{]*\{\{/ *i18n *}}", "gim");
     this.JsLocalizationRegex = new RegExp("(// @localize .*|i18n.t\\((\"|')[^(\"|')]*(\"|')\\))", "g");
-    this.JsAbConfigRegex = new RegExp("AB.isOn\\((\"|')[^(\"|')]*(\"|')\\)", "g");
+    this.JsAbConfigRegex = new RegExp("AB.(isOn|getVariant)\\((\"|')[^(\"|')]*(\"|')\\)", "g");
     this.LocalizationStartRegex = new RegExp("\{\{# *i18n *}}", "gim");
     this.LocalizationEndRegex = new RegExp("\{\{/ *i18n *}}", "gim");
     this.JsLocalizationRegexStart1 = new RegExp("// @localize ", "i");
     this.JsLocalizationRegexStart2 = new RegExp("i18n.t\\((\"|')", "i");
     this.JsLocalizationEndRegex = new RegExp("(\"|')\\)", "gim");
-    this.JsAbConfigRegexStart = new RegExp("AB.isOn\\((\"|')", "i");
+    this.JsAbConfigRegexStart = new RegExp("AB.(isOn|getVariant)\\((\"|')", "i");
 
     this.LessImportRegex = new RegExp("@import url\\((\"|')[^(\"|')]*(\"|')\\)", "g");
     this.LessImportRegexStart = new RegExp("@import url\\((\"|')", "i");
