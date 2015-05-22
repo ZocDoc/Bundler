@@ -32,11 +32,14 @@ describe("BundleStatsCollector - ", function() {
   var getAbConfig = function(ab) {
           return "AB.isOn('" + ab + "')";
       },
+  var getAbVariant = function(ab) {
+          return "AB.getVariant('" + ab + "')";
+      },
       ab1 = getAbConfig(string1),
       ab2 = getAbConfig(string2),
-      ab3 = getAbConfig(string3);
+      ab3 = getAbVariant(string3);
 
-  it("Adds ab configs to the collection.", function() {
+  it("Adds ab configs and variants to the collection.", function() {
 
       stats.ParseJsForStats(bundle1, ab1);
 
