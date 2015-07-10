@@ -30,6 +30,7 @@ describe("BundleFileUtility - ", function() {
             getOutputFilePath,
             givenOutputDirectory,
             givenStagingDirectory,
+            givenBundleName,
             givenFilePath,
             givenStagingDirectoryExistsForBundle,
             givenStagingDirectoryDoesNotExistForBundle,
@@ -88,7 +89,18 @@ describe("BundleFileUtility - ", function() {
             verifyOutputFilePath('staging-directory\\bundlejs\\file.js');
         });
 
-        it("Staging directory incorprates the director of the file", function() {
+        it("Given bundle name has periods in it, staging directory used for file removes all periods", function() {
+
+            givenBundleName('sg.bundle.js');
+            givenFilePath('file.js');
+            givenStagingDirectory('staging-directory');
+
+            getOutputFilePath();
+
+            verifyOutputFilePath('staging-directory\\sgbundlejs\\file.js');
+        });
+
+        it("Staging directory incorprates the directory of the file", function() {
 
             givenFilePath('folder1/folder2/folder3/file.js');
             givenStagingDirectory('staging-directory');
@@ -123,6 +135,10 @@ describe("BundleFileUtility - ", function() {
 
         givenOutputDirectory = function(directory) {
             _options['outputdirectory'] = directory;
+        };
+
+        givenBundleName = function(name) {
+            bundleName = name;
         };
 
         givenFilePath = function(path) {

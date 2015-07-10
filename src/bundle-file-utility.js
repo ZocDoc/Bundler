@@ -37,7 +37,7 @@ getStagingDirectory = function(fs, bundleName, filename, options) {
 
     var split = getSplit(bundleName);
     var splitBundle = bundleName.split(split);
-    var outputDir =  options.stagingdirectory + split + splitBundle.pop().replace('.','');
+    var outputDir =  options.stagingdirectory + split + splitBundle.pop().replace(/\./g, "");
 
     var stagingFileName = getStagingFileName(bundleName, filename);
 
