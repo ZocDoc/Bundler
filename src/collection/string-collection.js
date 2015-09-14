@@ -1,12 +1,12 @@
 var _ = require('underscore'),
-    utils = require('./utils.js');
+    path = require('path');
 
 var StringCollection = function(map) {
     this._map = _.extend({}, map);
 };
 
-StringCollection.prototype.add = function(bundleName, value) {
-    var fileName = utils.getFileName(bundleName);
+StringCollection.prototype.add = function(filePath, value) {
+    var fileName = path.basename(filePath);
 
     this._map[fileName] = value;
 };
@@ -15,8 +15,8 @@ StringCollection.prototype.get = function(fileName) {
     return this._map[fileName];
 };
 
-StringCollection.prototype.clear = function(bundleName) {
-    var fileName = utils.getFileName(bundleName);
+StringCollection.prototype.clear = function(filePath) {
+    var fileName = path.basename(filePath);
 
     if (this._map[fileName]) {
         delete this._map[fileName];

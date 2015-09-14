@@ -1,12 +1,12 @@
 var _ = require('underscore'),
-    utils = require('./utils.js');
+    path = require('path');
 
 var ArrayCollection = function(map) {
     this._map = _.extend({}, map);
 };
 
-ArrayCollection.prototype.add = function(bundleName, item) {
-    var fileName = utils.getFileName(bundleName);
+ArrayCollection.prototype.add = function(filePath, item) {
+    var fileName = path.basename(filePath);
 
     if (!this._map[fileName]) {
         this._map[fileName] = [];
@@ -21,8 +21,8 @@ ArrayCollection.prototype.get = function(fileName) {
     return this._map[fileName] || [];
 };
 
-ArrayCollection.prototype.clear = function(bundleName) {
-    var fileName = utils.getFileName(bundleName);
+ArrayCollection.prototype.clear = function(filePath) {
+    var fileName = path.basename(filePath);
 
     if (this._map[fileName]) {
         delete this._map[fileName];
