@@ -129,19 +129,6 @@ BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContent
     this.HashCollection.add(bundleName, hash);
 };
 
-var addToCollection = function(bundleName, collection, item) {
-    var bundleShortName = bundleName.split('/').pop();
-
-    if(!collection[bundleShortName])
-    {
-        collection[bundleShortName] = [];
-    }
-
-    if(collection[bundleShortName].indexOf(item) < 0) {
-        collection[bundleShortName].push(item);
-    }
-};
-
 var parseAndAddToCollection = function(bundleName, text, collection, parseRegex, cleaningFunc) {
 
     var parsed = [];
@@ -154,15 +141,6 @@ var parseAndAddToCollection = function(bundleName, text, collection, parseRegex,
     }
 
     return parsed;
-};
-
-var clearCollection = function(name, collection) {
-    var bundleShortName = name.split('/').pop();
-
-    if (collection[bundleShortName])
-    {
-        collection[bundleShortName] = [];
-    }
 };
 
 BundleStatsCollector.prototype.ClearStatsForBundle = function(bundleName) {
