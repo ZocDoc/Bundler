@@ -23,6 +23,7 @@ SOFTWARE.
 var fs = require("fs"),
     hasher = require('crypto'),
     path = require('path'),
+    collection = require('./collection'),
     HASH_FILE_NAME = 'bundle-hashes.json',
     DEBUG_FILE_NAME = 'bundle-debug.json',
     LOCALIZATION_FILE_NAME = 'bundle-localization-strings.json',
@@ -100,11 +101,11 @@ BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
         return ret;
     }
 
-    _this.HashCollection = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,HASH_FILE_NAME));
-    _this.DebugCollection = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,DEBUG_FILE_NAME));
-    _this.LocalizedStrings = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,LOCALIZATION_FILE_NAME));
-    _this.AbConfigs = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,AB_FILE_NAME));
-    _this.LessImports = loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,LESS_IMPORTS_FILE));
+    _this.HashCollection = collection.createHash(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,HASH_FILE_NAME)));
+    _this.DebugCollection = collection.createDebug(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,DEBUG_FILE_NAME)));
+    _this.LocalizedStrings = collection.createLocalizedStrings(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,LOCALIZATION_FILE_NAME)));
+    _this.AbConfigs = collection.createAbConfigs(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,AB_FILE_NAME)));
+    _this.LessImports = collection.createLessImports(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,LESS_IMPORTS_FILE)));
 };
 
 BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
@@ -123,13 +124,10 @@ BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
 }
 
 BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContents) {
+    var hash = this.GenerateHash(bundleContents);
 
-    var _this = this;
-    var hash = _this.GenerateHash(bundleContents),
-        bundleShortName = bundleName.split('/').pop();
-
-    _this.HashCollection[bundleShortName] = hash;
-}
+    this.HashCollection.add(bundleName, hash);
+};
 
 var addToCollection = function(bundleName, collection, item) {
     var bundleShortName = bundleName.split('/').pop();
@@ -152,7 +150,7 @@ var parseAndAddToCollection = function(bundleName, text, collection, parseRegex,
     });
 
     for(var i=0; i <parsed.length; i++) {
-        addToCollection(bundleName, collection, parsed[i]);
+        collection.add(bundleName, parsed[i]);
     }
 
     return parsed;
@@ -168,16 +166,13 @@ var clearCollection = function(name, collection) {
 };
 
 BundleStatsCollector.prototype.ClearStatsForBundle = function(bundleName) {
-    var _this = this;        
-
-    clearCollection(bundleName, _this.DebugCollection);
-    clearCollection(bundleName, _this.LocalizedStrings);
-    clearCollection(bundleName, _this.AbConfigs);
+    this.DebugCollection.clear(bundleName);
+    this.LocalizedStrings.clear(bundleName);
+    this.AbConfigs.clear(bundleName);
 };
 
 BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
-    var _this = this;
-    addToCollection(bundleName, _this.DebugCollection, fileName);
+    this.DebugCollection.add(bundleName, fileName);
 };
 
 
@@ -244,14 +239,14 @@ BundleStatsCollector.prototype.SearchForLessImports = function (fileName, text) 
         depth++;
     }
 
-    clearCollection(fileName, _this.LessImports);
+    _this.LessImports.clear(fileName);
     for (var i = 0; i < importList.length; i++) {
-        addToCollection(fileName, _this.LessImports, importList[i]);
+        _this.LessImports.add(fileName, importList[i]);
     }
 };
 
 BundleStatsCollector.prototype.GetImportsForFile = function (fileName) {
-    return this.LessImports[fileName] || [];
+    return this.LessImports.get(fileName);
 };
 
 BundleStatsCollector.prototype.ParseJsForStats = function (bundleName, text) {
