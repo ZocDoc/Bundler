@@ -2,8 +2,8 @@ var ArrayCollection = require('../../collection/array-collection.js');
 
 describe('ArrayCollection', function() {
 
-    var fileName = 'bundle.js.bundle',
-        bundleName = 'C:/foo/bar/' + fileName,
+    var fileName = 'foo.css',
+        filePath = 'C:/foo/bar/' + fileName,
         collection;
 
     beforeEach(function() {
@@ -64,55 +64,55 @@ describe('ArrayCollection', function() {
 
         var item = 'a';
         
-        it('Given no items previously added for bundle, adds item to bundle.', function() {
+        it('Given no items previously added for file, adds item to file.', function() {
         
             add();
 
-            assertItemWasAddedToEmptyBundle();
+            assertItemWasAddedToEmptyFile();
         
         });
 
-        it('Given different items previously added for bundle, adds item to bundle.', function() {
+        it('Given different items previously added for file, adds item to file.', function() {
 
-            givenDifferentItemsPreviouslyAddedForBundle();
+            givenDifferentItemsPreviouslyAddedForFile();
 
             add();
 
-            assertItemWasAddedToExistingBundle();
+            assertItemWasAddedToExistingFile();
 
         });
 
-        it('Given same item previously added for bundle, does not re-add item to bundle.', function() {
+        it('Given same item previously added for file, does not re-add item to file.', function() {
 
-            givenSameItemPreviouslyAddedForBundle();
+            givenSameItemPreviouslyAddedForFile();
 
             add();
 
-            assertItemWasNotReaddedToBundle();
+            assertItemWasNotReaddedToFile();
 
         });
 
         var add = function() {
-            collection.add(bundleName, item);
+            collection.add(filePath, item);
         };
 
-        var givenDifferentItemsPreviouslyAddedForBundle = function() {
-            collection.add(bundleName, 'b');
+        var givenDifferentItemsPreviouslyAddedForFile = function() {
+            collection.add(filePath, 'b');
         };
 
-        var givenSameItemPreviouslyAddedForBundle = function() {
-            collection.add(bundleName, item);
+        var givenSameItemPreviouslyAddedForFile = function() {
+            collection.add(filePath, item);
         };
 
-        var assertItemWasAddedToEmptyBundle = function() {
+        var assertItemWasAddedToEmptyFile = function() {
             expect(collection.toJSON()[fileName]).toEqual(['a']);
         };
 
-        var assertItemWasAddedToExistingBundle = function() {
+        var assertItemWasAddedToExistingFile = function() {
             expect(collection.toJSON()[fileName]).toEqual(['b', 'a']);
         };
 
-        var assertItemWasNotReaddedToBundle = function() {
+        var assertItemWasNotReaddedToFile = function() {
             expect(collection.toJSON()[fileName]).toEqual(['a']);
         };
 
@@ -122,7 +122,7 @@ describe('ArrayCollection', function() {
 
         var items;
 
-        it('Given no items added for bundle, returns empty array.', function() {
+        it('Given no items added for file, returns empty array.', function() {
 
             get();
 
@@ -130,13 +130,13 @@ describe('ArrayCollection', function() {
 
         });
 
-        it('Given items added for bundle, returns items for bundle.', function() {
+        it('Given items added for file, returns items for file.', function() {
 
-            givenItemsAddedToBundle();
+            givenItemsAddedToFile();
 
             get();
 
-            assertItemsForBundleWereReturned();
+            assertItemsForFileWereReturned();
 
         });
 
@@ -144,16 +144,16 @@ describe('ArrayCollection', function() {
             items = collection.get(fileName);
         };
 
-        var givenItemsAddedToBundle = function() {
-            collection.add(bundleName, 'a');
-            collection.add(bundleName, 'b');
+        var givenItemsAddedToFile = function() {
+            collection.add(filePath, 'a');
+            collection.add(filePath, 'b');
         };
 
         var assertEmptyArrayWasReturned = function() {
             expect(items).toEqual([]);
         };
 
-        var assertItemsForBundleWereReturned = function() {
+        var assertItemsForFileWereReturned = function() {
             expect(items).toEqual(['a', 'b']);
         };
 
@@ -161,16 +161,16 @@ describe('ArrayCollection', function() {
 
     describe('clear', function() {
 
-        var otherFileName = 'bundle2.js.bundle',
-            otherBundleName = 'C:/foo/bar/' + otherFileName;
+        var otherFileName = 'file2.js.file',
+            otherFilePath = 'C:/foo/bar/' + otherFileName;
 
         beforeEach(function() {
 
-            collection.add(otherBundleName, 'a');
+            collection.add(otherFilePath, 'a');
 
         });
 
-        it('Given no items added for bundle, does nothing.', function() {
+        it('Given no items added for file, does nothing.', function() {
 
             clear();
 
@@ -178,31 +178,31 @@ describe('ArrayCollection', function() {
 
         });
 
-        it('Given items added for bundle, removes items for bundle.', function() {
+        it('Given items added for file, removes items for file.', function() {
 
-            givenItemsAddedForBundle();
+            givenItemsAddedForFile();
 
             clear();
 
-            assertItemsForBundleWereRemoved();
+            assertItemsForFileWereRemoved();
 
         });
 
         var clear = function() {
-            collection.clear(bundleName);
+            collection.clear(filePath);
         };
 
-        var givenItemsAddedForBundle = function() {
-            collection.add(bundleName, 'a');
+        var givenItemsAddedForFile = function() {
+            collection.add(filePath, 'a');
         };
 
         var assertNothingWasCleared = function() {
-            assertItemsForBundleWereRemoved();
+            assertItemsForFileWereRemoved();
         };
 
-        var assertItemsForBundleWereRemoved = function() {
+        var assertItemsForFileWereRemoved = function() {
             expect(collection.toJSON()).toEqual({
-                'bundle2.js.bundle': ['a']
+                'file2.js.file': ['a']
             });
         };
 

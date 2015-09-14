@@ -2,8 +2,8 @@ var StringCollection = require('../../collection/string-collection.js');
 
 describe('StringCollection', function() {
 
-    var fileName = 'bundle.js.bundle',
-        bundleName = 'C:/foo/bar/' + fileName,
+    var fileName = 'foo.css',
+        filePath = 'C:/foo/bar/' + fileName,
         collection;
 
     beforeEach(function() {
@@ -64,33 +64,33 @@ describe('StringCollection', function() {
 
         var item = 'a';
 
-        it('Given bundle value not previously set, sets bundle value.', function() {
+        it('Given file value not previously set, sets file value.', function() {
 
             add();
 
-            assertValueWasSetForBundle();
+            assertValueWasSetForFile();
 
         });
 
-        it('Given bundle value previously set, updates bundle value.', function() {
+        it('Given file value previously set, updates file value.', function() {
 
-            givenValuePreviouslySetForBundle();
+            givenValuePreviouslySetForFile();
 
             add();
 
-            assertValueWasSetForBundle();
+            assertValueWasSetForFile();
 
         });
 
         var add = function() {
-            collection.add(bundleName, item);
+            collection.add(filePath, item);
         };
 
-        var givenValuePreviouslySetForBundle = function() {
-            collection.add(bundleName, 'b');
+        var givenValuePreviouslySetForFile = function() {
+            collection.add(filePath, 'b');
         };
 
-        var assertValueWasSetForBundle = function() {
+        var assertValueWasSetForFile = function() {
             expect(collection.toJSON()[fileName]).toEqual('a');
         };
 
@@ -100,7 +100,7 @@ describe('StringCollection', function() {
 
         var value;
 
-        it('Given value not set for bundle, returns undefined.', function() {
+        it('Given value not set for file, returns undefined.', function() {
 
             get();
 
@@ -108,13 +108,13 @@ describe('StringCollection', function() {
 
         });
 
-        it('Given value set for bundle, returns value for bundle.', function() {
+        it('Given value set for file, returns value for file.', function() {
 
-            givenValueSetForBundle();
+            givenValueSetForFile();
 
             get();
 
-            assertValueForBundleWasReturned();
+            assertValueForFileWasReturned();
 
         });
 
@@ -122,15 +122,15 @@ describe('StringCollection', function() {
             value = collection.get(fileName);
         };
 
-        var givenValueSetForBundle = function() {
-            collection.add(bundleName, 'a');
+        var givenValueSetForFile = function() {
+            collection.add(filePath, 'a');
         };
 
         var assertUndefinedWasReturned = function() {
             expect(value).toBeUndefined();
         };
 
-        var assertValueForBundleWasReturned = function() {
+        var assertValueForFileWasReturned = function() {
             expect(value).toEqual('a');
         };
 
@@ -138,16 +138,16 @@ describe('StringCollection', function() {
 
     describe('clear', function() {
 
-        var otherFileName = 'bundle2.js.bundle',
-            otherBundleName = 'C:/foo/bar/' + otherFileName;
+        var otherFileName = 'file2.js.file',
+            otherFilePath = 'C:/foo/bar/' + otherFileName;
 
         beforeEach(function() {
 
-            collection.add(otherBundleName, 'a');
+            collection.add(otherFilePath, 'a');
 
         });
 
-        it('Given value not set for bundle, does nothing.', function() {
+        it('Given value not set for file, does nothing.', function() {
 
             clear();
 
@@ -155,31 +155,31 @@ describe('StringCollection', function() {
 
         });
 
-        it('Given value set for bundle, removes value for bundle.', function() {
+        it('Given value set for file, removes value for file.', function() {
 
-            givenItemsAddedForBundle();
+            givenItemsAddedForFile();
 
             clear();
 
-            assertValueForBundleWasRemoved();
+            assertValueForFileWasRemoved();
 
         });
 
         var clear = function() {
-            collection.clear(bundleName);
+            collection.clear(filePath);
         };
 
-        var givenItemsAddedForBundle = function() {
-            collection.add(bundleName, 'a');
+        var givenItemsAddedForFile = function() {
+            collection.add(filePath, 'a');
         };
 
         var assertNothingWasCleared = function() {
-            assertValueForBundleWasRemoved();
+            assertValueForFileWasRemoved();
         };
 
-        var assertValueForBundleWasRemoved = function() {
+        var assertValueForFileWasRemoved = function() {
             expect(collection.toJSON()).toEqual({
-                'bundle2.js.bundle': 'a'
+                'file2.js.file': 'a'
             });
         };
 
