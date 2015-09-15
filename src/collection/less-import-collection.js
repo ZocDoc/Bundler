@@ -29,6 +29,10 @@ var validateStyleguideImports = function(filePath, lessImport) {
     }
 };
 
+LessImportCollection.prototype._getKey = function(filePath) {
+    return path.resolve(filePath);
+};
+
 LessImportCollection.prototype.add = function(filePath, lessImport) {
     validateStyleguideImports(filePath, lessImport);
     ArrayCollection.prototype.add.call(this, filePath, lessImport);

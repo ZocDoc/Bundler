@@ -1,36 +1,36 @@
 var _ = require('underscore'),
-    path = require('path');
+    Collection = require('./collection.js');
 
 var ArrayCollection = function(map) {
-    this._map = _.extend({}, map);
+    Collection.call(this, map);
 };
 
-ArrayCollection.prototype.add = function(filePath, item) {
-    var fileName = path.resolve(filePath);
+_.extend(ArrayCollection.prototype, Collection.prototype);
 
-    if (!this._map[fileName]) {
-        this._map[fileName] = [];
+ArrayCollection.prototype.add = function(filePath, item) {
+    var key = this._getKey(filePath);
+
+    if (!this._map[key]) {
+        this._map[key] = [];
     }
 
-    if (this._map[fileName].indexOf(item) < 0) {
-        this._map[fileName].push(item);
+    if (this._map[key].indexOf(item) < 0) {
+        this._map[key].push(item);
     }
 };
 
 ArrayCollection.prototype.get = function(fileName) {
-    return this._map[path.resolve(fileName)] || [];
+    var key = this._getKey(fileName);
+
+    return this._map[key] || [];
 };
 
 ArrayCollection.prototype.clear = function(filePath) {
-    var fileName = path.resolve(filePath);
+    var key = this._getKey(filePath);
 
-    if (this._map[fileName]) {
-        delete this._map[fileName];
+    if (this._map[key]) {
+        delete this._map[key];
     }
-};
-
-ArrayCollection.prototype.toJSON = function() {
-    return _.clone(this._map);
 };
 
 module.exports = ArrayCollection;

@@ -3,7 +3,8 @@ var path = require('path'),
 
 describe('ArrayCollection', function() {
 
-    var filePath = 'C:\\foo\\bar\\foo.css',
+    var fileName = 'foo.css',
+        filePath = 'C:/foo/bar/' + fileName,
         collection;
 
     beforeEach(function() {
@@ -105,15 +106,15 @@ describe('ArrayCollection', function() {
         };
 
         var assertItemWasAddedToEmptyFile = function() {
-            expect(collection.toJSON()[filePath]).toEqual(['a']);
+            expect(collection.toJSON()[fileName]).toEqual(['a']);
         };
 
         var assertItemWasAddedToExistingFile = function() {
-            expect(collection.toJSON()[filePath]).toEqual(['b', 'a']);
+            expect(collection.toJSON()[fileName]).toEqual(['b', 'a']);
         };
 
         var assertItemWasNotReaddedToFile = function() {
-            expect(collection.toJSON()[filePath]).toEqual(['a']);
+            expect(collection.toJSON()[fileName]).toEqual(['a']);
         };
 
     });
@@ -161,7 +162,8 @@ describe('ArrayCollection', function() {
 
     describe('clear', function() {
 
-        var otherFilePath = 'C:\\foo\\bar\\file2.js.file';
+        var otherFileName = 'file2.js',
+            otherFilePath = '../foo/bar/' + otherFileName;
 
         beforeEach(function() {
 
@@ -200,9 +202,9 @@ describe('ArrayCollection', function() {
         };
 
         var assertItemsForFileWereRemoved = function() {
-            expect(collection.toJSON()).toEqual({
-                'C:\\foo\\bar\\file2.js.file': ['a']
-            });
+            var expected = {};
+            expected[otherFileName] = ['a'];
+            expect(collection.toJSON()).toEqual(expected);
         };
 
     });
