@@ -6,7 +6,7 @@ var ArrayCollection = function(map) {
 };
 
 ArrayCollection.prototype.add = function(filePath, item) {
-    var fileName = path.basename(filePath);
+    var fileName = path.resolve(filePath);
 
     if (!this._map[fileName]) {
         this._map[fileName] = [];
@@ -18,11 +18,11 @@ ArrayCollection.prototype.add = function(filePath, item) {
 };
 
 ArrayCollection.prototype.get = function(fileName) {
-    return this._map[fileName] || [];
+    return this._map[path.resolve(fileName)] || [];
 };
 
 ArrayCollection.prototype.clear = function(filePath) {
-    var fileName = path.basename(filePath);
+    var fileName = path.resolve(filePath);
 
     if (this._map[fileName]) {
         delete this._map[fileName];

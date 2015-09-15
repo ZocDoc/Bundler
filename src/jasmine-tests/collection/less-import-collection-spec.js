@@ -3,8 +3,7 @@ var path = require('path'),
 
 describe('LessImportCollection', function() {
 
-    var fileName = 'foo.css',
-        filePath = 'C:/foo/bar/' + fileName,
+    var filePath = 'C:\\foo\\bar\\foo.css',
         collection;
 
     beforeEach(function() {
@@ -159,11 +158,11 @@ describe('LessImportCollection', function() {
         };
 
         var givenStyleguideFile = function() {
-            lessFile = 'C:/foo/styleguide/bar.less';
+            lessFile = 'C:\\foo\\styleguide\\bar.less';
         };
 
         var givenNonStyleguideFile = function() {
-            lessFile = 'C:/foo/bar.less';
+            lessFile = 'C:\\foo\\bar.less';
         };
 
         var givenStyleguideImport = function() {
@@ -187,19 +186,19 @@ describe('LessImportCollection', function() {
         };
 
         var assertItemWasAddedToEmptyFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual(['a']);
+            expect(collection.toJSON()[filePath]).toEqual(['a']);
         };
 
         var assertItemWasAddedToExistingFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual(['b', 'a']);
+            expect(collection.toJSON()[filePath]).toEqual(['b', 'a']);
         };
 
         var assertItemWasNotReaddedToFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual(['a']);
+            expect(collection.toJSON()[filePath]).toEqual(['a']);
         };
 
         var assertImportWasAddedForFile = function() {
-            expect(collection.toJSON()[path.basename(lessFile)]).toEqual([lessImport]);
+            expect(collection.toJSON()[lessFile]).toEqual([lessImport]);
         };
 
     });
@@ -227,7 +226,7 @@ describe('LessImportCollection', function() {
         });
 
         var get = function() {
-            items = collection.get(fileName);
+            items = collection.get(filePath);
         };
 
         var givenItemsAddedToFile = function() {
@@ -247,8 +246,7 @@ describe('LessImportCollection', function() {
 
     describe('clear', function() {
 
-        var otherFileName = 'file2.js.file',
-            otherFilePath = 'C:/foo/bar/' + otherFileName;
+        var otherFilePath = 'C:\\foo\\bar\\file2.js.file';
 
         beforeEach(function() {
 
@@ -288,7 +286,7 @@ describe('LessImportCollection', function() {
 
         var assertItemsForFileWereRemoved = function() {
             expect(collection.toJSON()).toEqual({
-                'file2.js.file': ['a']
+                'C:\\foo\\bar\\file2.js.file': ['a']
             });
         };
 

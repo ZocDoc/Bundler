@@ -2,8 +2,7 @@ var StringCollection = require('../../collection/string-collection.js');
 
 describe('StringCollection', function() {
 
-    var fileName = 'foo.css',
-        filePath = 'C:/foo/bar/' + fileName,
+    var filePath = 'C:\\foo\\bar\\foo.css',
         collection;
 
     beforeEach(function() {
@@ -91,7 +90,7 @@ describe('StringCollection', function() {
         };
 
         var assertValueWasSetForFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual('a');
+            expect(collection.toJSON()[filePath]).toEqual('a');
         };
 
     });
@@ -119,7 +118,7 @@ describe('StringCollection', function() {
         });
 
         var get = function() {
-            value = collection.get(fileName);
+            value = collection.get(filePath);
         };
 
         var givenValueSetForFile = function() {
@@ -138,8 +137,7 @@ describe('StringCollection', function() {
 
     describe('clear', function() {
 
-        var otherFileName = 'file2.js.file',
-            otherFilePath = 'C:/foo/bar/' + otherFileName;
+        var otherFilePath = 'C:\\foo\\bar\\file2.js.file';
 
         beforeEach(function() {
 
@@ -179,7 +177,7 @@ describe('StringCollection', function() {
 
         var assertValueForFileWasRemoved = function() {
             expect(collection.toJSON()).toEqual({
-                'file2.js.file': 'a'
+                'C:\\foo\\bar\\file2.js.file': 'a'
             });
         };
 

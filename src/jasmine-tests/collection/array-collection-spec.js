@@ -1,9 +1,9 @@
-var ArrayCollection = require('../../collection/array-collection.js');
+var path = require('path'),
+    ArrayCollection = require('../../collection/array-collection.js');
 
 describe('ArrayCollection', function() {
 
-    var fileName = 'foo.css',
-        filePath = 'C:/foo/bar/' + fileName,
+    var filePath = 'C:\\foo\\bar\\foo.css',
         collection;
 
     beforeEach(function() {
@@ -105,15 +105,15 @@ describe('ArrayCollection', function() {
         };
 
         var assertItemWasAddedToEmptyFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual(['a']);
+            expect(collection.toJSON()[filePath]).toEqual(['a']);
         };
 
         var assertItemWasAddedToExistingFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual(['b', 'a']);
+            expect(collection.toJSON()[filePath]).toEqual(['b', 'a']);
         };
 
         var assertItemWasNotReaddedToFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual(['a']);
+            expect(collection.toJSON()[filePath]).toEqual(['a']);
         };
 
     });
@@ -141,7 +141,7 @@ describe('ArrayCollection', function() {
         });
 
         var get = function() {
-            items = collection.get(fileName);
+            items = collection.get(filePath);
         };
 
         var givenItemsAddedToFile = function() {
@@ -161,8 +161,7 @@ describe('ArrayCollection', function() {
 
     describe('clear', function() {
 
-        var otherFileName = 'file2.js.file',
-            otherFilePath = 'C:/foo/bar/' + otherFileName;
+        var otherFilePath = 'C:\\foo\\bar\\file2.js.file';
 
         beforeEach(function() {
 
@@ -202,7 +201,7 @@ describe('ArrayCollection', function() {
 
         var assertItemsForFileWereRemoved = function() {
             expect(collection.toJSON()).toEqual({
-                'file2.js.file': ['a']
+                'C:\\foo\\bar\\file2.js.file': ['a']
             });
         };
 
