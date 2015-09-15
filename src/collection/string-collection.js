@@ -1,30 +1,28 @@
 var _ = require('underscore'),
     Collection = require('./collection.js');
 
-var StringCollection = function(map) {
-    Collection.call(this, map);
-};
+var StringCollection = Collection.extend({
 
-_.extend(StringCollection.prototype, Collection.prototype);
+    add: function(filePath, value) {
+        var key = this._getKey(filePath);
 
-StringCollection.prototype.add = function(filePath, value) {
-    var key = this._getKey(filePath);
+        this._map[key] = value;
+    },
 
-    this._map[key] = value;
-};
+    get: function(fileName) {
+        var key = this._getKey(fileName);
 
-StringCollection.prototype.get = function(fileName) {
-    var key = this._getKey(fileName);
+        return this._map[key];
+    },
 
-    return this._map[key];
-};
+    clear: function(filePath) {
+        var key = this._getKey(filePath);
 
-StringCollection.prototype.clear = function(filePath) {
-    var key = this._getKey(filePath);
-
-    if (this._map[key]) {
-        delete this._map[key];
+        if (this._map[key]) {
+            delete this._map[key];
+        }
     }
-};
+
+});
 
 module.exports = StringCollection;

@@ -2,12 +2,6 @@ var _ = require('underscore'),
     path = require('path'),
     ArrayCollection = require('./array-collection.js');
 
-var LessImportCollection = function() {
-    ArrayCollection.apply(this, Array.prototype.slice.call(arguments));
-};
-
-_.extend(LessImportCollection.prototype, ArrayCollection.prototype);
-
 var isStyleguideFile = function(filePath) {
     return filePath.indexOf('styleguide') > -1;
 };
@@ -29,13 +23,17 @@ var validateStyleguideImports = function(filePath, lessImport) {
     }
 };
 
-LessImportCollection.prototype._getKey = function(filePath) {
-    return path.resolve(filePath);
-};
+var LessImportCollection = ArrayCollection.extend({
 
-LessImportCollection.prototype.add = function(filePath, lessImport) {
-    validateStyleguideImports(filePath, lessImport);
-    ArrayCollection.prototype.add.call(this, filePath, lessImport);
-};
+    _getKey: function(filePath) {
+        return path.resolve(filePath);
+    },
+
+    add: function(filePath, lessImport) {
+        validateStyleguideImports(filePath, lessImport);
+        ArrayCollection.prototype.add.call(this, filePath, lessImport);
+    }
+
+});
 
 module.exports = LessImportCollection;
