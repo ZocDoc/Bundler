@@ -44,8 +44,7 @@ describe("Javascript Bundling: ", function() {
   it("An error is thrown for invalid mustache.", function () {
       var testCase = getTestCase("invalid-mustache");
       testCase.VerifyBundle = function () {
-          var hasError = testCase.StdError.indexOf("Error: missing closing tag: i") >= 0;
-          expect(hasError).toBe(true);
+          expect(testCase.Error).not.toBeNull();
       };
       testCase.RunBundlerAndVerifyOutput();
   });
