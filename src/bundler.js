@@ -55,6 +55,8 @@ var fs = require("fs"),
     bundlerOptions = new optionsRequire.BundlerOptions(),
     imageVersioningRequire = require('./bundle-image-rewrite.js'),
     ext = require('./string-extensions.js'),
+    _ = require('underscore'),
+    collection = require('./collection'),
     imageVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -163,7 +165,7 @@ function scanDir(allFiles, cb) {
                     bundleName = bundleFileUtility.getOutputFilePath(bundleName, bundleName, options);
 
                     if(options.directory !== undefined) {
-                        var tmpFiles = [];
+                        var tmpFiles = collection.createBundleFiles(jsBundle);
 
                         jsFiles.forEach(function(name) { 
 
@@ -172,7 +174,7 @@ function scanDir(allFiles, cb) {
                             var currentItem = bundleDir + '/' +  name;
                             var stat = fs.statSync(currentItem);
                             if(!stat.isDirectory()) {
-                                tmpFiles.push(name);
+                                tmpFiles.addFile(name);
                             }
                             else if(currentItem != bundleDir + '/'){
 
@@ -181,14 +183,12 @@ function scanDir(allFiles, cb) {
                                                     currentItem,
                                                     name
                                                 );
-                                var mustacheInDirectory = filesInDir.filter(function(a) { return a.endsWith(".mustache")});
-                                var jsInDirectory = filesInDir.filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx"); });
-
-                                tmpFiles = tmpFiles.concat(mustacheInDirectory).concat(jsInDirectory);
+                                _.chain(filesInDir).filter(function(a) { return a.endsWith(".mustache")}).each(tmpFiles.addFile, tmpFiles);
+                                _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx"); }).each(tmpFiles.addFile, tmpFiles);
                             }
                         });
 
-                        jsFiles = tmpFiles;
+                        jsFiles = tmpFiles.toJSON();
                     }
                     else if (options.folder !== undefined) {
                         options.nobundle = !options.forcebundle;
@@ -220,7 +220,7 @@ function scanDir(allFiles, cb) {
                     bundleName = bundleFileUtility.getOutputFilePath(bundleName, bundleName, options);
 
                     if(options.directory !== undefined) {
-                        var tmpFiles = [];
+                        var tmpFiles = collection.createBundleFiles(cssBundle);
 
                         cssFiles.forEach(function(name) { 
 
@@ -229,21 +229,20 @@ function scanDir(allFiles, cb) {
                             var currentItem = bundleDir + '/' +  name;
                             var stat = fs.statSync(currentItem);
                             if(!stat.isDirectory()) {
-                                tmpFiles.push(name);
+                                tmpFiles.addFile(name);
                             }
                             else if(currentItem != bundleDir + '/'){
-                                
-                                tmpFiles = tmpFiles.concat(
-                                    allFiles.getFilesInDirectory(
-                                        bundlefiles.BundleType.Css,
-                                        currentItem,
-                                        name
-                                    )
-                                );
+
+                                var cssFiles = allFiles.getFilesInDirectory(
+                                    bundlefiles.BundleType.Css,
+                                    currentItem,
+                                    name);
+
+                                _.each(cssFiles, tmpFiles.addFile, tmpFiles);
                             }
                         });
 
-                        cssFiles = tmpFiles;
+                        cssFiles = tmpFiles.toJSON();
                     }
                     else if (options.folder !== undefined) {
                         options.nobundle = !options.forcebundle;
