@@ -410,15 +410,14 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 allMinCss = imageVersioning.VersionImages(allMinCss);
             }
 
-            var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
-            fs.writeFile(minFileName, allMinCss, function() {
-                cssValidator.validate(cssBundle, allMinCss, function(err) {
-                    if (err) {
-                        handleError(err);
-                        return;
-                    }
-                    cb();
-                });
+            cssValidator.validate(cssBundle, allMinCss, function(err) {
+                if (err) {
+                    handleError(err);
+                    return;
+                }
+
+                var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
+                fs.writeFile(minFileName, allMinCss, cb);
             });
         };
 
