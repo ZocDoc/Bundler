@@ -15,10 +15,10 @@ describe('CssValidator', function() {
 
     });
     
-    it('Given mobile bundle with too many rules, does not throw error.', function(done) {
+    it('Given mobile bundle with too many selectors, does not throw error.', function(done) {
     
         givenBundle('patient-mobile');
-        givenCss('too-many-rules');
+        givenCss('too-many-selectors');
 
         assertValidateDoesNotThrowError(done);
     
@@ -33,10 +33,10 @@ describe('CssValidator', function() {
 
     });
 
-    it('Given CSR bundle with too many rules, does not throw error.', function(done) {
+    it('Given CSR bundle with too many selectors, does not throw error.', function(done) {
 
         givenBundle('ondeck-csr');
-        givenCss('too-many-rules');
+        givenCss('too-many-selectors');
 
         assertValidateDoesNotThrowError(done);
 
@@ -51,10 +51,10 @@ describe('CssValidator', function() {
 
     });
 
-    it('Given Pulse bundle with too many rules, does not throw error.', function(done) {
+    it('Given Pulse bundle with too many selectors, does not throw error.', function(done) {
 
         givenBundle('ondeck-pulse');
-        givenCss('too-many-rules');
+        givenCss('too-many-selectors');
 
         assertValidateDoesNotThrowError(done);
 
@@ -69,10 +69,10 @@ describe('CssValidator', function() {
 
     });
 
-    it('Given bundle with too many rules, throws error.', function(done) {
+    it('Given bundle with too many selectors, throws error.', function(done) {
 
         givenBundle('foo');
-        givenCss('too-many-rules');
+        givenCss('too-many-selectors');
 
         assertValidateThrowsError(done);
 
