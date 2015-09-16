@@ -1,14 +1,14 @@
 var _ = require('underscore');
 
-var TooManyRulesError = function(file, numSelectors) {
+var TooManySelectorsError = function(file, numSelectors) {
     this.file = file;
-    this.message = file + ' has ' + numSelectors + ' rules, but IE only allows 4095';
+    this.message = file + ' has ' + numSelectors + ' selectors, but IE only allows 4095';
 
     var err = Error.call(this, this.message);
-    err.name = this.name = 'TooManyRulesError';
+    err.name = this.name = 'TooManySelectorsError';
     this.stack = err.stack;
 };
 
-_.extend(TooManyRulesError.prototype, Error.prototype);
+_.extend(TooManySelectorsError.prototype, Error.prototype);
 
-module.exports = TooManyRulesError;
+module.exports = TooManySelectorsError;

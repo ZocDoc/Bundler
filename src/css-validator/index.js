@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var path = require('path');
 var StyleStats = require('stylestats');
-var TooManyRulesError = require('../errors/too-many-rules-error');
+var TooManySelectorsError = require('../errors/too-many-selectors-error');
 var FileTooBigError = require('../errors/file-too-big-error');
 
-var MAX_CSS_RULES = 4095;
+var MAX_CSS_SELECTORS = 4095;
 var MAX_FILE_SIZE_KB = 278;
 
 var cssStatsSettings = {
@@ -17,8 +17,8 @@ var cssStatsSettings = {
     ratioOfDataUriSize: false,
     gzippedSize: false,
     simplicity: false,
-    rules: true,
-    selectors: false,
+    rules: false,
+    selectors: true,
     declarations: false,
     averageOfIdentifier: false,
     mostIdentifier: false,
@@ -67,10 +67,10 @@ var validateFileSize = function(bundle, result) {
 
 };
 
-var validateRules = function(bundle, result) {
+var validateSelectors = function(bundle, result) {
 
-    if (result.rules > MAX_CSS_RULES) {
-        throw new TooManyRulesError(bundle, result.rules);
+    if (result.selectors > MAX_CSS_SELECTORS) {
+        throw new TooManySelectorsError(bundle, result.selectors);
     }
 
 };
@@ -92,7 +92,7 @@ var validate = function(bundle, css, cb) {
         }
 
         validateFileSize(bundle, result);
-        validateRules(bundle, result);
+        validateSelectors(bundle, result);
 
         cb();
 
