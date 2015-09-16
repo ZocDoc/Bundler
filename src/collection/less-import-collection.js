@@ -1,10 +1,8 @@
 var _ = require('underscore'),
     path = require('path'),
-    ArrayCollection = require('./array-collection.js');
-
-var isStyleguideFile = function(filePath) {
-    return filePath.indexOf('styleguide') > -1;
-};
+    styleguide = require('../styleguide'),
+    ArrayCollection = require('./array-collection.js'),
+    LessImportError = require('./less-import-error.js');
 
 var isMixinFile = function(filePath) {
     return filePath.indexOf('mixin') > -1;
@@ -14,12 +12,12 @@ var validateStyleguideImports = function(filePath, lessImport) {
     filePath = path.resolve(filePath);
     lessImport = path.resolve(filePath, lessImport);
 
-    if (isStyleguideFile(filePath)) {
+    if (styleguide.isStyleguideFile(filePath)) {
         return;
     }
 
-    if (isStyleguideFile(lessImport) && !isMixinFile(lessImport)) {
-        throw new Error('Only styleguide mixins should be imported: ' + filePath + ' imports ' + lessImport);
+    if (styleguide.isStyleguideFile(lessImport) && !isMixinFile(lessImport)) {
+        throw new LessImportError(filePath, lessImport);
     }
 };
 

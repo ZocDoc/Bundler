@@ -1,6 +1,7 @@
 var ArrayCollection = require('./array-collection.js');
 var StringCollection = require('./string-collection.js');
 var LessImportCollection = require('./less-import-collection.js');
+var BundleFileCollection = require('./bundle-file-collection.js');
 
 module.exports = {
     createAbConfigs: function(abConfigs) {
@@ -17,5 +18,8 @@ module.exports = {
     },
     createLocalizedStrings: function(localizedStrings) {
         return new ArrayCollection(localizedStrings);
+    },
+    createBundleFiles: function(bundleFile) {
+        return new BundleFileCollection(bundleFile);
     }
 };
