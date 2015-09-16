@@ -29,18 +29,40 @@ describe('BundleFileCollection', function() {
 
         });
 
-        it('Given non-styleguide bundle and styleguide file, error is thrown.', function() {
+        it('Given non-styleguide css bundle and styleguide file, error is thrown.', function() {
 
-            givenNonStyleguideBundle();
+            givenNonStyleguideBundle('css');
             givenStyleguideFile();
 
             expect(addFile).toThrow();
 
         });
 
-        it('Given non-styleguide bundle and non-styleguide file, file is added.', function() {
+        it('Given non-styleguide css bundle and non-styleguide file, file is added.', function() {
 
-            givenNonStyleguideBundle();
+            givenNonStyleguideBundle('css');
+            givenNonStyleguideFile();
+
+            addFile();
+
+            assertFileWasAdded();
+
+        });
+
+        it('Given non-styleguide js bundle and styleguide file, file is added.', function() {
+
+            givenNonStyleguideBundle('fs');
+            givenStyleguideFile();
+
+            addFile();
+
+            assertFileWasAdded();
+
+        });
+
+        it('Given non-styleguide fs bundle and non-styleguide file, file is added.', function() {
+
+            givenNonStyleguideBundle('fs');
             givenNonStyleguideFile();
 
             addFile();
@@ -57,8 +79,8 @@ describe('BundleFileCollection', function() {
             collection = new BundleFileCollection('C:/foo/bar/styleguide.css.bundle');
         };
 
-        var givenNonStyleguideBundle = function() {
-            collection = new BundleFileCollection('C:/foo/bar/baz.css.bundle');
+        var givenNonStyleguideBundle = function(type) {
+            collection = new BundleFileCollection('C:/foo/bar/baz.' + type + '.bundle');
         };
 
         var givenStyleguideFile = function() {
