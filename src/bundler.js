@@ -26,10 +26,12 @@ SOFTWARE.
 // with an exit code that will be identified as a failure by most
 // windows build systems
 
-process.on("uncaughtException", function (err) {
+var handleError = function(err) {
     console.error(JSON.stringify(err));
     process.exit(1);
-});
+};
+
+process.on("uncaughtException", handleError);
 
 var fs = require("fs"),
     path = require("path"),
@@ -57,6 +59,7 @@ var fs = require("fs"),
     ext = require('./string-extensions.js'),
     _ = require('underscore'),
     collection = require('./collection'),
+    cssValidator = require('./css-validator'),
     imageVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -408,7 +411,15 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             }
 
             var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
-            fs.writeFile(minFileName, allMinCss, cb);
+            fs.writeFile(minFileName, allMinCss, function() {
+                cssValidator.validate(cssBundle, allMinCss, function(err) {
+                    if (err) {
+                        handleError(err);
+                        return;
+                    }
+                    cb();
+                });
+            });
         };
 
         if (!options.bundleminonly) {
