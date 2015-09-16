@@ -1,5 +1,4 @@
-var _ = require('underscore'),
-    path = require('path');
+var _ = require('underscore');
 
 var LessImportError = function(file, importFile) {
     this.file = file;
