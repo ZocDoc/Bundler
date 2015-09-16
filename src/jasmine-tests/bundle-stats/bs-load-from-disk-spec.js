@@ -1,6 +1,6 @@
 var exec = require('child_process').exec,
-      fs = require('fs'),
-      bundleStats = require('../../bundle-stats.js');
+    fs = require('fs'),
+    bundleStats = require('../../bundle-stats.js');
 
 describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
 
@@ -68,8 +68,8 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
       var stats = getStatsCollector();
       stats.LoadStatsFromDisk(outputdirectory);
       
-      expect(stats.HashCollection.bundle1).toBe(objectOnDisk.bundle1);
-      expect(stats.HashCollection.bundle2).toBe(objectOnDisk.bundle2);
+      expect(stats.HashCollection.get('bundle1')).toBe(objectOnDisk.bundle1);
+      expect(stats.HashCollection.get('bundle2')).toBe(objectOnDisk.bundle2);
   });
 
   it("On file error, the hash collection is empty", function () {
@@ -81,8 +81,8 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
       var stats = getStatsCollector();
       stats.LoadStatsFromDisk(outputdirectory);
 
-      expect(stats.HashCollection.bundle1).toBe(undefined);
-      expect(stats.HashCollection.bundle2).toBe(undefined);
+      expect(stats.HashCollection.get('bundle1')).toBeUndefined();
+      expect(stats.HashCollection.get('bundle2')).toBeUndefined();
   });
 
   describe('given file loading with prefix', function() {

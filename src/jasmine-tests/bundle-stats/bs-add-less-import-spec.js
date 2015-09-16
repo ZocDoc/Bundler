@@ -1,4 +1,5 @@
-var fileNameStats = require('../../bundle-stats.js');
+var fileNameStats = require('../../bundle-stats.js'),
+    collection = require('../../collection');
 
 describe("fileNameStatsCollector - ", function() {
 
@@ -27,13 +28,13 @@ describe("fileNameStatsCollector - ", function() {
       };
 
       stats = new fileNameStats.BundleStatsCollector(fileSystem);
-      stats.LessImports = {};
+      stats.LessImports = collection.createLessImports();
       verifyImportsForFile = function(file, imports)
       {
-          expect(stats.LessImports[file].length).toBe(imports.length);
+          expect(stats.LessImports.get(file).length).toBe(imports.length);
 
           for (var i = 0; i < imports.length; i++) {
-              expect(stats.LessImports[file][i]).toBe(imports[i]);
+              expect(stats.LessImports.get(file)[i]).toBe(imports[i]);
           }
       };
   });

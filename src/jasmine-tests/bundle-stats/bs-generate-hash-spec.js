@@ -1,6 +1,7 @@
 var exec = require('child_process').exec,
-      fs = require('fs'),
-      bundleStats = require('../../bundle-stats.js');
+    fs = require('fs'),
+    bundleStats = require('../../bundle-stats.js'),
+    collection = require('../../collection');
 
 describe("BundleStatsCollector - Generates Hashes: ", function() {
 
@@ -16,9 +17,10 @@ describe("BundleStatsCollector - Generates Hashes: ", function() {
   beforeEach(function () {
 
       hasher = new bundleStats.BundleStatsCollector(null);
+      hasher.HashCollection = collection.createHash();
       validateHash = function (bundle, file, expectedHash) {
           hasher.AddFileHash(bundle, file);
-          expect(hasher.HashCollection[bundle]).toBe(expectedHash);
+          expect(hasher.HashCollection.get(bundle)).toBe(expectedHash);
       }
   });
 

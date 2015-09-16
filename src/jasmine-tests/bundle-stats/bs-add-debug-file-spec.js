@@ -1,6 +1,7 @@
 var exec = require('child_process').exec,
-      fs = require('fs'),
-      bundleStats = require('../../bundle-stats.js');
+    fs = require('fs'),
+    bundleStats = require('../../bundle-stats.js'),
+    collection = require('../../collection');
 
 describe("BundleStatsCollector - Adds files to the debug collection: ", function() {
 
@@ -17,13 +18,15 @@ describe("BundleStatsCollector - Adds files to the debug collection: ", function
   beforeEach(function () {
 
       stats = new bundleStats.BundleStatsCollector(null);
-      stats.DebugCollection = {};
+      stats.DebugCollection = collection.createDebug();
+      stats.LocalizedStrings = collection.createLocalizedStrings();
+      stats.AbConfigs = collection.createAbConfigs();
       validateBundle = function(bundleName, files)
       {
-          expect(stats.DebugCollection[bundleName].length).toBe(files.length);
+          expect(stats.DebugCollection.get(bundleName).length).toBe(files.length);
 
           for(var i=0; i<files.length; i++) {
-              expect(stats.DebugCollection[bundleName][i]).toBe(files[i]);
+              expect(stats.DebugCollection.get(bundleName)[i]).toBe(files[i]);
           }
       };
   });
