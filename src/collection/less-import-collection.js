@@ -2,7 +2,7 @@ var _ = require('underscore'),
     path = require('path'),
     styleguide = require('../styleguide'),
     ArrayCollection = require('./array-collection.js'),
-    LessImportError = require('./less-import-error.js');
+    LessImportError = require('../errors/less-import-error.js');
 
 var isMixinFile = function(filePath) {
     return filePath.indexOf('mixin') > -1;

@@ -1,10 +1,11 @@
 var _ = require('underscore'),
     path = require('path'),
     styleguide = require('../styleguide'),
-    StyleguideBundleError = require('./styleguide-bundle-error.js');
+    StyleguideBundleError = require('../errors/styleguide-bundle-error.js');
 
 var BundleFileCollection = function(bundleFile) {
     this._bundleFile = path.resolve(bundleFile);
+    this._bundleType = this._bundleFile.replace(/^.*\.(js|css)\.bundle$/, '$1');
     this._isStyleguideBundle = styleguide.isStyleguideFile(bundleFile);
     this._files = [];
 };
@@ -24,7 +25,7 @@ var resolvePath = function(bundleFile, filePath) {
 BundleFileCollection.prototype.addFile = function(filePath) {
     var absolutePath = resolvePath(this._bundleFile, filePath);
 
-    if (!this._isStyleguideBundle && styleguide.isStyleguideFile(absolutePath)) {
+    if (this._bundleType === 'css' && !this._isStyleguideBundle && styleguide.isStyleguideFile(absolutePath)) {
         throw new StyleguideBundleError(this._bundleFile, absolutePath);
     }
 
