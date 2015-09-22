@@ -27,7 +27,16 @@ SOFTWARE.
 // windows build systems
 
 var handleError = function(err) {
-    console.error(JSON.stringify(err));
+    if (err.stack) {
+        console.error(err.stack);
+    } else {
+        var jsonError = JSON.stringify(err, null, 4);
+        if (jsonError !== '{}') {
+            console.error(jsonError);
+        } else {
+            console.error(err.message);
+        }
+    }
     process.exit(1);
 };
 
