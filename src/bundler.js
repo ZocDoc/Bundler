@@ -26,10 +26,21 @@ SOFTWARE.
 // with an exit code that will be identified as a failure by most
 // windows build systems
 
-process.on("uncaughtException", function (err) {
-    console.error(JSON.stringify(err));
+var handleError = function(err) {
+    if (err.stack) {
+        console.error(err.stack);
+    } else {
+        var jsonError = JSON.stringify(err, null, 4);
+        if (jsonError !== '{}') {
+            console.error(jsonError);
+        } else {
+            console.error(err.message);
+        }
+    }
     process.exit(1);
 });
+
+process.on("uncaughtException", handleError);
 
 var fs = require("fs"),
     path = require("path"),
