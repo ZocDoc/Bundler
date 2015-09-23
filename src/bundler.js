@@ -588,7 +588,15 @@ function getOrCreateStylusCss(options, stylusText, stylusPath, cssPath, cb /*cb(
 
 function getOrCreateMinCss(options, css, cssPath, minCssPath, cb /*cb(minCss)*/) {
     compileAsync(options, "minifying", function (css, cssPath, cb) {
-            cb(new CleanCss(options).minify(css));
+            new CleanCss({
+                advanced: false,
+                restructuring: false
+            }).minify(css, function(err, minCss) {
+                if (err) {
+                    throw err;
+                }
+                cb(minCss.styles);
+            });
         }, css, cssPath, minCssPath, cb);
 }
 
@@ -664,7 +672,7 @@ function compileLess(lessCss, lessPath, cb) {
 
     less.render(lessCss, options, function (err, css) {
         if (err) throw err;
-        cb(css);
+        cb(css.css);
     });
 }
 
