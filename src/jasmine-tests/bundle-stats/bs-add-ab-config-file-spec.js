@@ -1,6 +1,7 @@
 var exec = require('child_process').exec,
-      fs = require('fs'),
-      bundleStats = require('../../bundle-stats.js');
+    fs = require('fs'),
+    bundleStats = require('../../bundle-stats.js'),
+    collection = require('../../collection');
 
 describe("BundleStatsCollector - ", function() {
 
@@ -16,13 +17,15 @@ describe("BundleStatsCollector - ", function() {
   beforeEach(function () {
 
       stats = new bundleStats.BundleStatsCollector(null);
-      stats.LocalizedStrings = {};
+      stats.DebugCollection = collection.createDebug();
+      stats.LocalizedStrings = collection.createLocalizedStrings();
+      stats.AbConfigs = collection.createAbConfigs();
       validateBundle = function(bundleName, abconfigs)
       {
-          expect(stats.AbConfigs[bundleName].length).toBe(abconfigs.length);
+          expect(stats.AbConfigs.get(bundleName).length).toBe(abconfigs.length);
 
           for(var i=0; i<abconfigs.length; i++) {
-              expect(stats.AbConfigs[bundleName][i]).toBe(abconfigs[i]);
+              expect(stats.AbConfigs.get(bundleName)[i]).toBe(abconfigs[i]);
           }
       };
   });
@@ -31,7 +34,7 @@ describe("BundleStatsCollector - ", function() {
 
   var getAbConfig = function(ab) {
           return "AB.isOn('" + ab + "')";
-      },
+      };
       getAbVariant = function(ab) {
           return "AB.getVariant('" + ab + "')";
       },
@@ -63,7 +66,7 @@ describe("BundleStatsCollector - ", function() {
     it("Doesn't break if there are no ab configs.", function() {
 
         stats.ParseJsForStats(bundle1, 'var x = "This has no ab configs"; \n x = x + "l";');
-        expect(stats.AbConfigs[bundle1]).toBe(undefined);
+        expect(stats.AbConfigs.get(bundle1)).toEqual([]);
     });
 
 

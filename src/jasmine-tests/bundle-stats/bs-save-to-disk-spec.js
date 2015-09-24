@@ -1,6 +1,7 @@
 var exec = require('child_process').exec,
-      fs = require('fs'),
-      bundleStats = require('../../bundle-stats.js');
+    fs = require('fs'),
+    bundleStats = require('../../bundle-stats.js'),
+    collection = require('../../collection');
 
 describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
 
@@ -31,11 +32,11 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
       getStatsCollector = function () {
           spyOn(fileSystem, 'writeFileSync').andCallThrough();
           var hash = new bundleStats.BundleStatsCollector(fileSystem);
-          hash.HashCollection = objectOnDisk;
-          hash.DebugCollection = debugOnDisk;
-          hash.LocalizedStrings = localizationOnDisk;
-          hash.AbConfigs = abConfigOnDisk;
-          hash.LessImports = importsOnDisk;
+          hash.HashCollection = collection.createHash(objectOnDisk);
+          hash.DebugCollection = collection.createDebug(debugOnDisk);
+          hash.LocalizedStrings = collection.createLocalizedStrings(localizationOnDisk);
+          hash.AbConfigs = collection.createAbConfigs(abConfigOnDisk);
+          hash.LessImports = collection.createLessImports(importsOnDisk);
           return hash;
       };
   });

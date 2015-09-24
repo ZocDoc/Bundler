@@ -43,7 +43,7 @@ TestUtility.prototype.RunCommandSync = function (cmd, execCallback) {
         return finishedCommand;
      }, 
      "Running command did not complete", 
-     750
+     2000
   );
 };
 

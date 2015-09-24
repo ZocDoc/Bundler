@@ -1,6 +1,7 @@
 var exec = require('child_process').exec,
-      fs = require('fs'),
-      bundleStats = require('../../bundle-stats.js');
+    fs = require('fs'),
+    bundleStats = require('../../bundle-stats.js'),
+    collection = require('../../collection');
 
 describe("BundleStatsCollector - ", function() {
 
@@ -16,13 +17,15 @@ describe("BundleStatsCollector - ", function() {
   beforeEach(function () {
 
       stats = new bundleStats.BundleStatsCollector(null);
-      stats.LocalizedStrings = {};
+      stats.DebugCollection = collection.createDebug();
+      stats.LocalizedStrings = collection.createLocalizedStrings();
+      stats.AbConfigs = collection.createAbConfigs();
       validateBundle = function(bundleName, localizedStrings)
       {
-          expect(stats.LocalizedStrings[bundleName].length).toBe(localizedStrings.length);
+          expect(stats.LocalizedStrings.get(bundleName).length).toBe(localizedStrings.length);
 
           for(var i=0; i<localizedStrings.length; i++) {
-              expect(stats.LocalizedStrings[bundleName][i]).toBe(localizedStrings[i]);
+              expect(stats.LocalizedStrings.get(bundleName)[i]).toBe(localizedStrings[i]);
           }
       };
   });
@@ -75,7 +78,7 @@ describe("BundleStatsCollector - ", function() {
     it("Doesn't break if there are no localized strings.", function() {
 
         stats.ParseMustacheForStats(bundle1, '<div>This has no localized strings.</div>');
-        expect(stats.LocalizedStrings[bundle1]).toBe(undefined);
+        expect(stats.LocalizedStrings.get(bundle1)).toEqual([]);
     });
 
     it("Clearing a bundle removes all LocalizedStrings.", function() {
@@ -170,7 +173,7 @@ describe("BundleStatsCollector - ", function() {
         it("Doesn't break if there are no localized strings.", function() {
 
             stats.ParseJsForStats(bundle1, 'var x = "There are no localized strings here";"');
-            expect(stats.LocalizedStrings[bundle1]).toBe(undefined);
+            expect(stats.LocalizedStrings.get(bundle1)).toEqual([]);
         });
 
 
