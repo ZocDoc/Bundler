@@ -35,7 +35,7 @@ describe("BundleStatsCollector - ", function() {
   var getAbConfig = function(ab) {
           return "AB.isOn('" + ab + "')";
       };
-  var getAbVariant = function(ab) {
+      getAbVariant = function(ab) {
           return "AB.getVariant('" + ab + "')";
       },
       ab1 = getAbConfig(string1),
