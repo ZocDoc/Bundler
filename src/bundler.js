@@ -678,7 +678,7 @@ function compileLess(lessCss, lessPath, cb) {
     }
 
     less.render(lessCss, options, function (err, css) {
-        if (err) throw err;
+        if (err) handleError(err);
         cb(css.css);
     });
 }
