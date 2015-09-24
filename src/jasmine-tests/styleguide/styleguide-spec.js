@@ -36,6 +36,36 @@ describe('Styleguide', function() {
             assertTrueWasReturned();
 
         });
+
+        it('Given file name contains styleguide and legacy, returns false.', function() {
+
+            givenFilePathIs('C:/foo/bar/bar.styleguide.legacy.less');
+
+            isStyleguideFile();
+
+            assertFalseWasReturned();
+
+        });
+
+        it('Given file name contains styleguide-documentation, returns false.', function() {
+
+            givenFilePathIs('C:/foo/styleguide-documentation/bar.less');
+
+            isStyleguideFile();
+
+            assertFalseWasReturned();
+
+        });
+
+        it('Given file name contains styleguide-docummentation, returns false.', function() {
+
+            givenFilePathIs('C:/foo/styleguide-docummentation/bar.less');
+
+            isStyleguideFile();
+
+            assertFalseWasReturned();
+
+        });
         
         it('Given file name starts with sg., returns true.', function() {
         
