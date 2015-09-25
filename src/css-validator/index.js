@@ -62,7 +62,7 @@ var validateFileSize = function(bundle, result) {
     var kbSize = result.size / 1024;
 
     if (kbSize > MAX_FILE_SIZE_KB) {
-        throw new FileTooBigError(bundle, kbSize);
+        //throw new FileTooBigError(bundle, kbSize);
     }
 
 };
