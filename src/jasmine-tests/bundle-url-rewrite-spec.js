@@ -1,10 +1,10 @@
 var exec = require('child_process').exec,
     fs = require('fs'),
-    bundleImageRewrite = require('../bundle-image-rewrite.js');
+    bundleUrlRewrite = require('../bundle-url-rewrite.js');
 
-describe("BundleImageRewriter - ", function () {
+describe("BundleUrlRewriter - ", function () {
 
-    var fileSystem, getImageRewriter, _exists, _filesToText, rootPath, outputRoot, _cssFileText, _outputFileText;
+    var fileSystem, getUrlRewriter, _exists, _filesToText, rootPath, outputRoot, _cssFileText, _outputFileText;
 
     beforeEach(function () {
 
@@ -20,15 +20,15 @@ describe("BundleImageRewriter - ", function () {
             return _filesToText[path];
         };
 
-        getImageRewriter = function() {
+        getUrlRewriter = function() {
             spyOn(fileSystem, 'existsSync').andCallThrough();
             spyOn(fileSystem, 'readFileSync').andCallThrough();
-            var util = new bundleImageRewrite.BundleImageRewriter(fileSystem, outputRoot, rootPath);
+            var util = new bundleUrlRewrite.BundleUrlRewriter(fileSystem, outputRoot, rootPath);
             return util;
         };
     });
 
-    describe("VersionImages: ", function () {
+    describe("VersionUrls: ", function () {
 
         var fileContents1 = "AN IMAGE FILE 1",
             fileContents2 = "Something else that is an image too.",
@@ -42,7 +42,7 @@ describe("BundleImageRewriter - ", function () {
             givenImageDoesNotExist();
             givenCssFileText(cssFileText);
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs(cssFileText);
         });
@@ -52,7 +52,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('img/an-image.jpg', fileContents1);
             givenCssFileText(".s { background: url('img/an-image.jpg') center no-repeat; }");
 
-            versionImages();
+            versionUrls();
 
             expect(fileSystem.readFileSync).toHaveBeenCalledWith(rootPath + "img/an-image.jpg");
         });
@@ -62,7 +62,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('img/an-image.jpg', fileContents1);
             givenCssFileText(".s { background: url('img/an-image.jpg') center no-repeat; }");
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs(".s { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg') center no-repeat; }");
         });
@@ -72,7 +72,7 @@ describe("BundleImageRewriter - ", function () {
 			givenFile('img/an-image.gif', fileContents1);
             givenCssFileText("url(img/an-image.gif) url(img/an-image.gif)");
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.gif') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.gif')");
         });
@@ -82,7 +82,7 @@ describe("BundleImageRewriter - ", function () {
 			givenFile('img/an-image.png', fileContents1);
             givenCssFileText("url(img/an-image.png) url(img/an-image.png)");
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.png') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.png')");
         });
@@ -92,7 +92,7 @@ describe("BundleImageRewriter - ", function () {
 			givenFile('img/an-image.jpg', fileContents1);
             givenCssFileText("url(img/an-image.jpg) url(img/an-image.jpg)");
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg')");
         });
@@ -102,7 +102,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('fonts/a-font.svg', fileContents1);
             givenCssFileText('url(fonts/a-font.svg) url(fonts/a-font.svg)');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.svg') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.svg')");
 
@@ -113,7 +113,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('fonts/a-font.ttf', fileContents1);
             givenCssFileText('url(fonts/a-font.ttf) url(fonts/a-font.ttf)');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.ttf') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.ttf')");
 
@@ -124,7 +124,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('fonts/a-font.woff', fileContents1);
             givenCssFileText('url(fonts/a-font.woff) url(fonts/a-font.woff)');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.woff') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.woff')");
 
@@ -135,7 +135,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('fonts/a-font.eot', fileContents1);
             givenCssFileText('url(fonts/a-font.eot) url(fonts/a-font.eot)');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.eot') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.eot')");
 
@@ -146,7 +146,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('fonts/a-font.otf', fileContents1);
             givenCssFileText('url(fonts/a-font.otf) url(fonts/a-font.otf)');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.otf') url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.otf')");
 
@@ -157,7 +157,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('fonts/a-font.otf', fileContents1);
             givenCssFileText('url(fonts/a-font.otf#foobar)');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font.otf#foobar')");
 
@@ -168,7 +168,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('img/an-image.jpg', fileContents1);
             givenCssFileText('.s { background: url("img/an-image.jpg") center no-repeat; }');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs(".s { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg') center no-repeat; }");
         });
@@ -178,7 +178,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('img/another-image.jpg', fileContents1);
             givenCssFileText('.s { background: url(img/another-image.jpg) center no-repeat; }');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs(".s { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/another-image.jpg') center no-repeat; }");
         });
@@ -188,7 +188,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('/img/another-image.jpg', fileContents1);
             givenCssFileText('.s { background: url(/img/another-image.jpg) center no-repeat; }');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs(".s { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/another-image.jpg') center no-repeat; }");
         });
@@ -199,7 +199,7 @@ describe("BundleImageRewriter - ", function () {
             givenFile('/fonts/a-font/a-font.woff', fileContents2);
             givenCssFileText('@font-face{font-family:a-font;src:url(/fonts/a-font/a-font.eot);src:url(/fonts/a-font/a-font.woff);}');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs('@font-face{font-family:a-font;src:url(\'combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font/a-font.eot\');src:url(\'combined/version__570e1018fd20af9e8e22c860a43d0ac3__/fonts/a-font/a-font.woff\');}');
 
@@ -218,7 +218,7 @@ describe("BundleImageRewriter - ", function () {
                 + "url(/fonts/a-font/a-font.svg#a-font) format('svg');"
                 + "font-weight:400;font-style:normal}");
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs("@font-face{font-family:a-font;src:url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font/a-font.eot');"
                 + "src:url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/fonts/a-font/a-font.eot?#iefix') format('embedded-opentype'),"
@@ -237,7 +237,7 @@ describe("BundleImageRewriter - ", function () {
                             + '.b { background: url("img/an-image.jpg") center no-repeat; }\n'
                             + '.c { background: url("img/another-image.jpg") no-repeat; }\n');
 
-            versionImages();
+            versionUrls();
 
             verifyOutputTextIs(".a { background: url('combined/version__570e1018fd20af9e8e22c860a43d0ac3__/img/another-image.jpg') center no-repeat; }\n"
                             + ".b { background: url('combined/version__18458d2016656fdb823ed3ef01b8f8da__/img/an-image.jpg') center no-repeat; }\n"
@@ -258,8 +258,8 @@ describe("BundleImageRewriter - ", function () {
             _cssFileText = text;
         };
      
-        var versionImages = function () {
-            _outputFileText = getImageRewriter().VersionImages(_cssFileText);
+        var versionUrls = function () {
+            _outputFileText = getUrlRewriter().VersionUrls(_cssFileText);
         };
 
         var verifyOutputTextIs = function (expectedFile) {

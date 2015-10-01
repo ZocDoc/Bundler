@@ -24,7 +24,7 @@ var ext = require('./string-extensions.js'),
     fs = require("fs"),
     hasher = require('crypto');
 
-function BundleImageRewriter(
+function BundleUrlRewriter(
     fileSystem,
     outputRoot,
     rootPath
@@ -88,10 +88,10 @@ function BundleImageRewriter(
     this.urlRegex = new RegExp('url\\([^\\)]*?\\.(?:' + fileExtensions.join('|') + ')(?:\\??#[^\\)]*)?[\'"]?\\)', 'ig');
 }
 
-exports.BundleImageRewriter = BundleImageRewriter;
+exports.BundleUrlRewriter = BundleUrlRewriter;
 
 
-BundleImageRewriter.prototype.VersionImages = function (cssFileText) {
+BundleUrlRewriter.prototype.VersionUrls = function (cssFileText) {
     var _this = this;
 
     (cssFileText.match(_this.urlRegex) || []).forEach(function (url) {

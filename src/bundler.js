@@ -64,12 +64,12 @@ var fs = require("fs"),
     bundleFileUtilityRequire = require('./bundle-file-utility.js'),
     bundleFileUtility,
     bundlerOptions = new optionsRequire.BundlerOptions(),
-    imageVersioningRequire = require('./bundle-image-rewrite.js'),
+    urlRewrite = require('./bundle-url-rewrite.js'),
     ext = require('./string-extensions.js'),
     _ = require('underscore'),
     collection = require('./collection'),
     cssValidator = require('./css-validator'),
-    imageVersioning = null;
+    urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
 
@@ -90,7 +90,7 @@ if(bundlerOptions.DefaultOptions.statsfileprefix) {
 }
 
 if(bundlerOptions.DefaultOptions.rewriteimagefileroot && bundlerOptions.DefaultOptions.rewriteimageoutputroot) {
-    imageVersioning = new imageVersioningRequire.BundleImageRewriter(
+    urlVersioning = new urlRewrite.BundleUrlRewriter(
         fs,
         bundlerOptions.DefaultOptions.rewriteimageoutputroot,
         bundlerOptions.DefaultOptions.rewriteimagefileroot
@@ -415,8 +415,8 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
         var afterBundle = options.skipmin ? cb : function (_) {
 
-            if(imageVersioning) {
-                allMinCss = imageVersioning.VersionImages(allMinCss);
+            if(urlVersioning) {
+                allMinCss = urlVersioning.VersionUrls(allMinCss);
             }
 
             cssValidator.validate(cssBundle, allMinCss, function(err) {
