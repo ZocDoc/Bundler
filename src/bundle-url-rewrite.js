@@ -24,7 +24,7 @@ var ext = require('./string-extensions.js'),
     fs = require("fs"),
     hasher = require('crypto');
 
-function BundleImageRewriter(
+function BundleUrlRewriter(
     fileSystem,
     outputRoot,
     rootPath
@@ -39,41 +39,62 @@ function BundleImageRewriter(
         rootPath = rootPath + '/';
     }
 
-    var generateHashOfFile = function (filepath)
-    {
+    var generateHashOfFile = function (filepath) {
         var fileText = fileSystem.readFileSync(filepath);
         return hasher.createHash('md5').update(fileText).digest('hex');
     };
 
     this.rewriteUrl = function (url) {
-        var cleanedUrl = url.replace("url(", "").replace(")", "").replace(/'/g, "").replace(/"/g, "");
-		var filepath = rootPath + cleanedUrl;
+        var cleanedUrl = url.replace("url(", "").replace(/\)/g, "").replace(/'/g, "").replace(/"/g, "");
+
+        var fileUrl;
+        var urlHashMatch = cleanedUrl.match(this.hashRegex);
+        if (urlHashMatch) {
+            fileUrl = urlHashMatch[1];
+        } else {
+            fileUrl = cleanedUrl;
+        }
+
+		var filepath = rootPath + fileUrl;
 		
         var exists = fileSystem.existsSync(filepath);
         if (!exists) {
             return cleanedUrl;
         }
 
-        var hash = generateHashOfFile(filepath);
+        var fileHash = generateHashOfFile(filepath);
         
 		var seperator = '__/';
 		if(cleanedUrl.startsWith('/')) {
 			seperator = '__';
 		}
 		
-        return outputRoot + 'version__' + hash + seperator + cleanedUrl;
-    }
+        return outputRoot + 'version__' + fileHash + seperator + cleanedUrl;
+    };
 
-    this.imageUrlRegex = new RegExp(/url\(.*?[gf]['"]?\)/ig)
+    var fileExtensions = [
+        'eot',
+        'gif',
+        'jpg',
+        'jpeg',
+        'otf',
+        'png',
+        'svg',
+        'ttf',
+        'woff'
+    ];
+
+    this.hashRegex = new RegExp('([^\\?]*)\\??#(.*)');
+    this.urlRegex = new RegExp('url\\([^\\)]*?\\.(?:' + fileExtensions.join('|') + ')(?:\\??#[^\\)]*)?[\'"]?\\)', 'ig');
 }
 
-exports.BundleImageRewriter = BundleImageRewriter;
+exports.BundleUrlRewriter = BundleUrlRewriter;
 
 
-BundleImageRewriter.prototype.VersionImages = function (cssFileText) {
+BundleUrlRewriter.prototype.VersionUrls = function (cssFileText) {
     var _this = this;
 
-    (cssFileText.match(_this.imageUrlRegex) || []).forEach(function (url) {
+    (cssFileText.match(_this.urlRegex) || []).forEach(function (url) {
         var rewrittenUrl = "url('" + _this.rewriteUrl(url) + "')";
         cssFileText = cssFileText.replace(url, rewrittenUrl);
     });
