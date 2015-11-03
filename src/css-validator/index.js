@@ -86,7 +86,10 @@ var validate = function(bundle, css, cb) {
 
     stats.parse(function onCssStatsParsed(err, result) {
 
-        if (err) {
+        // If it's an error about an empty stylesheet, don't throw.
+        // This occurs on new bundles that have no styles yet.
+        // Otherwise, bubble the error up.
+        if (err && err.message !== 'Rule is not found.') {
             cb(err);
             return;
         }
