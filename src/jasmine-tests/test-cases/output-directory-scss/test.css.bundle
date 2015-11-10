@@ -1,0 +1,4 @@
+#options outputdirectory:test-cases/output-directory-scss/folder-output
+
+scss1.scss
+scss2.scss
