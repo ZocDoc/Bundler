@@ -477,8 +477,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                         getOrCreateLessCss(options, lessText, filePath, cssPathOutput, next);
                     });
                 } else if (isSass) {
+                    cssPath = cssPathOutput;
                     readTextFile(filePath, function (sassText) {
-                        getOrCreateSassCss(options, sassText, filePath, cssPath, next);
+                        getOrCreateSassCss(options, sassText, filePath, cssPathOutput, next);
                     });
 				} else if (isStylus){
 					readTextFile(filePath, function (stylusText) {
@@ -561,21 +562,7 @@ function getOrCreateLessCss(options, less, lessPath, cssPath, cb /*cb(css)*/) {
 }
 
 function getOrCreateSassCss(options, sassText, sassPath, cssPath, cb /*cb(sass)*/) {
-    var explodedSassPath = sassPath.split('\\');
-
-    if (explodedSassPath.length == 0) {
-        explodedSassPath = sassPath.split('/');
-    }
-
-    var sassFileName = explodedSassPath.pop();
-    var includePaths = [sassPath.replace(sassFileName, '')];
-
-    compileAsync(options, "compiling", function (sassText, sassPath, cb) {
-        cb(sass.renderSync({
-            file: sassPath,
-            includePaths: includePaths
-        }));
-    }, sassText, sassPath, cssPath, cb);
+    compileAsync(options, "compiling", compileSass, sassText, sassPath, cssPath, cb);
 }
 
 function getOrCreateStylusCss(options, stylusText, stylusPath, cssPath, cb /*cb(css)*/) {
@@ -680,6 +667,28 @@ function compileLess(lessCss, lessPath, cb) {
     less.render(lessCss, options, function (err, css) {
         if (err) handleError(err);
         cb(css.css);
+    });
+}
+
+function compileSass(sassCss, sassPath, cb) {
+    var explodedSassPath = sassPath.split('\\');
+
+    if (explodedSassPath.length == 0) {
+        explodedSassPath = sassPath.split('/');
+    }
+
+    var sassFileName = explodedSassPath.pop();
+    var includePaths = [sassPath.replace(sassFileName, '')];
+
+    sass.render({
+        data: sassCss,
+        includePaths: includePaths,
+        success: function(css) {
+            cb(css);
+        },
+        error: function(err) {
+            handleError(err);
+        }
     });
 }
 

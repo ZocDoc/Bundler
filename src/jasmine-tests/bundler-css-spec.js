@@ -39,12 +39,25 @@ describe("Css Bundling:", function() {
       runTestCase("combines-less");
   });
 
+  it("Compiles and Concatenates .scss files", function() {
+      runTestCase("combines-scss");
+  });
+
   it("Optionally versions images in the minified file", function () {
       runTestCase("image-versioning-css", null, false, " -rewriteimagefileroot:test-cases/image-versioning-css -rewriteimageoutputroot:combined");
   });
 
   it("An error is thrown for invalid less.", function () {
       var testCase = getTestCase("invalid-less");
+      testCase.VerifyBundle = function () {
+          var hasError = testCase.StdError.indexOf("missing closing `}`") >= 0;
+          expect(hasError).toBe(true);
+      };
+      testCase.RunBundlerAndVerifyOutput();
+  });
+
+  it("An error is thrown for invalid scss.", function () {
+      var testCase = getTestCase("invalid-scss");
       testCase.VerifyBundle = function () {
           var hasError = testCase.StdError.indexOf("missing closing `}`") >= 0;
           expect(hasError).toBe(true);
@@ -88,6 +101,12 @@ describe("Css Bundling:", function() {
   it("If an output directory is specified, then the un-minified less files as .css are put in there..", function () {
       var testCase = getTestCase("output-directory-less", "/folder-output/");
       testCase.SetUpCacheFileTest(true, ["less1.min", "less2.min", "less1", "less2"]);
+      testCase.RunBundlerAndVerifyOutput();
+  });
+
+  it("If an output directory is specified, then the un-minified scss files as .css are put in there..", function () {
+      var testCase = getTestCase("output-directory-scss", "/folder-output/");
+      testCase.SetUpCacheFileTest(true, ["scss1.min", "scss2.min", "scss1", "scss2"]);
       testCase.RunBundlerAndVerifyOutput();
   });
 
