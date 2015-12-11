@@ -155,6 +155,11 @@ TestUtility.prototype.VerifyErrorIs = function (errorText) {
         }
 
         var hasError = error.indexOf(errorText) >= 0;
+
+        if(!hasError){
+            console.log("Could not find " + errorText + " in [ERROR] " + error)
+        }
+
         expect(hasError).toBe(true);
     });
 }
