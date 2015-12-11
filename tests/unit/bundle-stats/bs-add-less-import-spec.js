@@ -1,5 +1,5 @@
-var fileNameStats = require('../../bundle-stats.js'),
-    collection = require('../../collection');
+var fileNameStats = require('../../../src/bundle-stats.js'),
+    collection = require('../../../src/collection');
 
 describe("fileNameStatsCollector - ", function() {
 

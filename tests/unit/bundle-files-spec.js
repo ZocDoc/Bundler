@@ -1,4 +1,4 @@
-var bundlefiles = require('../bundle-files.js');
+var bundlefiles = require('../../src/bundle-files.js');
 
 Array.prototype.contains = function (item) {
     return this.indexOf(item) !== -1;

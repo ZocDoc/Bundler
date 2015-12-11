@@ -1,14 +1,15 @@
 var path = require('path'),
-    LessImportCollection = require('../../collection/less-import-collection.js');
+    ArrayCollection = require('../../../src/collection/array-collection.js');
 
-describe('LessImportCollection', function() {
+describe('ArrayCollection', function() {
 
-    var filePath = 'C:\\foo\\bar\\foo.css',
+    var fileName = 'foo.css',
+        filePath = 'C:/foo/bar/' + fileName,
         collection;
 
     beforeEach(function() {
 
-        collection = new LessImportCollection();
+        collection = new ArrayCollection();
 
     });
 
@@ -37,7 +38,7 @@ describe('LessImportCollection', function() {
         });
 
         var ctor = function() {
-            collection = new LessImportCollection(map);
+            collection = new ArrayCollection(map);
         };
 
         var givenNoMap = function() {
@@ -62,15 +63,7 @@ describe('LessImportCollection', function() {
 
     describe('add', function() {
 
-        var lessFile,
-            lessImport;
-
-        beforeEach(function() {
-
-            lessFile = filePath;
-            lessImport = 'a';
-
-        });
+        var item = 'a';
         
         it('Given no items previously added for file, adds item to file.', function() {
         
@@ -99,82 +92,9 @@ describe('LessImportCollection', function() {
             assertItemWasNotReaddedToFile();
 
         });
-        
-        it('Given styleguide file imports another styleguide file, import is added.', function() {
-        
-            givenStyleguideFile();
-            givenStyleguideImport();
-
-            add();
-
-            assertImportWasAddedForFile();
-        
-        });
-
-        it('Given styleguide file imports a styleguide mixin, import is added.', function() {
-
-            givenStyleguideFile();
-            givenStyleguideMixinImport();
-
-            add();
-
-            assertImportWasAddedForFile();
-
-        });
-
-        it('Given non-styleguide file imports a styleguide file, error is thrown.', function() {
-
-            givenNonStyleguideFile();
-            givenStyleguideImport();
-
-            expect(add).toThrow();
-
-        });
-
-        it('Given non-styleguide file imports a styleguide mixin, import is added.', function() {
-
-            givenNonStyleguideFile();
-            givenStyleguideMixinImport();
-
-            add();
-
-            assertImportWasAddedForFile();
-
-        });
-
-        it('Given non-styleguide file imports a non-styleguide file, import is added.', function() {
-
-            givenNonStyleguideFile();
-            givenNonStyleguideImport();
-
-            add();
-
-            assertImportWasAddedForFile();
-
-        });
 
         var add = function() {
-            collection.add(lessFile, lessImport);
-        };
-
-        var givenStyleguideFile = function() {
-            lessFile = 'C:\\foo\\styleguide\\bar.less';
-        };
-
-        var givenNonStyleguideFile = function() {
-            lessFile = 'C:\\foo\\bar.less';
-        };
-
-        var givenStyleguideImport = function() {
-            lessImport = '../../styleguide/foo.less';
-        };
-
-        var givenStyleguideMixinImport = function() {
-            lessImport = '../../styleguide/foo.mixin.less';
-        };
-
-        var givenNonStyleguideImport = function() {
-            lessImport = '../../foo.less';
+            collection.add(filePath, item);
         };
 
         var givenDifferentItemsPreviouslyAddedForFile = function() {
@@ -182,23 +102,19 @@ describe('LessImportCollection', function() {
         };
 
         var givenSameItemPreviouslyAddedForFile = function() {
-            collection.add(filePath, lessImport);
+            collection.add(filePath, item);
         };
 
         var assertItemWasAddedToEmptyFile = function() {
-            expect(collection.toJSON()[filePath]).toEqual(['a']);
+            expect(collection.toJSON()[fileName]).toEqual(['a']);
         };
 
         var assertItemWasAddedToExistingFile = function() {
-            expect(collection.toJSON()[filePath]).toEqual(['b', 'a']);
+            expect(collection.toJSON()[fileName]).toEqual(['b', 'a']);
         };
 
         var assertItemWasNotReaddedToFile = function() {
-            expect(collection.toJSON()[filePath]).toEqual(['a']);
-        };
-
-        var assertImportWasAddedForFile = function() {
-            expect(collection.toJSON()[lessFile]).toEqual([lessImport]);
+            expect(collection.toJSON()[fileName]).toEqual(['a']);
         };
 
     });
@@ -246,7 +162,8 @@ describe('LessImportCollection', function() {
 
     describe('clear', function() {
 
-        var otherFilePath = 'C:\\foo\\bar\\file2.js.file';
+        var otherFileName = 'file2.js',
+            otherFilePath = '../foo/bar/' + otherFileName;
 
         beforeEach(function() {
 
@@ -285,9 +202,9 @@ describe('LessImportCollection', function() {
         };
 
         var assertItemsForFileWereRemoved = function() {
-            expect(collection.toJSON()).toEqual({
-                'C:\\foo\\bar\\file2.js.file': ['a']
-            });
+            var expected = {};
+            expected[otherFileName] = ['a'];
+            expect(collection.toJSON()).toEqual(expected);
         };
 
     });

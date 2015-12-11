@@ -1,6 +1,6 @@
 var exec = require('child_process').exec,
     fs = require('fs'),
-    bundleUrlRewrite = require('../bundle-url-rewrite.js');
+    bundleUrlRewrite = require('../../src/bundle-url-rewrite.js');
 
 describe("BundleUrlRewriter - ", function () {
 

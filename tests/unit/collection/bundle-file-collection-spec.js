@@ -1,4 +1,4 @@
-var BundleFileCollection = require('../../collection/bundle-file-collection.js');
+var BundleFileCollection = require('../../../src/collection/bundle-file-collection.js');
 
 describe('BundleFileCollection', function() {
 

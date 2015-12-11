@@ -1,7 +1,7 @@
 var exec = require('child_process').exec,
     fs = require('fs'),
-    bundleStats = require('../../bundle-stats.js'),
-    collection = require('../../collection');
+    bundleStats = require('../../../src/bundle-stats.js'),
+    collection = require('../../../src/collection');
 
 describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
 

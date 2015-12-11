@@ -1,4 +1,4 @@
-var cssValidator = require('../../css-validator');
+var cssValidator = require('../.');
 var fs = require('fs');
 
 describe('CssValidator', function() {

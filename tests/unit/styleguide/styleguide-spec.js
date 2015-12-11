@@ -1,4 +1,4 @@
-var styleguide = require('../../styleguide');
+var styleguide = require('../../../src/styleguide');
 
 describe('Styleguide', function() {
 

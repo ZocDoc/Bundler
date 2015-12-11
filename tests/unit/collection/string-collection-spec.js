@@ -1,7 +1,6 @@
-var path = require('path'),
-    ArrayCollection = require('../../collection/array-collection.js');
+var StringCollection = require('../../../src/collection/string-collection.js');
 
-describe('ArrayCollection', function() {
+describe('StringCollection', function() {
 
     var fileName = 'foo.css',
         filePath = 'C:/foo/bar/' + fileName,
@@ -9,7 +8,7 @@ describe('ArrayCollection', function() {
 
     beforeEach(function() {
 
-        collection = new ArrayCollection();
+        collection = new StringCollection();
 
     });
 
@@ -38,7 +37,7 @@ describe('ArrayCollection', function() {
         });
 
         var ctor = function() {
-            collection = new ArrayCollection(map);
+            collection = new StringCollection(map);
         };
 
         var givenNoMap = function() {
@@ -47,7 +46,7 @@ describe('ArrayCollection', function() {
 
         var givenMap = function() {
             map = {
-                foo: ['a', 'b', 'c']
+                foo: 'bar'
             }
         };
 
@@ -64,32 +63,22 @@ describe('ArrayCollection', function() {
     describe('add', function() {
 
         var item = 'a';
-        
-        it('Given no items previously added for file, adds item to file.', function() {
-        
-            add();
 
-            assertItemWasAddedToEmptyFile();
-        
-        });
-
-        it('Given different items previously added for file, adds item to file.', function() {
-
-            givenDifferentItemsPreviouslyAddedForFile();
+        it('Given file value not previously set, sets file value.', function() {
 
             add();
 
-            assertItemWasAddedToExistingFile();
+            assertValueWasSetForFile();
 
         });
 
-        it('Given same item previously added for file, does not re-add item to file.', function() {
+        it('Given file value previously set, updates file value.', function() {
 
-            givenSameItemPreviouslyAddedForFile();
+            givenValuePreviouslySetForFile();
 
             add();
 
-            assertItemWasNotReaddedToFile();
+            assertValueWasSetForFile();
 
         });
 
@@ -97,65 +86,52 @@ describe('ArrayCollection', function() {
             collection.add(filePath, item);
         };
 
-        var givenDifferentItemsPreviouslyAddedForFile = function() {
+        var givenValuePreviouslySetForFile = function() {
             collection.add(filePath, 'b');
         };
 
-        var givenSameItemPreviouslyAddedForFile = function() {
-            collection.add(filePath, item);
-        };
-
-        var assertItemWasAddedToEmptyFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual(['a']);
-        };
-
-        var assertItemWasAddedToExistingFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual(['b', 'a']);
-        };
-
-        var assertItemWasNotReaddedToFile = function() {
-            expect(collection.toJSON()[fileName]).toEqual(['a']);
+        var assertValueWasSetForFile = function() {
+            expect(collection.toJSON()[fileName]).toEqual('a');
         };
 
     });
 
     describe('get', function() {
 
-        var items;
+        var value;
 
-        it('Given no items added for file, returns empty array.', function() {
+        it('Given value not set for file, returns undefined.', function() {
 
             get();
 
-            assertEmptyArrayWasReturned();
+            assertUndefinedWasReturned();
 
         });
 
-        it('Given items added for file, returns items for file.', function() {
+        it('Given value set for file, returns value for file.', function() {
 
-            givenItemsAddedToFile();
+            givenValueSetForFile();
 
             get();
 
-            assertItemsForFileWereReturned();
+            assertValueForFileWasReturned();
 
         });
 
         var get = function() {
-            items = collection.get(filePath);
+            value = collection.get(filePath);
         };
 
-        var givenItemsAddedToFile = function() {
+        var givenValueSetForFile = function() {
             collection.add(filePath, 'a');
-            collection.add(filePath, 'b');
         };
 
-        var assertEmptyArrayWasReturned = function() {
-            expect(items).toEqual([]);
+        var assertUndefinedWasReturned = function() {
+            expect(value).toBeUndefined();
         };
 
-        var assertItemsForFileWereReturned = function() {
-            expect(items).toEqual(['a', 'b']);
+        var assertValueForFileWasReturned = function() {
+            expect(value).toEqual('a');
         };
 
     });
@@ -171,7 +147,7 @@ describe('ArrayCollection', function() {
 
         });
 
-        it('Given no items added for file, does nothing.', function() {
+        it('Given value not set for file, does nothing.', function() {
 
             clear();
 
@@ -179,13 +155,13 @@ describe('ArrayCollection', function() {
 
         });
 
-        it('Given items added for file, removes items for file.', function() {
+        it('Given value set for file, removes value for file.', function() {
 
             givenItemsAddedForFile();
 
             clear();
 
-            assertItemsForFileWereRemoved();
+            assertValueForFileWasRemoved();
 
         });
 
@@ -198,12 +174,12 @@ describe('ArrayCollection', function() {
         };
 
         var assertNothingWasCleared = function() {
-            assertItemsForFileWereRemoved();
+            assertValueForFileWasRemoved();
         };
 
-        var assertItemsForFileWereRemoved = function() {
+        var assertValueForFileWasRemoved = function() {
             var expected = {};
-            expected[otherFileName] = ['a'];
+            expected[otherFileName] = 'a';
             expect(collection.toJSON()).toEqual(expected);
         };
 
