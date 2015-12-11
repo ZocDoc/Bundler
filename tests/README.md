@@ -12,3 +12,9 @@ Or to run a particular suite of tests:
 
   * `PS C:\src\Bundler\tests> jasmine-node .\unit\styleguide\styleguide-spec.js`
 
+Integration Tests
+===
+
+If you need to debug things, you can pass in the console so that it outputs debug information:
+
+  * `var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory, console);`
