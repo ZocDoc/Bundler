@@ -44,20 +44,4 @@ describe("Javascript Bundling: ", function() {
       runTestCase("combines-folder-with-forcebundle");
   });
 
-  it("If an output directory is specified, then the minified bundle is put in it.", function () {
-      runTestCase("output-directory-js", "/folder-output/");
-  });
-
-  it("If an output directory is specified, then any computed files are put in it.", function () {
-      var testCase = getTestCase("output-directory-js", "/folder-output/");
-      testCase.SetUpCacheFileTest(true, ["file1.min", "file2.min"]);
-      testCase.RunBundlerAndVerifyOutput();
-  });
-
-  it("If an output directory is specified, then the un-minified mustache files as .js are put in there..", function () {
-      var testCase = getTestCase("output-directory-mustache", "/folder-output/");
-      testCase.SetUpCacheFileTest(true, ["mustache1.min", "mustache2.min", "mustache1", "mustache2"]);
-      testCase.RunBundlerAndVerifyOutput();
-  });
-
 });

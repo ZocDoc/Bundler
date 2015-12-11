@@ -639,7 +639,6 @@ function compileAsync(options, mode, compileFn /*compileFn(text, textPath, cb(co
         },
         function (doCompile) {
             if (doCompile) {
-                //console.log(mode + " " + compileTextPath + "...");
                 var onAfterCompiled = function(minText) {
                     if (options.outputbundleonly) {
                         cb(minText);

@@ -1,4 +1,0 @@
-#options outputdirectory:test-cases/output-directory-mustache/folder-output
-
-mustache1.mustache
-mustache2.mustache
