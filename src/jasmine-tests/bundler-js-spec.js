@@ -40,16 +40,8 @@ describe("Javascript Bundling: ", function() {
       runTestCase("recursive-folder-js");
   });
 
-  it("The directory option allows entire subdirectories to be included", function () {
-      runTestCase("directory-source-js");
-  });
-
   it("Folder option will bundle with force bundle option", function () {
       runTestCase("combines-folder-with-forcebundle");
-  });
-
-  it("Listing items within a listed directory preferentially orders them.", function () {
-      runTestCase("preferential-ordering-js");
   });
 
   it("If an output directory is specified, then the minified bundle is put in it.", function () {

@@ -400,6 +400,8 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
 function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, cb) {
 
+    var processedFiles = {};
+
     var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
     var whenDone = function () {
         if (options.nobundle) {
@@ -447,8 +449,11 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     cssFiles.forEach(function (file) {
         if (!(file = file.trim())
             || (file.startsWith(".") && !file.startsWith(".."))
-            || file.startsWith('#'))
+            || file.startsWith('#')
+            || processedFiles[file])
             return;
+
+        processedFiles[file] = true;
 
         var isLess = file.endsWith(".less");
         var isSass = (file.endsWith(".sass") || file.endsWith(".scss"));

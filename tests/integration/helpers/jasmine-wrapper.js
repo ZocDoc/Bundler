@@ -8,11 +8,12 @@ var exec = require('child_process').exec,
 
 exports.TestType = {
     Css: 'css',
-    Js: 'js'
+    Js: 'js',
+    Undecided: 'undecided'
 }
 
-function Test(testType, testDirectory) {
-    this.utility = new testHelper.TestUtility(exec, fs, runs, waitsFor);
+function Test(testType, testDirectory, logger) {
+    this.utility = new testHelper.TestUtility(exec, fs, runs, waitsFor, logger);
     this.given = new givensHelper.Givens(this.utility);
     this.actions = new actionsHelper.Actions(this.utility, this.given, testType);
     this.assert = new assertsHelper.Asserts(this.utility, this.given, testType);
@@ -34,6 +35,12 @@ function Test(testType, testDirectory) {
         });
 
     };
+
+    this.resetTestType = function(testType) {
+        this.actions = new actionsHelper.Actions(this.utility, this.given, testType);
+        this.assert = new assertsHelper.Asserts(this.utility, this.given, testType);
+    };
+
 };
 
 exports.Test = Test;

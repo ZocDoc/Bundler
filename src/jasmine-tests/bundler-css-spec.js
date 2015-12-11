@@ -35,10 +35,6 @@ describe("Css Bundling:", function() {
       runTestCase("recursive-folder-css");
   });
 
-  it("The directory option allows entire subdirectories to be included", function () {
-      runTestCase("directory-source-css");
-  });
-
   it("Folder option will bundle with force bundle option", function () {
       runTestCase("combines-css-folder-with-forcebundle");
   });
