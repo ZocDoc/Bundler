@@ -1,4 +1,3 @@
-
 var exec = require('child_process').exec,
     fs = require('fs'),
     testHelper = require('./integration-test-helper.js'),
@@ -19,8 +18,7 @@ function Test(testType, testDirectory, logger) {
     this.assert = new assertsHelper.Asserts(this.utility, this.given, testType);
     this.testDirectory = testDirectory;
     var _this = this;
-    this.describeIntegrationTest = function(name, testFunctions)
-    {
+    this.describeIntegrationTest = function(name, testFunctions) {
         describe('Integration Test: ', function() {
 
             beforeEach(function () {
@@ -33,7 +31,6 @@ function Test(testType, testDirectory, logger) {
 
             describe(name,testFunctions);
         });
-
     };
 
     this.resetTestType = function(testType) {
@@ -44,4 +41,3 @@ function Test(testType, testDirectory, logger) {
 };
 
 exports.Test = Test;
-
