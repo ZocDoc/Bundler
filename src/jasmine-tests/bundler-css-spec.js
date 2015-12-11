@@ -31,51 +31,6 @@ describe("Css Bundling:", function() {
         testCase.RunBundlerAndVerifyOutput();
     };
 
-  it("Concatenates individual css files in a .bundle file into a single minified bundle.", function() {
-         runTestCase("combines-individual-css-files");
-  });  
-
-  it("Compiles and Concatenates .less files", function() {
-      runTestCase("combines-less");
-  });
-
-  it("Compiles and Concatenates .scss files", function() {
-      runTestCase("combines-scss");
-  });
-
-  it("Optionally versions images in the minified file", function () {
-      runTestCase("image-versioning-css", null, false, " -rewriteimagefileroot:test-cases/image-versioning-css -rewriteimageoutputroot:combined");
-  });
-
-  it("An error is thrown for invalid less.", function () {
-      var testCase = getTestCase("invalid-less");
-      testCase.VerifyBundle = function () {
-          var hasError = testCase.StdError.indexOf("missing closing `}`") >= 0;
-          expect(hasError).toBe(true);
-      };
-      testCase.RunBundlerAndVerifyOutput();
-  });
-
-  it("An error is thrown for invalid scss.", function () {
-      var testCase = getTestCase("invalid-scss");
-      testCase.VerifyBundle = function () {
-          var hasError = testCase.StdError.indexOf("missing closing `}`") >= 0;
-          expect(hasError).toBe(true);
-      };
-      testCase.RunBundlerAndVerifyOutput();
-  });
-
-  it("Compiles and Concatenates .less files with css files", function() {
-      runTestCase("combines-less-and-css");
-  });
-
-  it("Folder option by default minifies, but does not bundle."
-    , function() {
-        var testCase = getTestCase("default-folder-option-css");
-        testCase.SetUpCacheFileTest(false);
-        testCase.RunBundlerAndVerifyOutput();
-  });
- 
   it("The recursive option on a folder searches sub-directories", function () {
       runTestCase("recursive-folder-css");
   });
