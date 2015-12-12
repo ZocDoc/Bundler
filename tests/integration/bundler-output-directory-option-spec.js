@@ -149,7 +149,7 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
                 testDirectory + '/output-dir',
                 'file2.css',
                 "#css-results #scss {\n" +
-                    "  background: green; }\n");
+                    "  background: #008000; }\n");
         });
     });
 });

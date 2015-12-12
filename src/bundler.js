@@ -686,12 +686,14 @@ function compileSass(sassCss, sassPath, cb) {
 
     sass.render({
         data: sassCss,
-        includePaths: includePaths,
-        success: function(css) {
-            cb(css);
-        },
-        error: function(err) {
-            handleError(err);
+        includePaths: includePaths
+    }, function(error, result) {
+
+        if(error) {
+            handleError(error);
+        }
+        else {
+            cb(result.css.toString());
         }
     });
 }

@@ -17,7 +17,7 @@ test.describeIntegrationTest("Css Bundling:", function() {
 
         test.actions.Bundle();
 
-        test.utility.VerifyErrorIs("error: invalid property name");
+        test.utility.VerifyErrorIs("Invalid CSS after");
     });
 
 	it("Given css files, then they are concatenated into the output bundle.", function() {
