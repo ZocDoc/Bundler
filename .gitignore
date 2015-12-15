@@ -38,6 +38,6 @@ build/*.dll
 release/latest/
 *.nupkg
 release/*
-*.min.js
-*.min.css
+
+test-runner/node_modules/*
 

@@ -14,7 +14,6 @@ describe('CssValidator', function() {
         givenValidCss();
 
         assertValidateDoesNotThrowError(done);
-
     });
     
     it('Given mobile bundle with too many selectors, does not throw error.', function(done) {
@@ -23,7 +22,6 @@ describe('CssValidator', function() {
         givenTooManySelectors();
 
         assertValidateDoesNotThrowError(done);
-    
     });
 
     it('Given oversized mobile bundle, does not throw error.', function(done) {
@@ -32,7 +30,6 @@ describe('CssValidator', function() {
         givenToBigCss();
 
         assertValidateDoesNotThrowError(done);
-
     });
 
     it('Given CSR bundle with too many selectors, does not throw error.', function(done) {
@@ -41,7 +38,6 @@ describe('CssValidator', function() {
         givenTooManySelectors();
 
         assertValidateDoesNotThrowError(done);
-
     });
 
     it('Given oversized CSR bundle, does not throw error.', function(done) {
@@ -50,7 +46,6 @@ describe('CssValidator', function() {
         givenToBigCss();
 
         assertValidateDoesNotThrowError(done);
-
     });
 
     it('Given Pulse bundle with too many selectors, does not throw error.', function(done) {
@@ -59,7 +54,6 @@ describe('CssValidator', function() {
         givenTooManySelectors();
 
         assertValidateDoesNotThrowError(done);
-
     });
 
     it('Given oversized Pulse bundle, does not throw error.', function(done) {
@@ -68,7 +62,6 @@ describe('CssValidator', function() {
         givenToBigCss();
 
         assertValidateDoesNotThrowError(done);
-
     });
 
     it('Given bundle with too many selectors, throws error.', function(done) {
@@ -77,7 +70,6 @@ describe('CssValidator', function() {
         givenTooManySelectors();
 
         assertValidateThrowsError(done);
-
     });
 
     it('Given oversized bundle, does not throw error.', function(done) {
