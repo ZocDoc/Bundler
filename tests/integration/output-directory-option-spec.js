@@ -77,6 +77,22 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
                 'file2.js',
                 'var file2 = React.createClass({displayName: "file2",   render: function() {   return React.createElement("div", null, "file2 ", this.props.name);  }});');
         });
+
+        it('If an output directory is specified, then any computed es6 files are put in it.', function() {
+
+            test.given.FileToBundle('file1.js', 'var file1 = "file1";');
+            test.given.FileToBundle('file2.es6',
+                'var odds = evens.map(v => v + 1);');
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileDoesNotExist(test.given.TestDirectory, 'file2.js');
+            test.assert.verifyFileAndContentsAre(
+                testDirectory + '/output-dir',
+                'file2.js',
+                '"use strict";\n\nvar odds = evens.map(function (v) {\n  return v + 1;\n});');
+
+        });
     });
 
     describe("Css Files", function () {

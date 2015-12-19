@@ -54,6 +54,7 @@ var fs = require("fs"),
     coffee = require('coffee-script'),
     livescript = require('livescript'),
     react = require('react-tools'),
+    babel = require('babel-core'),
     CleanCss = require('clean-css'),
     Step = require('step'),
     startedAt = Date.now(),
@@ -196,7 +197,7 @@ function scanDir(allFiles, cb) {
                                                     name
                                                 );
                                 _.chain(filesInDir).filter(function(a) { return a.endsWith(".mustache")}).each(tmpFiles.addFile, tmpFiles);
-                                _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx"); }).each(tmpFiles.addFile, tmpFiles);
+                                _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6"); }).each(tmpFiles.addFile, tmpFiles);
                             }
                         });
 
@@ -322,10 +323,12 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var isLiveScript = file.endsWith(".ls");
         var isMustache = file.endsWith(".mustache");
         var isJsx = file.endsWith(".jsx");
+        var isES6 = file.endsWith(".es6");
         var jsFile = isCoffee ? file.replace(".coffee", ".js")
                    : isLiveScript ? file.replace(".ls", ".js")
                    : isMustache ? file.replace(".mustache", ".js")
                    : isJsx ? file.replace(".jsx", ".js")
+                   : isES6 ? file.replace(".es6", ".js")
 	           : file;
 
         var filePath = path.join(bundleDir, file),
@@ -357,13 +360,21 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                         getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
                     });  
-                } else if (isJsx){
+                } else if (isJsx) {
                     jsPath = jsPathOutput;
-                    readTextFile(filePath, function(jsxText) {
-                        if(options.outputbundlestats) {
+                    readTextFile(filePath, function (jsxText) {
+                        if (options.outputbundlestats) {
                             bundleStatsCollector.ParseJsForStats(jsBundle, jsxText);
                         }
                         getOrCreateJsx(options, jsxText, filePath, jsPathOutput, next);
+                    });
+                } else if (isES6) {
+                    jsPath = jsPathOutput;
+                    readTextFile(filePath, function(es6Text) {
+                        if (options.outputbundlestats) {
+                            bundleStatsCollector.ParseJsForStats(jsBundle, es6Text);
+                        }
+                        getOrCreateES6(options, es6Text, filePath, jsPathOutput, next);
                     });
                 } else {
                     readTextFile(jsPath, function(jsText) {
@@ -535,6 +546,18 @@ function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
     compileAsync(options, "compiling", function(jsxText, jsxPath, cb) {
             cb(react.transform(jsxText));
         }, jsxText, jsxPath, jsPath, cb);
+}
+
+function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
+    compileAsync(options, "compiling", function(es6Text, es6Path, cb) {
+            var result = babel.transform(es6Text, {
+                presets: [
+                    path.join(__dirname, "node_modules", "babel-preset-es2015"),
+                    path.join(__dirname, "node_modules", "babel-preset-react")
+                ]
+            });
+            cb(result.code);
+        }, es6Text, es6Path, jsPath, cb);
 }
 
 function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)*/) {
