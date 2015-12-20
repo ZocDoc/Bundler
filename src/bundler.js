@@ -70,6 +70,7 @@ var fs = require("fs"),
     _ = require('underscore'),
     collection = require('./collection'),
     cssValidator = require('./css-validator'),
+    directoryCrawler = require('./directory-crawler'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -495,7 +496,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 } else if (isSass) {
                     cssPath = cssPathOutput;
                     readTextFile(filePath, function (sassText) {
-                        getOrCreateSassCss(options, sassText, filePath, cssPathOutput, next);
+                        getOrCreateSassCss(options, sassText, filePath, cssPathOutput, bundleDir, next);
                     });
 				} else if (isStylus){
 					readTextFile(filePath, function (stylusText) {
@@ -589,8 +590,10 @@ function getOrCreateLessCss(options, less, lessPath, cssPath, cb /*cb(css)*/) {
     compileAsync(options, "compiling", compileLess, less, lessPath, cssPath, cb);
 }
 
-function getOrCreateSassCss(options, sassText, sassPath, cssPath, cb /*cb(sass)*/) {
-    compileAsync(options, "compiling", compileSass, sassText, sassPath, cssPath, cb);
+function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb /*cb(sass)*/) {
+    compileAsync(options, "compiling", function(sassCss, sassPath, cb) {
+        compileSass(sassCss, sassPath, bundleDir, cb);
+    }, sassText, sassPath, cssPath, cb);
 }
 
 function getOrCreateStylusCss(options, stylusText, stylusPath, cssPath, cb /*cb(css)*/) {
@@ -697,15 +700,9 @@ function compileLess(lessCss, lessPath, cb) {
     });
 }
 
-function compileSass(sassCss, sassPath, cb) {
-    var explodedSassPath = sassPath.split('\\');
+function compileSass(sassCss, sassPath, bundleDir, cb) {
 
-    if (explodedSassPath.length == 0) {
-        explodedSassPath = sassPath.split('/');
-    }
-
-    var sassFileName = explodedSassPath.pop();
-    var includePaths = [sassPath.replace(sassFileName, '')];
+    var includePaths = directoryCrawler.crawl(bundleDir);
 
     sass.render({
         data: sassCss,
