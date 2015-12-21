@@ -690,6 +690,17 @@ function compileLess(lessCss, lessPath, cb) {
             filename: fileName
         };
 
+    if (bundlerOptions.DefaultOptions.sourcemaps) {
+        var directory = path.dirname(lessPath),
+            siteRoot = path.normalize(bundlerOptions.DefaultOptions.siterootdirectory),
+            sourceMapRoot = directory.replace(siteRoot, '');
+
+        options.sourceMap = {
+            sourceMapFileInline: true,
+            sourceMapRootpath: sourceMapRoot
+        };
+    }
+
     if(bundlerOptions.DefaultOptions.outputbundlestats) {
         bundleStatsCollector.SearchForLessImports(lessPath, lessCss);
     }
