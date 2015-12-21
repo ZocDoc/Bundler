@@ -10,6 +10,16 @@ function getSourceMapRoot(filePath, siteRoot) {
 
 }
 
+function getSourceFilePath(filePath, siteRoot) {
+
+    var sourceMapRoot = getSourceMapRoot(filePath, siteRoot),
+        sourceMapPath = path.join(sourceMapRoot, path.basename(filePath));
+
+    return sourceMapPath.replace(/\\/g, '/')
+
+}
+
 module.exports = {
-    getSourceMapRoot: getSourceMapRoot
+    getSourceMapRoot: getSourceMapRoot,
+    getSourceFilePath: getSourceFilePath
 };

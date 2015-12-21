@@ -71,6 +71,7 @@ var fs = require("fs"),
     collection = require('./collection'),
     cssValidator = require('./css-validator'),
     directoryCrawler = require('./directory-crawler'),
+    sourceMap = require('./source-map-utility'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -545,7 +546,16 @@ function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*c
 
 function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
     compileAsync(options, "compiling", function(jsxText, jsxPath, cb) {
-            cb(react.transform(jsxText));
+
+            var reactOptions = {};
+
+            if (bundlerOptions.DefaultOptions.sourcemaps) {
+                reactOptions.sourceMap = true;
+                reactOptions.sourceFilename = sourceMap.getSourceFilePath(jsxPath, bundlerOptions.DefaultOptions.siterootdirectory);
+            }
+
+            cb(react.transform(jsxText, reactOptions));
+
         }, jsxText, jsxPath, jsPath, cb);
 }
 
