@@ -691,13 +691,9 @@ function compileLess(lessCss, lessPath, cb) {
         };
 
     if (bundlerOptions.DefaultOptions.sourcemaps) {
-        var directory = path.dirname(lessPath),
-            siteRoot = path.normalize(bundlerOptions.DefaultOptions.siterootdirectory),
-            sourceMapRoot = directory.replace(siteRoot, '');
-
         options.sourceMap = {
             sourceMapFileInline: true,
-            sourceMapRootpath: sourceMapRoot
+            sourceMapRootpath: sourceMap.getSourceMapRoot(lessPath, bundlerOptions.DefaultOptions.siterootdirectory)
         };
     }
 
@@ -713,17 +709,21 @@ function compileLess(lessCss, lessPath, cb) {
 
 function compileSass(sassCss, sassPath, bundleDir, cb) {
 
-    var includePaths = directoryCrawler.crawl(bundleDir);
-
-    sass.render({
+    var options = {
+        file: path.basename(sassPath),
         data: sassCss,
-        includePaths: includePaths
-    }, function(error, result) {
+        includePaths: directoryCrawler.crawl(bundleDir)
+    };
 
+    if (bundlerOptions.DefaultOptions.sourcemaps) {
+        options.sourceMapRoot = sourceMap.getSourceMapRoot(sassPath, bundlerOptions.DefaultOptions.siterootdirectory);
+        options.sourceMapEmbed = true;
+    }
+
+    sass.render(options, function(error, result) {
         if(error) {
             handleError(error);
-        }
-        else {
+        } else {
             cb(result.css.toString());
         }
     });
