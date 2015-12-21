@@ -561,12 +561,19 @@ function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
 
 function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
     compileAsync(options, "compiling", function(es6Text, es6Path, cb) {
-            var result = babel.transform(es6Text, {
-                presets: [
-                    path.join(__dirname, "node_modules", "babel-preset-es2015"),
-                    path.join(__dirname, "node_modules", "babel-preset-react")
-                ]
-            });
+            var babelOptions = {
+                    presets: [
+                        path.join(__dirname, "node_modules", "babel-preset-es2015"),
+                        path.join(__dirname, "node_modules", "babel-preset-react")
+                    ]
+                };
+
+            if (bundlerOptions.DefaultOptions.sourcemaps) {
+                babelOptions.sourceMaps = 'inline';
+                babelOptions.sourceFileName = sourceMap.getSourceFilePath(es6Path, bundlerOptions.DefaultOptions.siterootdirectory);
+            }
+
+            var result = babel.transform(es6Text, babelOptions);
             cb(result.code);
         }, es6Text, es6Path, jsPath, cb);
 }
