@@ -38,6 +38,17 @@ describe('BundleFileCollection', function() {
 
         });
 
+        it('Given non-styleguide css bundle and legacy styleguide file, file is added.', function() {
+
+            givenNonStyleguideBundle('css');
+            givenLegacyStyleguideFile();
+
+            addFile();
+
+            assertFileWasAdded();
+
+        });
+
         it('Given non-styleguide css bundle and non-styleguide file, file is added.', function() {
 
             givenNonStyleguideBundle('css');
@@ -85,6 +96,10 @@ describe('BundleFileCollection', function() {
 
         var givenStyleguideFile = function() {
             file = '../styleguide/foo.less';
+        };
+
+        var givenLegacyStyleguideFile = function() {
+            file = '../styleguide/legacy/foo.less';
         };
 
         var givenNonStyleguideFile = function() {
