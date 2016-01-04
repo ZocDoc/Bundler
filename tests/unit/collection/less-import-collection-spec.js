@@ -122,6 +122,17 @@ describe('LessImportCollection', function() {
 
         });
 
+        it('Given styleguide file imports a styleguide normalize file, import is added.', function() {
+
+            givenStyleguideFile();
+            givenStyleguideNormalizeImport();
+
+            add();
+
+            assertImportWasAddedForFile();
+
+        });
+
         it('Given non-styleguide file imports a styleguide file, error is thrown.', function() {
 
             givenNonStyleguideFile();
@@ -171,6 +182,10 @@ describe('LessImportCollection', function() {
 
         var givenStyleguideMixinImport = function() {
             lessImport = '../../styleguide/foo.mixin.less';
+        };
+
+        var givenStyleguideNormalizeImport = function() {
+            lessImport = '../../styleguide/ui/normalize.less';
         };
 
         var givenNonStyleguideImport = function() {
