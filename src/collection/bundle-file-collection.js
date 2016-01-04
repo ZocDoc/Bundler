@@ -25,7 +25,10 @@ var resolvePath = function(bundleFile, filePath) {
 BundleFileCollection.prototype.addFile = function(filePath) {
     var absolutePath = resolvePath(this._bundleFile, filePath);
 
-    if (this._bundleType === 'css' && !this._isStyleguideBundle && styleguide.isStyleguideFile(absolutePath)) {
+    if (this._bundleType === 'css'
+        && !this._isStyleguideBundle
+        && styleguide.isStyleguideFile(absolutePath)
+        && !styleguide.isLegacyStyleguideFile(absolutePath)) {
         throw new StyleguideBundleError(this._bundleFile, absolutePath);
     }
 

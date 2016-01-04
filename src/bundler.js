@@ -70,6 +70,8 @@ var fs = require("fs"),
     _ = require('underscore'),
     collection = require('./collection'),
     cssValidator = require('./css-validator'),
+    directoryCrawler = require('./directory-crawler'),
+    sourceMap = require('./source-map-utility'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -495,7 +497,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 } else if (isSass) {
                     cssPath = cssPathOutput;
                     readTextFile(filePath, function (sassText) {
-                        getOrCreateSassCss(options, sassText, filePath, cssPathOutput, next);
+                        getOrCreateSassCss(options, sassText, filePath, cssPathOutput, bundleDir, next);
                     });
 				} else if (isStylus){
 					readTextFile(filePath, function (stylusText) {
@@ -544,18 +546,34 @@ function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*c
 
 function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
     compileAsync(options, "compiling", function(jsxText, jsxPath, cb) {
-            cb(react.transform(jsxText));
+
+            var reactOptions = {};
+
+            if (bundlerOptions.DefaultOptions.sourcemaps) {
+                reactOptions.sourceMap = true;
+                reactOptions.sourceFilename = sourceMap.getSourceFilePath(jsxPath, bundlerOptions.DefaultOptions.siterootdirectory);
+            }
+
+            cb(react.transform(jsxText, reactOptions));
+
         }, jsxText, jsxPath, jsPath, cb);
 }
 
 function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
     compileAsync(options, "compiling", function(es6Text, es6Path, cb) {
-            var result = babel.transform(es6Text, {
-                presets: [
-                    path.join(__dirname, "node_modules", "babel-preset-es2015"),
-                    path.join(__dirname, "node_modules", "babel-preset-react")
-                ]
-            });
+            var babelOptions = {
+                    presets: [
+                        path.join(__dirname, "node_modules", "babel-preset-es2015"),
+                        path.join(__dirname, "node_modules", "babel-preset-react")
+                    ]
+                };
+
+            if (bundlerOptions.DefaultOptions.sourcemaps) {
+                babelOptions.sourceMaps = 'inline';
+                babelOptions.sourceFileName = sourceMap.getSourceFilePath(es6Path, bundlerOptions.DefaultOptions.siterootdirectory);
+            }
+
+            var result = babel.transform(es6Text, babelOptions);
             cb(result.code);
         }, es6Text, es6Path, jsPath, cb);
 }
@@ -589,8 +607,10 @@ function getOrCreateLessCss(options, less, lessPath, cssPath, cb /*cb(css)*/) {
     compileAsync(options, "compiling", compileLess, less, lessPath, cssPath, cb);
 }
 
-function getOrCreateSassCss(options, sassText, sassPath, cssPath, cb /*cb(sass)*/) {
-    compileAsync(options, "compiling", compileSass, sassText, sassPath, cssPath, cb);
+function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb /*cb(sass)*/) {
+    compileAsync(options, "compiling", function(sassCss, sassPath, cb) {
+        compileSass(sassCss, sassPath, bundleDir, cb);
+    }, sassText, sassPath, cssPath, cb);
 }
 
 function getOrCreateStylusCss(options, stylusText, stylusPath, cssPath, cb /*cb(css)*/) {
@@ -687,6 +707,13 @@ function compileLess(lessCss, lessPath, cb) {
             filename: fileName
         };
 
+    if (bundlerOptions.DefaultOptions.sourcemaps) {
+        options.sourceMap = {
+            sourceMapFileInline: true,
+            sourceMapRootpath: sourceMap.getSourceMapRoot(lessPath, bundlerOptions.DefaultOptions.siterootdirectory)
+        };
+    }
+
     if(bundlerOptions.DefaultOptions.outputbundlestats) {
         bundleStatsCollector.SearchForLessImports(lessPath, lessCss);
     }
@@ -697,25 +724,23 @@ function compileLess(lessCss, lessPath, cb) {
     });
 }
 
-function compileSass(sassCss, sassPath, cb) {
-    var explodedSassPath = sassPath.split('\\');
+function compileSass(sassCss, sassPath, bundleDir, cb) {
 
-    if (explodedSassPath.length == 0) {
-        explodedSassPath = sassPath.split('/');
+    var options = {
+        file: path.basename(sassPath),
+        data: sassCss,
+        includePaths: directoryCrawler.crawl(bundleDir)
+    };
+
+    if (bundlerOptions.DefaultOptions.sourcemaps) {
+        options.sourceMapRoot = sourceMap.getSourceMapRoot(sassPath, bundlerOptions.DefaultOptions.siterootdirectory);
+        options.sourceMapEmbed = true;
     }
 
-    var sassFileName = explodedSassPath.pop();
-    var includePaths = [sassPath.replace(sassFileName, '')];
-
-    sass.render({
-        data: sassCss,
-        includePaths: includePaths
-    }, function(error, result) {
-
+    sass.render(options, function(error, result) {
         if(error) {
             handleError(error);
-        }
-        else {
+        } else {
             cb(result.css.toString());
         }
     });
