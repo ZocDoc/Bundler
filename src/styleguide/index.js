@@ -1,16 +1,16 @@
 var path = require('path');
 
 var isExcludedStyleguideFile = function(filePath) {
-    if (filePath.indexOf('legacy') > -1) {
-        return true;
-    }
-
     if (filePath.indexOf('styleguide-documentation') > -1
         || filePath.indexOf('styleguide-docummentation') > -1) {
         return true;
     }
 
     return false;
+};
+
+var isLegacyStyleguideFile = function(filePath) {
+    return filePath.indexOf('legacy') > -1;
 };
 
 var isStyleguideFile = function(filePath) {
@@ -27,5 +27,6 @@ var isStyleguideFile = function(filePath) {
 };
 
 module.exports = {
-    isStyleguideFile: isStyleguideFile
+    isStyleguideFile: isStyleguideFile,
+    isLegacyStyleguideFile: isLegacyStyleguideFile
 };

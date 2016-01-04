@@ -37,16 +37,6 @@ describe('Styleguide', function() {
 
         });
 
-        it('Given file name contains styleguide and legacy, returns false.', function() {
-
-            givenFilePathIs('C:/foo/bar/bar.styleguide.legacy.less');
-
-            isStyleguideFile();
-
-            assertFalseWasReturned();
-
-        });
-
         it('Given file name contains styleguide-documentation, returns false.', function() {
 
             givenFilePathIs('C:/foo/styleguide-documentation/bar.less');
@@ -111,6 +101,59 @@ describe('Styleguide', function() {
 
         var assertTrueWasReturned = function() {
             expect(isSgFile).toBeTruthy();
+        };
+
+    });
+
+    describe('isLegacyStyleguideFile', function() {
+
+        var filePath,
+            isLegacyFile;
+
+        it('Given file in legacy styleguide folder, returns true.', function() {
+
+            givenFilePathIs('C:/foo/bar/styleguide/legacy/baz.less');
+
+            isLegacyStyleguideFile();
+
+            assertTrueWasReturned();
+
+        });
+
+        it('Given file with legacy in name, returns true.', function() {
+
+            givenFilePathIs('C:/foo/bar/styleguide/styleguide.legacy.less');
+
+            isLegacyStyleguideFile();
+
+            assertTrueWasReturned();
+
+        });
+
+        it('Given legacy not in file path, returns false.', function() {
+
+            givenFilePathIs('C:/foo/bar/styleguide/styleguide.less');
+
+            isLegacyStyleguideFile();
+
+            assertFalseWasReturned();
+
+        });
+
+        var isLegacyStyleguideFile = function() {
+            isLegacyFile = styleguide.isLegacyStyleguideFile(filePath);
+        };
+
+        var givenFilePathIs = function(path) {
+            filePath = path;
+        };
+
+        var assertFalseWasReturned = function() {
+            expect(isLegacyFile).toBeFalsy();
+        };
+
+        var assertTrueWasReturned = function() {
+            expect(isLegacyFile).toBeTruthy();
         };
 
     });

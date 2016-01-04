@@ -5,7 +5,8 @@ var _ = require('underscore'),
     LessImportError = require('../errors/less-import-error.js');
 
 var isMixinFile = function(filePath) {
-    return filePath.indexOf('mixin') > -1;
+    return filePath.indexOf('mixin') > -1
+        || path.basename(filePath) === 'normalize.less';
 };
 
 var validateStyleguideImports = function(filePath, lessImport) {

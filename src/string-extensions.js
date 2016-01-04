@@ -48,7 +48,7 @@ String.prototype.NormalizeSlash = function (addInitialSlash, removeFinalSlash) {
 
 String.prototype.isJs = function () {
     if (this.endsWith('.min.js')) return false;
-    if (this.endsWithAny(['.js', '.coffee', '.ls', '.ts', '.mustache', '.jsx'])) return true;
+    if (this.endsWithAny(['.js', '.coffee', '.ls', '.ts', '.mustache', '.jsx', '.es6'])) return true;
     return false;
 }
 
