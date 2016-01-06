@@ -18,7 +18,7 @@ sprity.create({
     prefix: 'sgv-icon',
     'style-indent-size': 4,
     processor: 'less',
-    template: 'template.hbs',
+    template: 'sprite-less-template.hbs',
     'dimension': [{
         ratio: 1, dpi: 72
     }, {
