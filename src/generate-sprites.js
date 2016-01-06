@@ -9,8 +9,8 @@ var srcPath = path.join(options.imagesPath, '**', '*.png');
 sprity.create({
     src: srcPath,
     split: true,
-    spriteOutputPath: options.spritePath,
-    cssOutputPath: options.lessPath,
+    spriteOutputPath: options.spriteOutputPath,
+    cssOutputPath: options.lessOutputPath,
     spriteUrlBase: options.spriteUrlBase,
     name: 'sprite',
     style: 'sprites.mixin.generated.less',
