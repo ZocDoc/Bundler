@@ -44,8 +44,6 @@ process.on("uncaughtException", handleError);
 
 var fs = require("fs"),
     path = require("path"),
-    jsp = require("uglify-js").parser,
-    pro = require("uglify-js").uglify,
     less = require('less'),
     sass = require('node-sass'),
     stylus = require('stylus'),
@@ -72,6 +70,9 @@ var fs = require("fs"),
     cssValidator = require('./css-validator'),
     directoryCrawler = require('./directory-crawler'),
     sourceMap = require('./source-map-utility'),
+    tasks = {
+        minifyJs: require('./tasks/minify/minify-js')
+    },
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -599,7 +600,7 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)
 
 function getOrCreateMinJs(options, js, jsPath, minJsPath, cb /*cb(minJs)*/) {
     compileAsync(options, "minifying", function (js, jsPath, cb) {
-        cb(minifyjs(js, jsPath));
+        cb(tasks.minifyJs(js, jsPath));
     }, js, jsPath, minJsPath, cb);
 }
 
@@ -744,21 +745,6 @@ function compileSass(sassCss, sassPath, bundleDir, cb) {
             cb(result.css.toString());
         }
     });
-}
-
-function minifyjs(js, fileName) {
-    try {
-        var ast = jsp.parse(js);
-        ast = pro.ast_mangle(ast);
-        ast = pro.ast_squeeze(ast);
-        var minJs = pro.gen_code(ast);
-        return minJs;
-    }
-    catch(e) {
-        e.FileName = path.basename(fileName);
-        delete e.stack;
-        throw e;
-    }
 }
 
 function removeCR(text) {

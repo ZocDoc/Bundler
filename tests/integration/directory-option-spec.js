@@ -27,8 +27,8 @@ test.describeIntegrationTest("Directory Option:", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs(';var file1="file1"\n'
-                + ';var file2="file2"\n');
+            test.assert.verifyBundleIs(';var file1="file1";\n'
+                + ';var file2="file2";\n');
         });
 
         it("The directory option is recursive", function () {
@@ -41,8 +41,8 @@ test.describeIntegrationTest("Directory Option:", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs(';var file1="file1"\n'
-                + ';var file2="file2"\n');
+            test.assert.verifyBundleIs(';var file1="file1";\n'
+                + ';var file2="file2";\n');
         });
 
         it("The directory option can be combined with direct file references", function () {
@@ -55,9 +55,9 @@ test.describeIntegrationTest("Directory Option:", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs(';var file1="file1"\n'
-                + ';var file2="file2"\n'
-                + ';var file3="file3"\n');
+            test.assert.verifyBundleIs(';var file1="file1";\n'
+                + ';var file2="file2";\n'
+                + ';var file3="file3";\n');
         });
 
         it("Listing items before a directory preferentially orders them", function () {
@@ -71,9 +71,9 @@ test.describeIntegrationTest("Directory Option:", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs(';var file3="file3"\n'
-                + ';var file1="file1"\n'
-                + ';var file2="file2"\n');
+            test.assert.verifyBundleIs(';var file3="file3";\n'
+                + ';var file1="file1";\n'
+                + ';var file2="file2";\n');
         });
     });
 
