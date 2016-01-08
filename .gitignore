@@ -39,5 +39,6 @@ release/latest/
 *.nupkg
 release/*
 
+src/node_modules/*
 test-runner/node_modules/*
 
