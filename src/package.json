@@ -11,13 +11,14 @@
     "node-sass": "3.4.2",
     "babel-core": "6.3.21",
     "stylus": "0.40.0",
-    "nib": "0.40.0",
+    "nib": "1.0.1",
     "hogan.js-template": "2.0.0",
     "coffee-script": "1.6.3",
-    "livescript": "1.2.0",
+    "livescript": "1.4.0",
     "react-tools": "0.13.1",
     "clean-css": "3.4.4",
     "step": "0.0.5",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "stylestats": "5.4.3"
   }
 }
