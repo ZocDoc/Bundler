@@ -21,9 +21,11 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs(';var foo="asdf"\n'
-                         + ';var foo2="bnmf"\n'
-                         + ';window.JST=window.JST||{},JST.mustache1=new Hogan.Template({code:function(a,b,c){var d=this;return d.b(c=c||""),d.b("<div>"),d.b(d.v(d.f("a",a,b,0))),d.b("</div>"),d.fl()},partials:{},subs:{}})\n');
+            test.assert.verifyBundleIs(
+                ';var foo="asdf";\n' +
+                ';var foo2="bnmf";\n' +
+                ';window.JST=window.JST||{},JST.mustache1=new Hogan.Template({code:function(a,o,n){var f=this;return f.b(n=n||""),f.b("<div>"),f.b(f.v(f.f("a",a,o,0))),f.b("</div>"),f.fl()},partials:{},subs:{}});\n'
+            );
 
         });
 
@@ -33,9 +35,11 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs(';var foo="asdf"\n'
-                         + ';var foo2="a new value"\n'
-                         + ';window.JST=window.JST||{},JST.mustache1=new Hogan.Template({code:function(a,b,c){var d=this;return d.b(c=c||""),d.b("<div>"),d.b(d.v(d.f("a",a,b,0))),d.b("</div>"),d.fl()},partials:{},subs:{}})\n');
+            test.assert.verifyBundleIs(
+                ';var foo="asdf";\n' +
+                ';var foo2="a new value";\n' +
+                ';window.JST=window.JST||{},JST.mustache1=new Hogan.Template({code:function(a,o,n){var f=this;return f.b(n=n||""),f.b("<div>"),f.b(f.v(f.f("a",a,o,0))),f.b("</div>"),f.fl()},partials:{},subs:{}});\n'
+            );
 
         });
 
@@ -45,9 +49,11 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs(';var foo="asdf"\n'
-                         + ';var foo2="bnmf"\n'
-                         + ';window.JST=window.JST||{},JST.mustache1=new Hogan.Template({code:function(a,b,c){var d=this;return d.b(c=c||""),d.b("<a>"),d.b(d.v(d.f("b",a,b,0))),d.b("</a>"),d.fl()},partials:{},subs:{}})\n');
+            test.assert.verifyBundleIs(
+                ';var foo="asdf";\n' +
+                ';var foo2="bnmf";\n' +
+                ';window.JST=window.JST||{},JST.mustache1=new Hogan.Template({code:function(a,n,b){var e=this;return e.b(b=b||""),e.b("<a>"),e.b(e.v(e.f("b",a,n,0))),e.b("</a>"),e.fl()},partials:{},subs:{}});\n'
+            );
 
         });
     });

@@ -25,8 +25,8 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
             test.assert.verifyFileAndContentsAre(
                 testDirectory + '/output-dir',
                 'test.min.js',
-                ';var file1="file1"\n'
-                + ';var file2="file2"\n');
+                ';var file1="file1";\n'
+                + ';var file2="file2";\n');
         });
 
         it("If an output directory is specified, then any minified files are put in it.", function () {
@@ -40,11 +40,11 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
             test.assert.verifyFileAndContentsAre(
                 testDirectory + '/output-dir',
                 'file1.min.js',
-                'var file1="file1"');
+                'var file1="file1";');
             test.assert.verifyFileAndContentsAre(
                 testDirectory + '/output-dir',
                 'file2.min.js',
-                'window.JST=window.JST||{},JST.file2=new Hogan.Template({code:function(a,b,c){var d=this;return d.b(c=c||""),d.b("<div> "),d.b(d.v(d.f("c",a,b,0))),d.b(" </div>"),d.fl()},partials:{},subs:{}})');
+                'window.JST=window.JST||{},JST.file2=new Hogan.Template({code:function(i,e,n){var f=this;return f.b(n=n||""),f.b("<div> "),f.b(f.v(f.f("c",i,e,0))),f.b(" </div>"),f.fl()},partials:{},subs:{}});');
         });
 
         it("If an output directory is specified, then any computed mustache files are put in it.", function () {

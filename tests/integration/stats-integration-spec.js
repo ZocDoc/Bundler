@@ -34,7 +34,7 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
                     var properties = Object.getOwnPropertyNames(json);
                     expect(properties.length).toBe(1);
                     expect(properties[0]).toBe('test.js');
-                    expect(json['test.js']).toBe("1f293fa2bbd662c1c4ef9780550867a7");
+                    expect(json['test.js']).toBe("858a41fa69ad8e61542c1e506b1b107d");
                 });
         });
     });

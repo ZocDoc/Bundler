@@ -21,10 +21,11 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
 
                 test.actions.Bundle();
 
-                test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'file1.min.js', 'var file1="file1"');
-                test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'file2.min.js', 'var file2="file2"');
-                test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'file3.min.js', 'var file3="file3"');
+                test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'file1.min.js', 'var file1="file1";');
+                test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'file2.min.js', 'var file2="file2";');
+                test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'file3.min.js', 'var file3="file3";');
                 test.assert.verifyFileDoesNotExist(test.given.TestDirectory, 'test.min.js');
+
             });
 
         it("Given folder and force bundle option, then it minifies all files in the top level folder and concatenates them into a bundle."
@@ -38,9 +39,12 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
 
                 test.actions.Bundle();
 
-                test.assert.verifyBundleIs(';var file1="file1"\n'
-                    + ';var file2="file2"\n'
-                    + ';var file3="file3"\n');
+                test.assert.verifyBundleIs(
+                    ';var file1="file1";\n' +
+                    ';var file2="file2";\n' +
+                    ';var file3="file3";\n'
+                );
+
             });
 
         it("Given the recursive option, then files in sub-directories are included in the bundle.", function () {
@@ -55,9 +59,11 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs(';var file1="file1"\n'
-                + ';var file2="file2"\n'
-                + ';window.JST=window.JST||{},JST.file3=new Hogan.Template({code:function(a,b,c){var d=this;return d.b(c=c||""),d.b("<div> "),d.b(d.v(d.f("c",a,b,0))),d.b(" </div>"),d.fl()},partials:{},subs:{}})\n');
+            test.assert.verifyBundleIs(
+                ';var file1="file1";\n' +
+                ';var file2="file2";\n' +
+                ';window.JST=window.JST||{},JST.file3=new Hogan.Template({code:function(i,e,f){var l=this;return l.b(f=f||""),l.b("<div> "),l.b(l.v(l.f("c",i,e,0))),l.b(" </div>"),l.fl()},partials:{},subs:{}});\n'
+            );
 
         });
 
