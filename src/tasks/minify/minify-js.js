@@ -1,4 +1,4 @@
-var UglifyJS = require('uglify-js');
+var uglify = require('uglify-js');
 
 function minify(js, filePath) {
 
@@ -14,7 +14,7 @@ function minify(js, filePath) {
 
 function generateSyntaxTree(js, filePath) {
 
-    return UglifyJS.parse(js, {
+    return uglify.parse(js, {
         filename: filePath
     });
 
@@ -22,7 +22,7 @@ function generateSyntaxTree(js, filePath) {
 
 function compress(ast) {
 
-    var sq = UglifyJS.Compressor({
+    var sq = uglify.Compressor({
         warnings: false
     });
 
@@ -43,7 +43,7 @@ function mangle(ast) {
 function generateCode(ast) {
 
     var output = {},
-        stream = UglifyJS.OutputStream(output);
+        stream = uglify.OutputStream(output);
 
     ast.print(stream);
 

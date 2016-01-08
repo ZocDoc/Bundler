@@ -71,7 +71,7 @@ var fs = require("fs"),
     directoryCrawler = require('./directory-crawler'),
     sourceMap = require('./source-map-utility'),
     tasks = {
-        minifyJs: require('./tasks/minify-js')
+        minifyJs: require('./tasks/minify/minify-js')
     },
     urlVersioning = null;
 
