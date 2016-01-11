@@ -48,7 +48,6 @@ var fs = require("fs"),
     sass = require('node-sass'),
     stylus = require('stylus'),
     nib = require('nib'),
-    hogan = require('hogan.js-template/lib/hogan.js'),
     coffee = require('coffee-script'),
     livescript = require('livescript'),
     CleanCss = require('clean-css'),
@@ -71,7 +70,8 @@ var fs = require("fs"),
     tasks = {
         compile: {
             es6: require('./tasks/compile/compile-es6'),
-            jsx: require('./tasks/compile/compile-jsx')
+            jsx: require('./tasks/compile/compile-jsx'),
+            mustache: require('./tasks/compile/compile-mustache')
         },
         minify: {
             js: require('./tasks/minify/minify-js')
@@ -574,23 +574,15 @@ function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
     }, es6Text, es6Path, jsPath, cb);
 }
 
-function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)*/) {
-
+function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb) {
 	compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
-            var templateName = path.basename(mPath, path.extname(mPath)); 
-            if (options.usetemplatedirs){
-                var splitPath = mPath.replace(".mustache", "").split(path.sep);
-                var templateIndex = splitPath.indexOf("templates");
-                templateName = splitPath.slice(templateIndex + 1).join("-");
-            }
-            var templateObject = "{ code: " + hogan.compile(mustacheText, { asString: true })
-                            + ", partials: {}, subs: {} }";
-            var compiledTemplate = "window[\"JST\"] = window[\"JST\"] || {};"
-                        + " JST['"
-                        + templateName
-                        + "'] = new Hogan.Template("+ templateObject + ");";
-            cb(compiledTemplate);
-        }, mustacheText, mPath, jsPath, cb);
+        tasks.compile.mustache({
+            code: mustacheText,
+            filePath: mPath,
+            useTemplateDirs: options.usetemplatedirs,
+            callback: cb
+        });
+    }, mustacheText, mPath, jsPath, cb);
 }
 
 function getOrCreateMinJs(options, js, jsPath, minJsPath, cb /*cb(minJs)*/) {
