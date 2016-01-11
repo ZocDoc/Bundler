@@ -565,6 +565,8 @@ function getOrCreateLessCss(options, less, lessPath, cssPath, cb) {
         tasks.compile.less({
             code: lessCss,
             filePath: lessPath,
+            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
+            bundleStatsCollector: bundleStatsCollector,
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
             siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
             success: cb,
