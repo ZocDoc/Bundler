@@ -63,10 +63,6 @@ var fs = require("fs"),
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
 
-function ArgumentisOptional(arg) {
-    return arg.startsWith('#') || arg.startsWith('-');
-}
-
 bundlerOptions.ParseCommandLineArgs(process.argv.splice(2));
 
 if (!bundlerOptions.Directories.length) {
