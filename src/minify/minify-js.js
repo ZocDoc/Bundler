@@ -9,15 +9,23 @@ var uglify = require('uglify-js');
  */
 function minify(options) {
 
-    var ast = generateSyntaxTree(options.code, options.filePath);
+    try {
 
-    ast = compress(ast);
+        var ast = generateSyntaxTree(options.code, options.filePath);
 
-    mangle(ast);
+        ast = compress(ast);
 
-    var minifiedJs = generateCode(ast);
+        mangle(ast);
 
-    options.success(minifiedJs);
+        var minifiedJs = generateCode(ast);
+
+        options.success(minifiedJs);
+
+    } catch (err) {
+
+        options.error(err);
+
+    }
 
 }
 

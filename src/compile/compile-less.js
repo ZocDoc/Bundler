@@ -15,33 +15,41 @@ var sourceMap = require('../source-map-utility');
  */
 function compile(options) {
 
-    var lessDir = path.dirname(options.filePath),
-        fileName = path.basename(options.filePath),
-        lessOptions = {
-            paths: ['.', lessDir], // Specify search paths for @import directives
-            filename: fileName
-        };
+    try {
 
-    if (options.sourceMap) {
-        lessOptions.sourceMap = {
-            sourceMapFileInline: true,
-            sourceMapRootpath: sourceMap.getSourceMapRoot(options.filePath, options.siteRoot)
-        };
-    }
+        var lessDir = path.dirname(options.filePath),
+            fileName = path.basename(options.filePath),
+            lessOptions = {
+                paths: ['.', lessDir], // Specify search paths for @import directives
+                filename: fileName
+            };
 
-    if (options.outputBundleStats) {
-        options.bundleStatsCollector.SearchForLessImports(options.filePath, options.code);
-    }
-
-    less.render(options.code, lessOptions, function (err, result) {
-
-        if (err) {
-            options.error(err);
-        } else {
-            options.success(result.css);
+        if (options.sourceMap) {
+            lessOptions.sourceMap = {
+                sourceMapFileInline: true,
+                sourceMapRootpath: sourceMap.getSourceMapRoot(options.filePath, options.siteRoot)
+            };
         }
 
-    });
+        if (options.outputBundleStats) {
+            options.bundleStatsCollector.SearchForLessImports(options.filePath, options.code);
+        }
+
+        less.render(options.code, lessOptions, function (err, result) {
+
+            if (err) {
+                options.error(err);
+            } else {
+                options.success(result.css);
+            }
+
+        });
+
+    } catch (err) {
+
+        options.error(err);
+
+    }
 
 }
 

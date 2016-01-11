@@ -11,18 +11,26 @@ var path = require('path');
  */
 function compile(options) {
 
-    var templateName = getTemplateName(options.filePath, options.useTemplateDirs);
+    try {
 
-    var compiledTemplate = compileTemplate(options.code);
+        var templateName = getTemplateName(options.filePath, options.useTemplateDirs);
 
-    var templateObject = '{ code: ' + compiledTemplate + ', partials: {}, subs: {} }';
+        var compiledTemplate = compileTemplate(options.code);
 
-    var result = 'window["JST"] = window["JST"] || {};'
-        + ' JST[\''
-        + templateName
-        + '\'] = new Hogan.Template(' + templateObject + ');';
+        var templateObject = '{ code: ' + compiledTemplate + ', partials: {}, subs: {} }';
 
-    options.success(result);
+        var result = 'window["JST"] = window["JST"] || {};'
+            + ' JST[\''
+            + templateName
+            + '\'] = new Hogan.Template(' + templateObject + ');';
+
+        options.success(result);
+
+    } catch (err) {
+
+        options.error(err);
+
+    }
 
 }
 

@@ -9,20 +9,28 @@ var CleanCss = require('clean-css');
  */
 function minify(options) {
 
-    var cleaner = new CleanCss({
-        advanced: false,
-        restructuring: false
-    });
+    try {
 
-    cleaner.minify(options.code, function(err, result) {
+        var cleaner = new CleanCss({
+            advanced: false,
+            restructuring: false
+        });
 
-        if (err) {
-            options.error(err);
-        } else {
-            options.success(result.styles);
-        }
+        cleaner.minify(options.code, function (err, result) {
 
-    });
+            if (err) {
+                options.error(err);
+            } else {
+                options.success(result.styles);
+            }
+
+        });
+
+    } catch (err) {
+
+        options.error(err);
+
+    }
 
 }
 

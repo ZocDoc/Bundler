@@ -15,26 +15,34 @@ var sourceMap = require('../source-map-utility');
  */
 function compile(options) {
 
-    var sassOptions = {
-        file: path.basename(options.filePath),
-        data: options.code,
-        includePaths: directoryCrawler.crawl(options.bundleDir)
-    };
+    try {
 
-    if (options.sourceMap) {
-        sassOptions.sourceMapRoot = sourceMap.getSourceMapRoot(options.filePath, options.siteRoot);
-        sassOptions.sourceMapEmbed = true;
-    }
+        var sassOptions = {
+            file: path.basename(options.filePath),
+            data: options.code,
+            includePaths: directoryCrawler.crawl(options.bundleDir)
+        };
 
-    sass.render(sassOptions, function(err, result) {
-
-        if (err) {
-            options.error(err);
-        } else {
-            options.success(result.css.toString());
+        if (options.sourceMap) {
+            sassOptions.sourceMapRoot = sourceMap.getSourceMapRoot(options.filePath, options.siteRoot);
+            sassOptions.sourceMapEmbed = true;
         }
 
-    });
+        sass.render(sassOptions, function (err, result) {
+
+            if (err) {
+                options.error(err);
+            } else {
+                options.success(result.css.toString());
+            }
+
+        });
+
+    } catch(err) {
+
+        options.error(err);
+
+    }
 
 }
 

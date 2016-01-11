@@ -12,16 +12,24 @@ var sourceMap = require('../source-map-utility');
  */
 function compile(options) {
 
-    var reactOptions = {};
+    try {
 
-    if (options.sourceMap) {
-        reactOptions.sourceMap = true;
-        reactOptions.sourceFilename = sourceMap.getSourceFilePath(options.filePath, options.siteRoot);
+        var reactOptions = {};
+
+        if (options.sourceMap) {
+            reactOptions.sourceMap = true;
+            reactOptions.sourceFilename = sourceMap.getSourceFilePath(options.filePath, options.siteRoot);
+        }
+
+        var compiledJsx = react.transform(options.code, reactOptions);
+
+        options.success(compiledJsx);
+
+    } catch (err) {
+
+        options.error(err);
+
     }
-
-    var compiledJsx = react.transform(options.code, reactOptions);
-
-    options.success(compiledJsx);
 
 }
 

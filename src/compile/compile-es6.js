@@ -14,21 +14,29 @@ var sourceMap = require('../source-map-utility');
  */
 function compile(options) {
 
-    var babelOptions = {
-        presets: [
-            path.join(options.nodeModulesPath, 'babel-preset-es2015'),
-            path.join(options.nodeModulesPath, 'babel-preset-react')
-        ]
-    };
+    try {
 
-    if (options.sourceMap) {
-        babelOptions.sourceMaps = 'inline';
-        babelOptions.sourceFileName = sourceMap.getSourceFilePath(options.filePath, options.siteRoot);
+        var babelOptions = {
+            presets: [
+                path.join(options.nodeModulesPath, 'babel-preset-es2015'),
+                path.join(options.nodeModulesPath, 'babel-preset-react')
+            ]
+        };
+
+        if (options.sourceMap) {
+            babelOptions.sourceMaps = 'inline';
+            babelOptions.sourceFileName = sourceMap.getSourceFilePath(options.filePath, options.siteRoot);
+        }
+
+        var result = babel.transform(options.code, babelOptions);
+
+        options.success(result.code);
+
+    } catch (err) {
+
+        options.error(err);
+
     }
-
-    var result = babel.transform(options.code, babelOptions);
-
-    options.success(result.code);
 
 }
 
