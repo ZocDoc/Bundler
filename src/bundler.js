@@ -44,7 +44,6 @@ process.on("uncaughtException", handleError);
 
 var fs = require("fs"),
     path = require("path"),
-    stylus = require('stylus'),
     nib = require('nib'),
     coffee = require('coffee-script'),
     livescript = require('livescript'),
@@ -473,13 +472,10 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
         var isLess = file.endsWith(".less");
         var isSass = (file.endsWith(".sass") || file.endsWith(".scss"));
-        var isStylus = file.endsWith(".styl");
         var cssFile = isLess ?
             file.replace(".less", ".css")
             : isSass ?
-            file.replace(".sass", ".css").replace(".scss", ".css")
-            : isStylus ?
-            file.replace(".styl", ".css") :
+            file.replace(".sass", ".css").replace(".scss", ".css") :
             file;
 
         var filePath = path.join(bundleDir, file),
@@ -502,11 +498,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                     readTextFile(filePath, function (sassText) {
                         getOrCreateSassCss(options, sassText, filePath, cssPathOutput, bundleDir, next);
                     });
-				} else if (isStylus){
-					readTextFile(filePath, function (stylusText) {
-						getOrCreateStylusCss(options, stylusText, filePath, cssPath, next);
-					});
-                } else {
+				} else {
                     readTextFile(cssPath, next);
                 }
 
@@ -622,21 +614,6 @@ function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb)
             error: handleError
         });
     }, sassText, sassPath, cssPath, cb);
-}
-
-function getOrCreateStylusCss(options, stylusText, stylusPath, cssPath, cb /*cb(css)*/) {
-    compileAsync(options, "compiling", function (stylusText, stylusPath, cb) {
-        stylus(stylusText)
-			.set('filename', stylusPath)
-			.use(nib())
-			.render(function(err, css){
-				if(err){
-					throw new Error(err);
-				}
-
-				cb(css);
-			});
-    }, stylusText, stylusPath, cssPath, cb);
 }
 
 function getOrCreateMinCss(options, css, cssPath, minCssPath, cb) {
