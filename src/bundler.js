@@ -326,19 +326,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = {
-                        code: code,
-                        inputPath: filePath,
-                        outputPath: jsPathOutput,
-                        bundleDir: bundleDir,
-                        nodeModulesPath: path.join(__dirname, 'node_modules'),
-                        outputBundleOnly: options.outputbundleonly,
-                        outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
-                        bundleStatsCollector: bundleStatsCollector,
-                        sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-                        siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
-                        useTemplateDirs: options.usetemplatedirs
-                    };
+                    var compileOptions = getProcessCodeOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isMustache) {
 
@@ -398,7 +386,8 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 } else if (/(\.min\.|\.pack\.)/.test(file) && options.skipremin) {
                     readTextFile(jsPath, withMin);
                 }  else {
-                    getOrCreateMinJs(options, js, jsPath, minJsPath, withMin);
+                    var minifyOptions = getProcessCodeOptions(js, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
+                    minify.js(minifyOptions).then(withMin).catch(handleError);
                 }
             }
         );
@@ -484,19 +473,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = {
-                        code: code,
-                        inputPath: filePath,
-                        outputPath: cssPathOutput,
-                        bundleDir: bundleDir,
-                        nodeModulesPath: path.join(__dirname, 'node_modules'),
-                        outputBundleOnly: options.outputbundleonly,
-                        outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
-                        bundleStatsCollector: bundleStatsCollector,
-                        sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-                        siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
-                        useTemplateDirs: options.usetemplatedirs
-                    };
+                    var compileOptions = getProcessCodeOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isLess) {
 
@@ -533,38 +510,31 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                     withMin('');
                 } else if (/(\.min\.|\.pack\.)/.test(file) && options.skipremin) {
                     readTextFile(cssPath, withMin);
-                }else {
-                    getOrCreateMinCss(options, css, cssPath, minCssPath, withMin);
+                } else {
+                    var minifyOptions = getProcessCodeOptions(css, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
+                    minify.css(minifyOptions).then(withMin).catch(handleError);
                 }
             }
         );
     });
 }
 
-function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
-    minify.js({
-            code: js,
-            inputPath: jsPath,
-            outputPath: minJsPath,
-            outputBundleOnly: options.outputbundleonly,
-            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
-            bundleStatsCollector: bundleStatsCollector
-        })
-        .then(cb)
-        .catch(handleError);
-}
+function getProcessCodeOptions(code, inputPath, outputPath, bundleDir, bundleStatsCollector, bundlerOptions) {
 
-function getOrCreateMinCss(options, css, cssPath, minCssPath, cb) {
-    minify.css({
-            code: css,
-            inputPath: cssPath,
-            outputPath: minCssPath,
-            outputBundleOnly: options.outputbundleonly,
-            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
-            bundleStatsCollector: bundleStatsCollector
-        })
-        .then(cb)
-        .catch(handleError);
+    return {
+        code: code,
+        inputPath: inputPath,
+        outputPath: outputPath,
+        bundleDir: bundleDir,
+        nodeModulesPath: path.join(__dirname, 'node_modules'),
+        outputBundleOnly: bundlerOptions.outputbundleonly,
+        outputBundleStats: bundlerOptions.outputbundlestats,
+        bundleStatsCollector: bundleStatsCollector,
+        sourceMap: bundlerOptions.sourcemaps,
+        siteRoot: bundlerOptions.siterootdirectory,
+        useTemplateDirs: bundlerOptions.usetemplatedirs
+    };
+
 }
 
 function removeCR(text) {
