@@ -32,7 +32,7 @@ function processAsync(options, processFn) {
 
                 if (!outputFileExists) {
 
-                    next(!outputFileExists);
+                    next(true);
 
                 } else {
 

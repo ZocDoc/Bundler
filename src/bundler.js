@@ -342,6 +342,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     if (isMustache) {
 
+                        jsPath = jsPathOutput;
                         if (options.outputbundlestats) {
                             bundleStatsCollector.ParseMustacheForStats(jsBundle, code);
                         }
@@ -350,6 +351,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     } else if (isJsx) {
 
+                        jsPath = jsPathOutput;
                         if (options.outputbundlestats) {
                             bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         }
@@ -358,6 +360,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     } else if (isES6) {
 
+                        jsPath = jsPathOutput;
                         if (options.outputbundlestats) {
                             bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         }
@@ -496,11 +499,19 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                     };
 
                     if (isLess) {
+
+                        cssPath = cssPathOutput;
                         compile.less(compileOptions).then(next).catch(handleError);
+
                     } else if (isSass) {
+
+                        cssPath = cssPathOutput;
                         compile.sass(compileOptions).then(next).catch(handleError);
+
                     } else {
+
                         next(code);
+
                     }
 
                 });
