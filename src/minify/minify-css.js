@@ -1,36 +1,40 @@
 var CleanCss = require('clean-css');
+var Promise = require('bluebird');
 
 /**
  * @param {object} options
  * @param {string} options.code
  * @param {string} options.filePath
- * @param {function} options.success
- * @param {function} options.error
+ * @returns {bluebird}
  */
 function minify(options) {
 
-    try {
+    return new Promise(function(resolve, reject) {
 
-        var cleaner = new CleanCss({
-            advanced: false,
-            restructuring: false
-        });
+        try {
 
-        cleaner.minify(options.code, function (err, result) {
+            var cleaner = new CleanCss({
+                advanced: false,
+                restructuring: false
+            });
 
-            if (err) {
-                options.error(err);
-            } else {
-                options.success(result.styles);
-            }
+            cleaner.minify(options.code, function (err, result) {
 
-        });
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result.styles);
+                }
 
-    } catch (err) {
+            });
 
-        options.error(err);
+        } catch (err) {
 
-    }
+            reject(err);
+
+        }
+
+    });
 
 }
 

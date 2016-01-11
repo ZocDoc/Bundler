@@ -506,10 +506,8 @@ function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
             code: jsxText,
             filePath: jsxPath,
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
-            success: cb,
-            error: handleError
-        });
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
+        }).then(cb).catch(handleError);
     }, jsxText, jsxPath, jsPath, cb);
 }
 
@@ -520,10 +518,8 @@ function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
             filePath: es6Path,
             nodeModulesPath: path.join(__dirname, 'node_modules'),
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
-            success: cb,
-            error: handleError
-        });
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
+        }).then(cb).catch(handleError);
     }, es6Text, es6Path, jsPath, cb);
 }
 
@@ -532,10 +528,8 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb) {
         compile.mustache({
             code: mustacheText,
             filePath: mPath,
-            useTemplateDirs: options.usetemplatedirs,
-            success: cb,
-            error: handleError
-        });
+            useTemplateDirs: options.usetemplatedirs
+        }).then(cb).catch(handleError);
     }, mustacheText, mPath, jsPath, cb);
 }
 
@@ -543,10 +537,8 @@ function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
     compileAsync(options, "minifying", function (js, jsPath, cb) {
         minify.js({
             code: js,
-            filePath: jsPath,
-            success: cb,
-            error: handleError
-        });
+            filePath: jsPath
+        }).then(cb).catch(handleError);
     }, js, jsPath, minJsPath, cb);
 }
 
@@ -558,10 +550,8 @@ function getOrCreateLessCss(options, less, lessPath, cssPath, cb) {
             outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
             bundleStatsCollector: bundleStatsCollector,
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
-            success: cb,
-            error: handleError
-        });
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
+        }).then(cb).catch(handleError);
     }, less, lessPath, cssPath, cb);
 }
 
@@ -572,10 +562,8 @@ function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb)
             filePath: sassPath,
             bundleDir: bundleDir,
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
-            success: cb,
-            error: handleError
-        });
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
+        }).then(cb).catch(handleError);
     }, sassText, sassPath, cssPath, cb);
 }
 
@@ -583,10 +571,8 @@ function getOrCreateMinCss(options, css, cssPath, minCssPath, cb) {
     compileAsync(options, "minifying", function (css, cssPath, cb) {
         minify.css({
             code: css,
-            filePath: cssPath,
-            success: cb,
-            error: handleError
-        });
+            filePath: cssPath
+        }).then(cb).catch(handleError);
     }, css, cssPath, minCssPath, cb);
 }
 

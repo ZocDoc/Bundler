@@ -1,5 +1,6 @@
 var less = require('less');
 var path = require('path');
+var Promise = require('bluebird');
 var sourceMap = require('../source-map-utility');
 
 /**
@@ -10,46 +11,49 @@ var sourceMap = require('../source-map-utility');
  * @param {string} options.siteRoot
  * @param {boolean} options.outputBundleStats
  * @param {object} options.bundleStatsCollector
- * @param {function} options.success
- * @param {function} options.error
+ * @returns {bluebird}
  */
 function compile(options) {
 
-    try {
+    return new Promise(function(resolve, reject) {
 
-        var lessDir = path.dirname(options.filePath),
-            fileName = path.basename(options.filePath),
-            lessOptions = {
-                paths: ['.', lessDir], // Specify search paths for @import directives
-                filename: fileName
-            };
+        try {
 
-        if (options.sourceMap) {
-            lessOptions.sourceMap = {
-                sourceMapFileInline: true,
-                sourceMapRootpath: sourceMap.getSourceMapRoot(options.filePath, options.siteRoot)
-            };
-        }
+            var lessDir = path.dirname(options.filePath),
+                fileName = path.basename(options.filePath),
+                lessOptions = {
+                    paths: ['.', lessDir], // Specify search paths for @import directives
+                    filename: fileName
+                };
 
-        if (options.outputBundleStats) {
-            options.bundleStatsCollector.SearchForLessImports(options.filePath, options.code);
-        }
-
-        less.render(options.code, lessOptions, function (err, result) {
-
-            if (err) {
-                options.error(err);
-            } else {
-                options.success(result.css);
+            if (options.sourceMap) {
+                lessOptions.sourceMap = {
+                    sourceMapFileInline: true,
+                    sourceMapRootpath: sourceMap.getSourceMapRoot(options.filePath, options.siteRoot)
+                };
             }
 
-        });
+            if (options.outputBundleStats) {
+                options.bundleStatsCollector.SearchForLessImports(options.filePath, options.code);
+            }
 
-    } catch (err) {
+            less.render(options.code, lessOptions, function (err, result) {
 
-        options.error(err);
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result.css);
+                }
 
-    }
+            });
+
+        } catch (err) {
+
+            reject(err);
+
+        }
+
+    });
 
 }
 

@@ -1,5 +1,6 @@
 var babel = require('babel-core');
 var path = require('path');
+var Promise = require('bluebird');
 var sourceMap = require('../source-map-utility');
 
 /**
@@ -9,34 +10,37 @@ var sourceMap = require('../source-map-utility');
  * @param {string} options.nodeModulesPath
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
- * @param {function} options.success
- * @param {function} options.error
+ * @returns {bluebird}
  */
 function compile(options) {
 
-    try {
+    return new Promise(function(resolve, reject) {
 
-        var babelOptions = {
-            presets: [
-                path.join(options.nodeModulesPath, 'babel-preset-es2015'),
-                path.join(options.nodeModulesPath, 'babel-preset-react')
-            ]
-        };
+        try {
 
-        if (options.sourceMap) {
-            babelOptions.sourceMaps = 'inline';
-            babelOptions.sourceFileName = sourceMap.getSourceFilePath(options.filePath, options.siteRoot);
+            var babelOptions = {
+                presets: [
+                    path.join(options.nodeModulesPath, 'babel-preset-es2015'),
+                    path.join(options.nodeModulesPath, 'babel-preset-react')
+                ]
+            };
+
+            if (options.sourceMap) {
+                babelOptions.sourceMaps = 'inline';
+                babelOptions.sourceFileName = sourceMap.getSourceFilePath(options.filePath, options.siteRoot);
+            }
+
+            var result = babel.transform(options.code, babelOptions);
+
+            resolve(result.code);
+
+        } catch (err) {
+
+            reject(err);
+
         }
 
-        var result = babel.transform(options.code, babelOptions);
-
-        options.success(result.code);
-
-    } catch (err) {
-
-        options.error(err);
-
-    }
+    });
 
 }
 
