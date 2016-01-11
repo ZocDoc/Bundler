@@ -1,4 +1,3 @@
-var compileAsync = require('../compile-async');
 var Promise = require('bluebird');
 var uglify = require('uglify-js');
 
@@ -73,4 +72,4 @@ function generateCode(ast) {
 
 }
 
-module.exports = compileAsync(minify);
+module.exports = minify;

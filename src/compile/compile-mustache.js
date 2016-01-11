@@ -1,4 +1,3 @@
-var compileAsync = require('../compile-async');
 var hogan = require('hogan.js-template/lib/hogan.js');
 var path = require('path');
 var Promise = require('bluebird');
@@ -61,4 +60,4 @@ function compileTemplate(code) {
 
 }
 
-module.exports = compileAsync(compile);
+module.exports = compile;

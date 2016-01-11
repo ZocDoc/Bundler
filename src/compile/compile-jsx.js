@@ -1,4 +1,3 @@
-var compileAsync = require('../compile-async');
 var Promise = require('bluebird');
 var react = require('react-tools');
 var sourceMap = require('../source-map-utility');
@@ -38,4 +37,4 @@ function compile(options) {
 
 }
 
-module.exports = compileAsync(compile);
+module.exports = compile;

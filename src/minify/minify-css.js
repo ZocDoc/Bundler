@@ -1,5 +1,4 @@
 var CleanCss = require('clean-css');
-var compileAsync = require('../compile-async');
 var Promise = require('bluebird');
 
 /**
@@ -39,4 +38,4 @@ function minify(options) {
 
 }
 
-module.exports = compileAsync(minify);
+module.exports = minify;

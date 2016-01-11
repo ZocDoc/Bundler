@@ -1,5 +1,4 @@
 var babel = require('babel-core');
-var compileAsync = require('../compile-async');
 var path = require('path');
 var Promise = require('bluebird');
 var sourceMap = require('../source-map-utility');
@@ -45,4 +44,4 @@ function compile(options) {
 
 }
 
-module.exports = compileAsync(compile);
+module.exports = compile;

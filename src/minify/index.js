@@ -1,4 +1,8 @@
+var minifyCSS = require('./minify-css');
+var minifyJS = require('./minify-js');
+var processCode = require('../process-code');
+
 module.exports = {
-    css: require('./minify-css'),
-    js: require('./minify-js')
+    css: processCode.with(minifyCSS),
+    js: processCode.with(minifyJS)
 };

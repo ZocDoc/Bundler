@@ -1,4 +1,3 @@
-var compileAsync = require('../compile-async');
 var less = require('less');
 var path = require('path');
 var Promise = require('bluebird');
@@ -58,4 +57,4 @@ function compile(options) {
 
 }
 
-module.exports = compileAsync(compile);
+module.exports = compile;
