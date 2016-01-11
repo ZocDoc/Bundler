@@ -10,7 +10,6 @@
     "babel-preset-es2015": "6.3.13",
     "babel-preset-react": "6.3.13",
     "clean-css": "3.4.4",
-    "coffee-script": "1.6.3",
     "hogan.js-template": "2.0.0",
     "less": "2.5.1",
     "livescript": "1.4.0",

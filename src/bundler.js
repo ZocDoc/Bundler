@@ -45,7 +45,6 @@ process.on("uncaughtException", handleError);
 var fs = require("fs"),
     path = require("path"),
     nib = require('nib'),
-    coffee = require('coffee-script'),
     livescript = require('livescript'),
     Step = require('step'),
     startedAt = Date.now(),
@@ -323,13 +322,11 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         processedFiles[file] = true;
 
-        var isCoffee = file.endsWith(".coffee");
         var isLiveScript = file.endsWith(".ls");
         var isMustache = file.endsWith(".mustache");
         var isJsx = file.endsWith(".jsx");
         var isES6 = file.endsWith(".es6");
-        var jsFile = isCoffee ? file.replace(".coffee", ".js")
-                   : isLiveScript ? file.replace(".ls", ".js")
+        var jsFile = isLiveScript ? file.replace(".ls", ".js")
                    : isMustache ? file.replace(".mustache", ".js")
                    : isJsx ? file.replace(".jsx", ".js")
                    : isES6 ? file.replace(".es6", ".js")
@@ -345,11 +342,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         Step(
             function () {
                 var next = this;
-                if (isCoffee) {
-                    readTextFile(filePath, function (coffee) {
-                        getOrCreateJs(options, coffee, filePath, jsPath, next);
-                    });
-                } else if(isLiveScript){
+                if(isLiveScript){
                     readTextFile(filePath, function(livescriptText){
                         getOrCreateJsLiveScript(options, livescriptText, filePath, jsPath, next);
                     });
@@ -525,12 +518,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             }
         );
     });
-}
-
-function getOrCreateJs(options, coffeeScript, csPath, jsPath, cb /*cb(js)*/) {
-    compileAsync(options, "compiling", function (coffeeScript, csPath, cb) {
-            cb(coffee.compile(coffeeScript));
-        }, coffeeScript, csPath, jsPath, cb);
 }
 
 function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*cb(js)*/) {
