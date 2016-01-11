@@ -7,7 +7,8 @@ var sourceMap = require('../../source-map-utility');
  * @param {string} options.filePath
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
- * @param {function} options.callback
+ * @param {function} options.success
+ * @param {function} options.error
  */
 function compile(options) {
 
@@ -18,9 +19,9 @@ function compile(options) {
         reactOptions.sourceFilename = sourceMap.getSourceFilePath(options.filePath, options.siteRoot);
     }
 
-    var result = react.transform(options.code, reactOptions);
+    var compiledJsx = react.transform(options.code, reactOptions);
 
-    options.callback(result);
+    options.success(compiledJsx);
 
 }
 

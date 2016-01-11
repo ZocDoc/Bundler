@@ -6,7 +6,8 @@ var path = require('path');
  * @param {string} options.code
  * @param {string} options.filePath
  * @param {boolean} options.useTemplateDirs
- * @param {function} options.callback
+ * @param {function} options.success
+ * @param {function} options.error
  */
 function compile(options) {
 
@@ -21,7 +22,7 @@ function compile(options) {
         + templateName
         + '\'] = new Hogan.Template(' + templateObject + ');';
 
-    options.callback(result);
+    options.success(result);
 
 }
 

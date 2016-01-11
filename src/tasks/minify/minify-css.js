@@ -4,7 +4,8 @@ var CleanCss = require('clean-css');
  * @param {object} options
  * @param {string} options.code
  * @param {string} options.filePath
- * @param {function} options.callback
+ * @param {function} options.success
+ * @param {function} options.error
  */
 function minify(options) {
 
@@ -13,13 +14,13 @@ function minify(options) {
         restructuring: false
     });
 
-    cleaner.minify(options.code, function(err, css) {
+    cleaner.minify(options.code, function(err, result) {
 
         if (err) {
-            throw err;
+            options.error(err);
+        } else {
+            options.success(result.styles);
         }
-
-        options.callback(css);
 
     });
 

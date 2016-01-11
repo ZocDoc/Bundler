@@ -4,7 +4,8 @@ var uglify = require('uglify-js');
  * @param {object} options
  * @param {string} options.code
  * @param {string} options.filePath
- * @param {function} options.callback
+ * @param {function} options.success
+ * @param {function} options.error
  */
 function minify(options) {
 
@@ -14,9 +15,9 @@ function minify(options) {
 
     mangle(ast);
 
-    var minifiedCode = generateCode(ast);
+    var minifiedJs = generateCode(ast);
 
-    options.callback(minifiedCode);
+    options.success(minifiedJs);
 
 }
 

@@ -44,7 +44,6 @@ process.on("uncaughtException", handleError);
 
 var fs = require("fs"),
     path = require("path"),
-    less = require('less'),
     sass = require('node-sass'),
     stylus = require('stylus'),
     nib = require('nib'),
@@ -70,10 +69,11 @@ var fs = require("fs"),
         compile: {
             es6: require('./tasks/compile/compile-es6'),
             jsx: require('./tasks/compile/compile-jsx'),
+            less: require('./tasks/compile/compile-less'),
             mustache: require('./tasks/compile/compile-mustache')
         },
         minify: {
-            css: require('./tasks/minify/minif-css'),
+            css: require('./tasks/minify/minify-css'),
             js: require('./tasks/minify/minify-js')
         }
     },
@@ -556,7 +556,8 @@ function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
             filePath: jsxPath,
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
             siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
-            callback: cb
+            success: cb,
+            error: handleError
         });
     }, jsxText, jsxPath, jsPath, cb);
 }
@@ -569,7 +570,8 @@ function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
             nodeModulesPath: path.join(__dirname, 'node_modules'),
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
             siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
-            callback: cb
+            success: cb,
+            error: handleError
         });
     }, es6Text, es6Path, jsPath, cb);
 }
@@ -580,7 +582,8 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb) {
             code: mustacheText,
             filePath: mPath,
             useTemplateDirs: options.usetemplatedirs,
-            callback: cb
+            success: cb,
+            error: handleError
         });
     }, mustacheText, mPath, jsPath, cb);
 }
@@ -590,13 +593,21 @@ function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
         tasks.minify.js({
             code: js,
             filePath: jsPath,
-            callback: cb
+            success: cb,
+            error: handleError
         });
     }, js, jsPath, minJsPath, cb);
 }
 
-function getOrCreateLessCss(options, less, lessPath, cssPath, cb /*cb(css)*/) {
-    compileAsync(options, "compiling", compileLess, less, lessPath, cssPath, cb);
+function getOrCreateLessCss(options, less, lessPath, cssPath, cb) {
+    compileAsync(options, "compiling", function(lessCss, lessPath, cb) {
+        tasks.compile.less({
+            code: lessCss,
+            filePath: lessPath,
+            success: cb,
+            error: handleError
+        });
+    }, less, lessPath, cssPath, cb);
 }
 
 function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb /*cb(sass)*/) {
@@ -625,7 +636,8 @@ function getOrCreateMinCss(options, css, cssPath, minCssPath, cb) {
         tasks.minify.css({
             code: css,
             filePath: cssPath,
-            callback: cb
+            success: cb,
+            error: handleError
         });
     }, css, cssPath, minCssPath, cb);
 }
@@ -685,31 +697,6 @@ function compileAsync(options, mode, compileFn /*compileFn(text, textPath, cb(co
             }
         }
     );
-}
-
-function compileLess(lessCss, lessPath, cb) {
-    var lessDir = path.dirname(lessPath),
-        fileName = path.basename(lessPath),
-        options = {
-            paths: ['.', lessDir], // Specify search paths for @import directives
-            filename: fileName
-        };
-
-    if (bundlerOptions.DefaultOptions.sourcemaps) {
-        options.sourceMap = {
-            sourceMapFileInline: true,
-            sourceMapRootpath: sourceMap.getSourceMapRoot(lessPath, bundlerOptions.DefaultOptions.siterootdirectory)
-        };
-    }
-
-    if(bundlerOptions.DefaultOptions.outputbundlestats) {
-        bundleStatsCollector.SearchForLessImports(lessPath, lessCss);
-    }
-
-    less.render(lessCss, options, function (err, css) {
-        if (err) handleError(err);
-        cb(css.css);
-    });
 }
 
 function compileSass(sassCss, sassPath, bundleDir, cb) {

@@ -9,7 +9,8 @@ var sourceMap = require('../../source-map-utility');
  * @param {string} options.nodeModulesPath
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
- * @param {function} options.callback
+ * @param {function} options.success
+ * @param {function} options.error
  */
 function compile(options) {
 
@@ -27,7 +28,7 @@ function compile(options) {
 
     var result = babel.transform(options.code, babelOptions);
 
-    options.callback(result.code);
+    options.success(result.code);
 
 }
 
