@@ -1,14 +1,22 @@
 var uglify = require('uglify-js');
 
-function minify(js, filePath) {
+/**
+ * @param {object} options
+ * @param {string} options.code
+ * @param {string} options.filePath
+ * @param {function} options.callback
+ */
+function minify(options) {
 
-    var ast = generateSyntaxTree(js, filePath);
+    var ast = generateSyntaxTree(options.code, options.filePath);
 
     ast = compress(ast);
 
     mangle(ast);
 
-    return generateCode(ast);
+    var minifiedCode = generateCode(ast);
+
+    options.callback(minifiedCode);
 
 }
 

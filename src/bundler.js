@@ -566,11 +566,14 @@ function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
 
 function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
     compileAsync(options, "compiling", function(es6Text, es6Path, cb) {
-        var nodeModulesPath = path.join(__dirname, 'node_modules');
-        cb(tasks.compile.es6(es6Text, es6Path, nodeModulesPath, {
+        tasks.compile.es6({
+            code: es6Text,
+            filePath: es6Path,
+            nodeModulesPath: path.join(__dirname, 'node_modules'),
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
-        }));
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
+            callback: cb
+        });
     }, es6Text, es6Path, jsPath, cb);
 }
 
@@ -595,7 +598,11 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)
 
 function getOrCreateMinJs(options, js, jsPath, minJsPath, cb /*cb(minJs)*/) {
     compileAsync(options, "minifying", function (js, jsPath, cb) {
-        cb(tasks.minify.js(js, jsPath));
+        tasks.minify.js({
+            code: js,
+            filePath: jsPath,
+            callback: cb
+        });
     }, js, jsPath, minJsPath, cb);
 }
 
