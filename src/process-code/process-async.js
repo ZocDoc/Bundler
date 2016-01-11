@@ -1,6 +1,6 @@
 var fs = require('fs');
 var Promise = require('bluebird');
-var readTextFile = require('./read-text-file');
+var readTextFile = require('../read-text-file');
 var Step = require('step');
 
 /**
