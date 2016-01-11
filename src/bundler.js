@@ -44,7 +44,6 @@ process.on("uncaughtException", handleError);
 
 var fs = require("fs"),
     path = require("path"),
-    sass = require('node-sass'),
     stylus = require('stylus'),
     nib = require('nib'),
     coffee = require('coffee-script'),
@@ -63,14 +62,13 @@ var fs = require("fs"),
     _ = require('underscore'),
     collection = require('./collection'),
     cssValidator = require('./css-validator'),
-    directoryCrawler = require('./directory-crawler'),
-    sourceMap = require('./source-map-utility'),
     tasks = {
         compile: {
             es6: require('./tasks/compile/compile-es6'),
             jsx: require('./tasks/compile/compile-jsx'),
             less: require('./tasks/compile/compile-less'),
-            mustache: require('./tasks/compile/compile-mustache')
+            mustache: require('./tasks/compile/compile-mustache'),
+            sass: require('./tasks/compile/compile-sass')
         },
         minify: {
             css: require('./tasks/minify/minify-css'),
@@ -604,15 +602,25 @@ function getOrCreateLessCss(options, less, lessPath, cssPath, cb) {
         tasks.compile.less({
             code: lessCss,
             filePath: lessPath,
+            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
             success: cb,
             error: handleError
         });
     }, less, lessPath, cssPath, cb);
 }
 
-function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb /*cb(sass)*/) {
+function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb) {
     compileAsync(options, "compiling", function(sassCss, sassPath, cb) {
-        compileSass(sassCss, sassPath, bundleDir, cb);
+        tasks.compile.sass({
+            code: sassCss,
+            filePath: sassPath,
+            bundleDir: bundleDir,
+            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
+            success: cb,
+            error: handleError
+        });
     }, sassText, sassPath, cssPath, cb);
 }
 
@@ -697,28 +705,6 @@ function compileAsync(options, mode, compileFn /*compileFn(text, textPath, cb(co
             }
         }
     );
-}
-
-function compileSass(sassCss, sassPath, bundleDir, cb) {
-
-    var options = {
-        file: path.basename(sassPath),
-        data: sassCss,
-        includePaths: directoryCrawler.crawl(bundleDir)
-    };
-
-    if (bundlerOptions.DefaultOptions.sourcemaps) {
-        options.sourceMapRoot = sourceMap.getSourceMapRoot(sassPath, bundlerOptions.DefaultOptions.siterootdirectory);
-        options.sourceMapEmbed = true;
-    }
-
-    sass.render(options, function(error, result) {
-        if(error) {
-            handleError(error);
-        } else {
-            cb(result.css.toString());
-        }
-    });
 }
 
 function removeCR(text) {
