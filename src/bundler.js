@@ -51,7 +51,6 @@ var fs = require("fs"),
     hogan = require('hogan.js-template/lib/hogan.js'),
     coffee = require('coffee-script'),
     livescript = require('livescript'),
-    react = require('react-tools'),
     CleanCss = require('clean-css'),
     Step = require('step'),
     startedAt = Date.now(),
@@ -71,7 +70,8 @@ var fs = require("fs"),
     sourceMap = require('./source-map-utility'),
     tasks = {
         compile: {
-            es6: require('./tasks/compile/compile-es6')
+            es6: require('./tasks/compile/compile-es6'),
+            jsx: require('./tasks/compile/compile-jsx')
         },
         minify: {
             js: require('./tasks/minify/minify-js')
@@ -551,17 +551,14 @@ function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*c
 
 function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
     compileAsync(options, "compiling", function(jsxText, jsxPath, cb) {
-
-            var reactOptions = {};
-
-            if (bundlerOptions.DefaultOptions.sourcemaps) {
-                reactOptions.sourceMap = true;
-                reactOptions.sourceFilename = sourceMap.getSourceFilePath(jsxPath, bundlerOptions.DefaultOptions.siterootdirectory);
-            }
-
-            cb(react.transform(jsxText, reactOptions));
-
-        }, jsxText, jsxPath, jsPath, cb);
+        tasks.compile.jsx({
+            code: jsxText,
+            filePath: jsxPath,
+            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
+            callback: cb
+        });
+    }, jsxText, jsxPath, jsPath, cb);
 }
 
 function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
