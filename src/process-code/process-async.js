@@ -26,7 +26,7 @@ function processAsync(options, processFn) {
             function doesOutputFileExist() {
                 fs.exists(options.outputPath, this);
             },
-            function (outputFileExists) {
+            function shouldProcessCode(outputFileExists) {
 
                 var next = this;
 
@@ -74,9 +74,9 @@ function processAsync(options, processFn) {
                 }
 
             },
-            function (shouldRecompile) {
+            function processCode(shouldProcessCode) {
 
-                if (shouldRecompile) {
+                if (shouldProcessCode) {
 
                     var onAfterProcessed = function(code) {
 
