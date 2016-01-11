@@ -56,19 +56,8 @@ var fs = require("fs"),
     _ = require('underscore'),
     collection = require('./collection'),
     cssValidator = require('./css-validator'),
-    tasks = {
-        compile: {
-            es6: require('./tasks/compile/compile-es6'),
-            jsx: require('./tasks/compile/compile-jsx'),
-            less: require('./tasks/compile/compile-less'),
-            mustache: require('./tasks/compile/compile-mustache'),
-            sass: require('./tasks/compile/compile-sass')
-        },
-        minify: {
-            css: require('./tasks/minify/minify-css'),
-            js: require('./tasks/minify/minify-js')
-        }
-    },
+    compile = require('./compile'),
+    minify = require('./minify'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -512,7 +501,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
 function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
     compileAsync(options, "compiling", function(jsxText, jsxPath, cb) {
-        tasks.compile.jsx({
+        compile.jsx({
             code: jsxText,
             filePath: jsxPath,
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
@@ -525,7 +514,7 @@ function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
 
 function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
     compileAsync(options, "compiling", function(es6Text, es6Path, cb) {
-        tasks.compile.es6({
+        compile.es6({
             code: es6Text,
             filePath: es6Path,
             nodeModulesPath: path.join(__dirname, 'node_modules'),
@@ -539,7 +528,7 @@ function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
 
 function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb) {
 	compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
-        tasks.compile.mustache({
+        compile.mustache({
             code: mustacheText,
             filePath: mPath,
             useTemplateDirs: options.usetemplatedirs,
@@ -551,7 +540,7 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb) {
 
 function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
     compileAsync(options, "minifying", function (js, jsPath, cb) {
-        tasks.minify.js({
+        minify.js({
             code: js,
             filePath: jsPath,
             success: cb,
@@ -562,7 +551,7 @@ function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
 
 function getOrCreateLessCss(options, less, lessPath, cssPath, cb) {
     compileAsync(options, "compiling", function(lessCss, lessPath, cb) {
-        tasks.compile.less({
+        compile.less({
             code: lessCss,
             filePath: lessPath,
             outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
@@ -577,7 +566,7 @@ function getOrCreateLessCss(options, less, lessPath, cssPath, cb) {
 
 function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb) {
     compileAsync(options, "compiling", function(sassCss, sassPath, cb) {
-        tasks.compile.sass({
+        compile.sass({
             code: sassCss,
             filePath: sassPath,
             bundleDir: bundleDir,
@@ -591,7 +580,7 @@ function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb)
 
 function getOrCreateMinCss(options, css, cssPath, minCssPath, cb) {
     compileAsync(options, "minifying", function (css, cssPath, cb) {
-        tasks.minify.css({
+        minify.css({
             code: css,
             filePath: cssPath,
             success: cb,

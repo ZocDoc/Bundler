@@ -1,6 +1,6 @@
 var less = require('less');
 var path = require('path');
-var sourceMap = require('../../source-map-utility');
+var sourceMap = require('../source-map-utility');
 
 /**
  * @param {object} options

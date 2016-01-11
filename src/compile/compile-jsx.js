@@ -1,5 +1,5 @@
 var react = require('react-tools');
-var sourceMap = require('../../source-map-utility');
+var sourceMap = require('../source-map-utility');
 
 /**
  * @param {object} options

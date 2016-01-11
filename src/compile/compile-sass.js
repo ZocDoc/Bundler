@@ -1,7 +1,7 @@
-var directoryCrawler = require('../../directory-crawler');
+var directoryCrawler = require('../directory-crawler');
 var path = require('path');
 var sass = require('node-sass');
-var sourceMap = require('../../source-map-utility');
+var sourceMap = require('../source-map-utility');
 
 /**
  * @param {object} options
