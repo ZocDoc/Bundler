@@ -321,46 +321,46 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         pending++;
         Step(
             function () {
+
                 var next = this;
-                if (isMustache){
 
-                    jsPath = jsPathOutput;
-                    readTextFile(filePath, function(mustacheText){
+                readTextFile(filePath, function(code) {
 
-                        if(options.outputbundlestats) {
-                            bundleStatsCollector.ParseMustacheForStats(jsBundle,mustacheText);
-                        }
+                    var compileOptions = {
+                        code: code,
+                        inputPath: filePath,
+                        outputPath: jsPathOutput,
+                        bundleDir: bundleDir,
+                        nodeModulesPath: path.join(__dirname, 'node_modules'),
+                        outputBundleOnly: options.outputbundleonly,
+                        outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
+                        bundleStatsCollector: bundleStatsCollector,
+                        sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
+                        siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
+                        useTemplateDirs: options.usetemplatedirs
+                    };
 
-                        getOrCreateJsMustache(options, mustacheText, filePath, jsPathOutput, next);
-                    });  
-                } else if (isJsx) {
-                    jsPath = jsPathOutput;
-                    readTextFile(filePath, function (jsxText) {
-                        if (options.outputbundlestats) {
-                            bundleStatsCollector.ParseJsForStats(jsBundle, jsxText);
-                        }
-                        getOrCreateJsx(options, jsxText, filePath, jsPathOutput, next);
-                    });
-                } else if (isES6) {
-                    jsPath = jsPathOutput;
-                    readTextFile(filePath, function(es6Text) {
-                        if (options.outputbundlestats) {
-                            bundleStatsCollector.ParseJsForStats(jsBundle, es6Text);
-                        }
-                        getOrCreateES6(options, es6Text, filePath, jsPathOutput, next);
-                    });
-                } else {
-                    readTextFile(jsPath, function(jsText) {
-                        if(options.outputbundlestats) {
-                            bundleStatsCollector.ParseJsForStats(jsBundle,jsText);
-                        }
-                        next(jsText);
-                    });
-                }
+                    if (options.outputbundlestats) {
+                        bundleStatsCollector.ParseJsForStats(jsBundle, code);
+                    }
 
-                if(options.outputbundlestats) {
+                    if (isMustache) {
+                        compile.mustache(compileOptions).then(next).catch(handleError);
+                    } else if (isJsx) {
+                        compile.jsx(compileOptions).then(next).catch(handleError);
+                    } else if (isES6) {
+                        compile.es6(compileOptions).then(next).catch(handleError);
+                    } else {
+                        next(code);
+                    }
+
+
+                });
+
+                if (options.outputbundlestats) {
                     bundleStatsCollector.AddDebugFile(jsBundle, jsPath);
                 }
+
             },
             function (js) {
                 allJsArr[i] = js;
@@ -456,22 +456,36 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         pending++;
         Step(
             function () {
-                var next = this;
-                if (isLess) {
-                    cssPath = cssPathOutput;
-                    readTextFile(filePath, function (lessText) {
-                        getOrCreateLessCss(options, lessText, filePath, cssPathOutput, next);
-                    });
-                } else if (isSass) {
-                    cssPath = cssPathOutput;
-                    readTextFile(filePath, function (sassText) {
-                        getOrCreateSassCss(options, sassText, filePath, cssPathOutput, bundleDir, next);
-                    });
-				} else {
-                    readTextFile(cssPath, next);
-                }
 
-                if(options.outputbundlestats) {
+                var next = this;
+
+                readTextFile(filePath, function(code) {
+
+                    var compileOptions = {
+                        code: code,
+                        inputPath: filePath,
+                        outputPath: cssPathOutput,
+                        bundleDir: bundleDir,
+                        nodeModulesPath: path.join(__dirname, 'node_modules'),
+                        outputBundleOnly: options.outputbundleonly,
+                        outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
+                        bundleStatsCollector: bundleStatsCollector,
+                        sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
+                        siteRoot: bundlerOptions.DefaultOptions.siterootdirectory,
+                        useTemplateDirs: options.usetemplatedirs
+                    };
+
+                    if (isLess) {
+                        compile.less(compileOptions).then(next).catch(handleError);
+                    } else if (isSass) {
+                        compile.sass(compileOptions).then(next).catch(handleError);
+                    } else {
+                        next(code);
+                    }
+
+                });
+
+                if (options.outputbundlestats) {
                     bundleStatsCollector.AddDebugFile(cssBundle, cssPath);
                 }
 
@@ -496,51 +510,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     });
 }
 
-function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
-    compile.jsx({
-            code: jsxText,
-            inputPath: jsxPath,
-            outputPath: jsPath,
-            outputBundleOnly: options.outputbundleonly,
-            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
-            bundleStatsCollector: bundleStatsCollector,
-            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
-        })
-        .then(cb)
-        .catch(handleError);
-}
-
-function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
-    compile.es6({
-            code: es6Text,
-            inputPath: es6Path,
-            outputPath: jsPath,
-            nodeModulesPath: path.join(__dirname, 'node_modules'),
-            outputBundleOnly: options.outputbundleonly,
-            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
-            bundleStatsCollector: bundleStatsCollector,
-            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
-        })
-        .then(cb)
-        .catch(handleError);
-}
-
-function getOrCreateJsMustache(options, mustacheText, mustachePath, jsPath, cb) {
-    compile.mustache({
-            code: mustacheText,
-            inputPath: mustachePath,
-            outputPath: jsPath,
-            useTemplateDirs: options.usetemplatedirs,
-            outputBundleOnly: options.outputbundleonly,
-            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
-            bundleStatsCollector: bundleStatsCollector
-        })
-        .then(cb)
-        .catch(handleError);
-}
-
 function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
     minify.js({
             code: js,
@@ -549,37 +518,6 @@ function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
             outputBundleOnly: options.outputbundleonly,
             outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
             bundleStatsCollector: bundleStatsCollector
-        })
-        .then(cb)
-        .catch(handleError);
-}
-
-function getOrCreateLessCss(options, lessText, lessPath, cssPath, cb) {
-    compile.less({
-            code: lessText,
-            inputPath: lessPath,
-            outputPath: cssPath,
-            outputBundleOnly: options.outputbundleonly,
-            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
-            bundleStatsCollector: bundleStatsCollector,
-            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
-        })
-        .then(cb)
-        .catch(handleError);
-}
-
-function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb) {
-    compile.sass({
-            code: sassText,
-            inputPath: sassPath,
-            outputPath: cssPath,
-            bundleDir: bundleDir,
-            outputBundleOnly: options.outputbundleonly,
-            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
-            bundleStatsCollector: bundleStatsCollector,
-            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
         })
         .then(cb)
         .catch(handleError);
