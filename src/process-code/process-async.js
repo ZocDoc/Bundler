@@ -1,13 +1,15 @@
 var fs = require('fs');
 var Promise = require('bluebird');
-var readTextFile = require('../read-text-file');
+var readCode = require('./read-code');
 var Step = require('step');
+var writeCode = require('./write-code');
 
 /**
  * @param {object} options
  * @param {string} options.code
  * @param {string} options.inputPath
  * @param {string} options.outputPath
+ * @param {string} options.mapOutputPath
  * @param {string} options.bundleDir
  * @param {string} options.nodeModulesPath
  * @param {boolean} options.outputBundleOnly
@@ -78,23 +80,17 @@ function processAsync(options, processFn) {
 
                 if (shouldProcessCode) {
 
-                    var onAfterProcessed = function(code) {
+                    var onAfterProcessed = function(result) {
 
                         if (options.outputBundleOnly) {
 
-                            resolve(code);
+                            resolve(result.code);
 
                         } else {
 
-                            fs.writeFile(options.outputPath, code, 'utf-8', function(err) {
-
-                                if (err) {
-                                    reject(err);
-                                }
-
-                                resolve(code);
-
-                            });
+                            writeCode(result.code, result.map, options.outputPath, options.mapOutputPath, options.siteRoot)
+                                .then(resolve)
+                                .catch(reject);
 
                         }
                     };
@@ -105,11 +101,9 @@ function processAsync(options, processFn) {
 
                 } else {
 
-                    try {
-                        readTextFile(options.outputPath, resolve);
-                    } catch (err) {
-                        reject(err);
-                    }
+                    readCode(options.outputPath, options.mapOutputPath)
+                        .then(resolve)
+                        .catch(reject);
 
                 }
 

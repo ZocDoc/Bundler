@@ -19,7 +19,14 @@ function getSourceFilePath(filePath, siteRoot) {
 
 }
 
+function getSourceMapOutputPath(outputPath) {
+
+    return outputPath + '.map';
+
+}
+
 module.exports = {
     getSourceMapRoot: getSourceMapRoot,
-    getSourceFilePath: getSourceFilePath
+    getSourceFilePath: getSourceFilePath,
+    getSourceMapOutputPath: getSourceMapOutputPath
 };

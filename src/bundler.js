@@ -59,6 +59,7 @@ var fs = require("fs"),
     readTextFile = require('./read-text-file'),
     compile = require('./compile'),
     minify = require('./minify'),
+    sourceMap = require('./source-map-utility'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -361,7 +362,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                             bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         }
 
-                        next(code);
+                        next({
+                            code: code
+                        });
 
                     }
 
@@ -373,20 +376,24 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 }
 
             },
-            function (js) {
-                allJsArr[i] = js;
-                var withMin = function (minJs) {
-                    allMinJsArr[i] = minJs;
+            function (compiledJs) {
+                allJsArr[i] = compiledJs.code;
+                var withMin = function (minifiedJs) {
+                    allMinJsArr[i] = minifiedJs.code;
 
                     if (! --pending) whenDone();
                 };
 
                 if (options.skipmin) {
-                    withMin('');
+                    withMin({});
                 } else if (/(\.min\.|\.pack\.)/.test(file) && options.skipremin) {
-                    readTextFile(jsPath, withMin);
+                    readTextFile(jsPath, function(code) {
+                        withMin({
+                            code: code
+                        });
+                    });
                 }  else {
-                    var minifyOptions = getProcessCodeOptions(js, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
+                    var minifyOptions = getProcessCodeOptions(compiledJs.code, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
                     minify.js(minifyOptions).then(withMin).catch(handleError);
                 }
             }
@@ -487,7 +494,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                     } else {
 
-                        next(code);
+                        next({
+                            code: code
+                        });
 
                     }
 
@@ -498,20 +507,24 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 }
 
             },
-            function (css) {
-                allCssArr[i] = css;
-                var withMin = function (minCss) {
-                    allMinCssArr[i] = minCss;
+            function (compiledCss) {
+                allCssArr[i] = compiledCss.code;
+                var withMin = function (minifiedCss) {
+                    allMinCssArr[i] = minifiedCss.code;
 
                     if (! --pending) whenDone();
                 };
 
                 if (options.skipmin) {
-                    withMin('');
+                    withMin({});
                 } else if (/(\.min\.|\.pack\.)/.test(file) && options.skipremin) {
-                    readTextFile(cssPath, withMin);
+                    readTextFile(cssPath, function(code) {
+                        withMin({
+                            code: code
+                        });
+                    });
                 } else {
-                    var minifyOptions = getProcessCodeOptions(css, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
+                    var minifyOptions = getProcessCodeOptions(compiledCss.code, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
                     minify.css(minifyOptions).then(withMin).catch(handleError);
                 }
             }
@@ -525,6 +538,7 @@ function getProcessCodeOptions(code, inputPath, outputPath, bundleDir, bundleSta
         code: code,
         inputPath: inputPath,
         outputPath: outputPath,
+        mapOutputPath: sourceMap.getSourceMapOutputPath(outputPath),
         bundleDir: bundleDir,
         nodeModulesPath: path.join(__dirname, 'node_modules'),
         outputBundleOnly: bundlerOptions.outputbundleonly,

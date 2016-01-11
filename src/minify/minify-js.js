@@ -21,7 +21,9 @@ function minify(options) {
 
             var minifiedJs = generateCode(ast);
 
-            resolve(minifiedJs);
+            resolve({
+                code: minifiedJs
+            });
 
         } catch (err) {
 

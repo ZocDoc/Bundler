@@ -27,9 +27,10 @@ function compile(options) {
                 };
 
             if (options.sourceMap) {
+                lessOptions.filename = sourceMap.getSourceFilePath(options.inputPath, options.siteRoot);
                 lessOptions.sourceMap = {
-                    sourceMapFileInline: true,
-                    sourceMapRootpath: sourceMap.getSourceMapRoot(options.inputPath, options.siteRoot)
+                    sourceMapBasepath: options.siteRoot,
+                    sourceMapRootpath: '/'
                 };
             }
 
@@ -42,7 +43,10 @@ function compile(options) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result.css);
+                    resolve({
+                        code: result.css,
+                        map: result.map
+                    });
                 }
 
             });

@@ -26,8 +26,8 @@ function compile(options) {
             };
 
             if (options.sourceMap) {
+                sassOptions.sourceMap = true;
                 sassOptions.sourceMapRoot = sourceMap.getSourceMapRoot(options.inputPath, options.siteRoot);
-                sassOptions.sourceMapEmbed = true;
             }
 
             sass.render(sassOptions, function (err, result) {
@@ -35,7 +35,10 @@ function compile(options) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result.css.toString());
+                    resolve({
+                        code: result.css.toString(),
+                        map: JSON.stringify(result.map)
+                    });
                 }
 
             });

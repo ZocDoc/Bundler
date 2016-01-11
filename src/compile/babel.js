@@ -30,7 +30,7 @@ function transform(presets, options) {
 
     return {
         code: result.code,
-        map: result.map
+        map: JSON.stringify(result.map)
     };
 
 }
