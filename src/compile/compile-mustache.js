@@ -1,3 +1,4 @@
+var compileAsync = require('../compile-async');
 var hogan = require('hogan.js-template/lib/hogan.js');
 var path = require('path');
 var Promise = require('bluebird');
@@ -5,7 +6,7 @@ var Promise = require('bluebird');
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {string} options.filePath
+ * @param {string} options.inputPath
  * @param {boolean} options.useTemplateDirs
  * @returns {bluebird}
  */
@@ -15,7 +16,7 @@ function compile(options) {
 
         try {
 
-            var templateName = getTemplateName(options.filePath, options.useTemplateDirs);
+            var templateName = getTemplateName(options.inputPath, options.useTemplateDirs);
 
             var compiledTemplate = compileTemplate(options.code);
 
@@ -60,4 +61,4 @@ function compileTemplate(code) {
 
 }
 
-module.exports = compile;
+module.exports = compileAsync(compile);

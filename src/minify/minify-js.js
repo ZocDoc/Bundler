@@ -1,10 +1,11 @@
+var compileAsync = require('../compile-async');
 var Promise = require('bluebird');
 var uglify = require('uglify-js');
 
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {string} options.filePath
+ * @param {string} options.inputPath
  * @returns {bluebird}
  */
 function minify(options) {
@@ -13,7 +14,7 @@ function minify(options) {
 
         try {
 
-            var ast = generateSyntaxTree(options.code, options.filePath);
+            var ast = generateSyntaxTree(options.code, options.inputPath);
 
             ast = compress(ast);
 
@@ -72,4 +73,4 @@ function generateCode(ast) {
 
 }
 
-module.exports = minify;
+module.exports = compileAsync(minify);

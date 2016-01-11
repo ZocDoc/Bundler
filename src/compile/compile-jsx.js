@@ -1,3 +1,4 @@
+var compileAsync = require('../compile-async');
 var Promise = require('bluebird');
 var react = require('react-tools');
 var sourceMap = require('../source-map-utility');
@@ -5,7 +6,7 @@ var sourceMap = require('../source-map-utility');
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {string} options.filePath
+ * @param {string} options.inputPath
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
  * @returns {bluebird}
@@ -20,7 +21,7 @@ function compile(options) {
 
             if (options.sourceMap) {
                 reactOptions.sourceMap = true;
-                reactOptions.sourceFilename = sourceMap.getSourceFilePath(options.filePath, options.siteRoot);
+                reactOptions.sourceFilename = sourceMap.getSourceFilePath(options.inputPath, options.siteRoot);
             }
 
             var compiledJsx = react.transform(options.code, reactOptions);
@@ -37,4 +38,4 @@ function compile(options) {
 
 }
 
-module.exports = compile;
+module.exports = compileAsync(compile);

@@ -1,3 +1,4 @@
+var compileAsync = require('../compile-async');
 var directoryCrawler = require('../directory-crawler');
 var path = require('path');
 var Promise = require('bluebird');
@@ -7,7 +8,7 @@ var sourceMap = require('../source-map-utility');
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {string} options.filePath
+ * @param {string} options.inputPath
  * @param {string} options.bundleDir
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
@@ -20,13 +21,13 @@ function compile(options) {
         try {
 
             var sassOptions = {
-                file: path.basename(options.filePath),
+                file: path.basename(options.inputPath),
                 data: options.code,
                 includePaths: directoryCrawler.crawl(options.bundleDir)
             };
 
             if (options.sourceMap) {
-                sassOptions.sourceMapRoot = sourceMap.getSourceMapRoot(options.filePath, options.siteRoot);
+                sassOptions.sourceMapRoot = sourceMap.getSourceMapRoot(options.inputPath, options.siteRoot);
                 sassOptions.sourceMapEmbed = true;
             }
 
@@ -50,4 +51,4 @@ function compile(options) {
 
 }
 
-module.exports = compile;
+module.exports = compileAsync(compile);

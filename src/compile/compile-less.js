@@ -1,3 +1,4 @@
+var compileAsync = require('../compile-async');
 var less = require('less');
 var path = require('path');
 var Promise = require('bluebird');
@@ -6,7 +7,7 @@ var sourceMap = require('../source-map-utility');
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {string} options.filePath
+ * @param {string} options.inputPath
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
  * @param {boolean} options.outputBundleStats
@@ -19,8 +20,8 @@ function compile(options) {
 
         try {
 
-            var lessDir = path.dirname(options.filePath),
-                fileName = path.basename(options.filePath),
+            var lessDir = path.dirname(options.inputPath),
+                fileName = path.basename(options.inputPath),
                 lessOptions = {
                     paths: ['.', lessDir], // Specify search paths for @import directives
                     filename: fileName
@@ -29,12 +30,12 @@ function compile(options) {
             if (options.sourceMap) {
                 lessOptions.sourceMap = {
                     sourceMapFileInline: true,
-                    sourceMapRootpath: sourceMap.getSourceMapRoot(options.filePath, options.siteRoot)
+                    sourceMapRootpath: sourceMap.getSourceMapRoot(options.inputPath, options.siteRoot)
                 };
             }
 
             if (options.outputBundleStats) {
-                options.bundleStatsCollector.SearchForLessImports(options.filePath, options.code);
+                options.bundleStatsCollector.SearchForLessImports(options.inputPath, options.code);
             }
 
             less.render(options.code, lessOptions, function (err, result) {
@@ -57,4 +58,4 @@ function compile(options) {
 
 }
 
-module.exports = compile;
+module.exports = compileAsync(compile);

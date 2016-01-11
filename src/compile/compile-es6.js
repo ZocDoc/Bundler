@@ -1,4 +1,5 @@
 var babel = require('babel-core');
+var compileAsync = require('../compile-async');
 var path = require('path');
 var Promise = require('bluebird');
 var sourceMap = require('../source-map-utility');
@@ -6,7 +7,7 @@ var sourceMap = require('../source-map-utility');
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {string} options.filePath
+ * @param {string} options.inputPath
  * @param {string} options.nodeModulesPath
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
@@ -27,7 +28,7 @@ function compile(options) {
 
             if (options.sourceMap) {
                 babelOptions.sourceMaps = 'inline';
-                babelOptions.sourceFileName = sourceMap.getSourceFilePath(options.filePath, options.siteRoot);
+                babelOptions.sourceFileName = sourceMap.getSourceFilePath(options.inputPath, options.siteRoot);
             }
 
             var result = babel.transform(options.code, babelOptions);
@@ -44,4 +45,4 @@ function compile(options) {
 
 }
 
-module.exports = compile;
+module.exports = compileAsync(compile);
