@@ -1,7 +1,5 @@
-var babel = require('babel-core');
-var path = require('path');
+var babel = require('./babel');
 var Promise = require('bluebird');
-var sourceMap = require('../source-map-utility');
 
 /**
  * @param {object} options
@@ -18,21 +16,12 @@ function compile(options) {
 
         try {
 
-            var babelOptions = {
-                presets: [
-                    path.join(options.nodeModulesPath, 'babel-preset-es2015'),
-                    path.join(options.nodeModulesPath, 'babel-preset-react')
-                ]
-            };
+            var result = babel.transform(['babel-preset-es2015', 'babel-preset-react'], options);
 
-            if (options.sourceMap) {
-                babelOptions.sourceMaps = 'inline';
-                babelOptions.sourceFileName = sourceMap.getSourceFilePath(options.inputPath, options.siteRoot);
-            }
-
-            var result = babel.transform(options.code, babelOptions);
-
-            resolve(result.code);
+            resolve({
+                code: result.code,
+                map: result.map
+            });
 
         } catch (err) {
 

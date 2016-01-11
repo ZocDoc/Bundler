@@ -1,11 +1,11 @@
+var babel = require('./babel');
 var Promise = require('bluebird');
-var react = require('react-tools');
-var sourceMap = require('../source-map-utility');
 
 /**
  * @param {object} options
  * @param {string} options.code
  * @param {string} options.inputPath
+ * @param {string} options.nodeModulesPath
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
  * @returns {bluebird}
@@ -16,16 +16,12 @@ function compile(options) {
 
         try {
 
-            var reactOptions = {};
+            var result = babel.transform(['babel-preset-react'], options);
 
-            if (options.sourceMap) {
-                reactOptions.sourceMap = true;
-                reactOptions.sourceFilename = sourceMap.getSourceFilePath(options.inputPath, options.siteRoot);
-            }
-
-            var compiledJsx = react.transform(options.code, reactOptions);
-
-            resolve(compiledJsx);
+            resolve({
+                code: result.code,
+                map: result.map
+            });
 
         } catch (err) {
 
