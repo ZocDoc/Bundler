@@ -8,12 +8,17 @@ var Step = require('step');
  * @param {string} options.code
  * @param {string} options.inputPath
  * @param {string} options.outputPath
+ * @param {string} options.bundleDir
+ * @param {string} options.nodeModulesPath
  * @param {boolean} options.outputBundleOnly
  * @param {boolean} options.outputBundleStats
  * @param {object} options.bundleStatsCollector
- * @param {function} compile
+ * @param {boolean} options.sourceMap
+ * @param {string} options.siteRoot
+ * @param {boolean} options.useTemplateDirs
+ * @param {function} processFn
  */
-function compileAsync(options, compile) {
+function processAsync(options, processFn) {
 
     return new Promise(function(resolve, reject) {
 
@@ -43,9 +48,9 @@ function compileAsync(options, compile) {
                                 throw err;
                             }
 
-                            var shouldRecompile = outputFileStat.mtime.getTime() < inputFileStat.mtime.getTime();
+                            var shouldReprocess = outputFileStat.mtime.getTime() < inputFileStat.mtime.getTime();
 
-                            if (options.outputBundleStats && !shouldRecompile) {
+                            if (options.outputBundleStats && !shouldReprocess) {
 
                                 var imports = options.bundleStatsCollector.GetImportsForFile(options.inputPath) || [];
 
@@ -53,16 +58,16 @@ function compileAsync(options, compile) {
 
                                     var importStat = fs.statSync(imports[i]);
 
-                                    shouldRecompile = outputFileStat.mtime.getTime() < importStat.mtime.getTime();
+                                    shouldReprocess = outputFileStat.mtime.getTime() < importStat.mtime.getTime();
 
-                                    if (shouldRecompile) {
+                                    if (shouldReprocess) {
                                         break;
                                     }
                                 }
 
                             }
 
-                            next(shouldRecompile);
+                            next(shouldReprocess);
 
                         });
                     });
@@ -73,7 +78,7 @@ function compileAsync(options, compile) {
 
                 if (shouldRecompile) {
 
-                    var onAfterCompiled = function(code) {
+                    var onAfterProcessed = function(code) {
 
                         if (options.outputBundleOnly) {
 
@@ -94,8 +99,8 @@ function compileAsync(options, compile) {
                         }
                     };
 
-                    compile(options)
-                        .then(onAfterCompiled)
+                    processFn(options)
+                        .then(onAfterProcessed)
                         .catch(reject);
 
                 } else {
@@ -115,12 +120,4 @@ function compileAsync(options, compile) {
 
 }
 
-module.exports = function(compile) {
-
-    return function(options) {
-
-        return compileAsync(options, compile);
-
-    };
-
-};
+module.exports = processAsync;
