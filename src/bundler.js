@@ -501,136 +501,105 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 }
 
 function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
-    compileAsync(options, "compiling", function(jsxText, jsxPath, cb) {
-        compile.jsx({
+    compile.jsx({
             code: jsxText,
-            filePath: jsxPath,
-            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
-        }).then(cb).catch(handleError);
-    }, jsxText, jsxPath, jsPath, cb);
-}
-
-function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
-    compileAsync(options, "compiling", function(es6Text, es6Path, cb) {
-        compile.es6({
-            code: es6Text,
-            filePath: es6Path,
-            nodeModulesPath: path.join(__dirname, 'node_modules'),
-            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
-            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
-        }).then(cb).catch(handleError);
-    }, es6Text, es6Path, jsPath, cb);
-}
-
-function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb) {
-	compileAsync(options, "compiling", function (mustacheText, mPath, cb) {
-        compile.mustache({
-            code: mustacheText,
-            filePath: mPath,
-            useTemplateDirs: options.usetemplatedirs
-        }).then(cb).catch(handleError);
-    }, mustacheText, mPath, jsPath, cb);
-}
-
-function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
-    compileAsync(options, "minifying", function (js, jsPath, cb) {
-        minify.js({
-            code: js,
-            filePath: jsPath
-        }).then(cb).catch(handleError);
-    }, js, jsPath, minJsPath, cb);
-}
-
-function getOrCreateLessCss(options, less, lessPath, cssPath, cb) {
-    compileAsync(options, "compiling", function(lessCss, lessPath, cb) {
-        compile.less({
-            code: lessCss,
-            filePath: lessPath,
+            inputPath: jsxPath,
+            outputPath: jsPath,
+            outputBundleOnly: options.outputbundleonly,
             outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
             bundleStatsCollector: bundleStatsCollector,
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
             siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
-        }).then(cb).catch(handleError);
-    }, less, lessPath, cssPath, cb);
+        })
+        .then(cb)
+        .catch(handleError);
+}
+
+function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
+    compile.es6({
+            code: es6Text,
+            inputPath: es6Path,
+            outputPath: jsPath,
+            nodeModulesPath: path.join(__dirname, 'node_modules'),
+            outputBundleOnly: options.outputbundleonly,
+            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
+            bundleStatsCollector: bundleStatsCollector,
+            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
+        })
+        .then(cb)
+        .catch(handleError);
+}
+
+function getOrCreateJsMustache(options, mustacheText, mustachePath, jsPath, cb) {
+    compile.mustache({
+            code: mustacheText,
+            inputPath: mustachePath,
+            outputPath: jsPath,
+            useTemplateDirs: options.usetemplatedirs,
+            outputBundleOnly: options.outputbundleonly,
+            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
+            bundleStatsCollector: bundleStatsCollector
+        })
+        .then(cb)
+        .catch(handleError);
+}
+
+function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
+    minify.js({
+            code: js,
+            inputPath: jsPath,
+            outputPath: minJsPath,
+            outputBundleOnly: options.outputbundleonly,
+            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
+            bundleStatsCollector: bundleStatsCollector
+        })
+        .then(cb)
+        .catch(handleError);
+}
+
+function getOrCreateLessCss(options, lessText, lessPath, cssPath, cb) {
+    compile.less({
+            code: lessText,
+            inputPath: lessPath,
+            outputPath: cssPath,
+            outputBundleOnly: options.outputbundleonly,
+            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
+            bundleStatsCollector: bundleStatsCollector,
+            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
+        })
+        .then(cb)
+        .catch(handleError);
 }
 
 function getOrCreateSassCss(options, sassText, sassPath, cssPath, bundleDir, cb) {
-    compileAsync(options, "compiling", function(sassCss, sassPath, cb) {
-        compile.sass({
-            code: sassCss,
-            filePath: sassPath,
+    compile.sass({
+            code: sassText,
+            inputPath: sassPath,
+            outputPath: cssPath,
             bundleDir: bundleDir,
+            outputBundleOnly: options.outputbundleonly,
+            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
+            bundleStatsCollector: bundleStatsCollector,
             sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
             siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
-        }).then(cb).catch(handleError);
-    }, sassText, sassPath, cssPath, cb);
+        })
+        .then(cb)
+        .catch(handleError);
 }
 
 function getOrCreateMinCss(options, css, cssPath, minCssPath, cb) {
-    compileAsync(options, "minifying", function (css, cssPath, cb) {
-        minify.css({
+    minify.css({
             code: css,
-            filePath: cssPath
-        }).then(cb).catch(handleError);
-    }, css, cssPath, minCssPath, cb);
-}
-
-function compileAsync(options, mode, compileFn /*compileFn(text, textPath, cb(compiledText))*/,
-    text, textPath, compileTextPath, cb /*cb(compiledText)*/) {
-	
-    Step(
-        function () {
-            fs.exists(compileTextPath, this);
-        },
-        function (exists) {
-
-            var next = this;
-            if (!exists)
-                next(!exists);
-            else {
-                fs.stat(textPath, function (_, textStat) {
-                    fs.stat(compileTextPath, function (_, minTextStat) {
-
-                        var shouldCompile = minTextStat.mtime.getTime() < textStat.mtime.getTime();
-
-                        if(bundlerOptions.DefaultOptions.outputbundlestats && !shouldCompile) {
-                            var imports = bundleStatsCollector.GetImportsForFile(textPath) || [];
-
-                            for(var i=0; i < imports.length; i++) {
-                                
-                                var importStat = fs.statSync(imports[i]);
-
-                                shouldCompile = minTextStat.mtime.getTime() < importStat.mtime.getTime();
-
-                                if(shouldCompile) {
-                                    break;
-                                }
-                            }
-                        };
-
-                        next(shouldCompile);
-                    });
-                });
-            }
-        },
-        function (doCompile) {
-            if (doCompile) {
-                var onAfterCompiled = function(minText) {
-                    if (options.outputbundleonly) {
-                        cb(minText);
-                    } else {
-                        fs.writeFile(compileTextPath, minText, 'utf-8', function(_) {
-                            cb(minText);
-                        });
-                    }
-                };
-                compileFn(text, textPath, onAfterCompiled);
-            } else {
-                readTextFile(compileTextPath, cb);
-            }
-        }
-    );
+            inputPath: cssPath,
+            outputPath: minCssPath,
+            outputBundleOnly: options.outputbundleonly,
+            outputBundleStats: bundlerOptions.DefaultOptions.outputbundlestats,
+            bundleStatsCollector: bundleStatsCollector
+        })
+        .then(cb)
+        .catch(handleError);
 }
 
 function removeCR(text) {
