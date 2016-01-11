@@ -50,7 +50,6 @@ var fs = require("fs"),
     nib = require('nib'),
     coffee = require('coffee-script'),
     livescript = require('livescript'),
-    CleanCss = require('clean-css'),
     Step = require('step'),
     startedAt = Date.now(),
     hashingRequire = require('./bundle-stats.js'),
@@ -74,6 +73,7 @@ var fs = require("fs"),
             mustache: require('./tasks/compile/compile-mustache')
         },
         minify: {
+            css: require('./tasks/minify/minif-css'),
             js: require('./tasks/minify/minify-js')
         }
     },
@@ -585,7 +585,7 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb) {
     }, mustacheText, mPath, jsPath, cb);
 }
 
-function getOrCreateMinJs(options, js, jsPath, minJsPath, cb /*cb(minJs)*/) {
+function getOrCreateMinJs(options, js, jsPath, minJsPath, cb) {
     compileAsync(options, "minifying", function (js, jsPath, cb) {
         tasks.minify.js({
             code: js,
@@ -620,18 +620,14 @@ function getOrCreateStylusCss(options, stylusText, stylusPath, cssPath, cb /*cb(
     }, stylusText, stylusPath, cssPath, cb);
 }
 
-function getOrCreateMinCss(options, css, cssPath, minCssPath, cb /*cb(minCss)*/) {
+function getOrCreateMinCss(options, css, cssPath, minCssPath, cb) {
     compileAsync(options, "minifying", function (css, cssPath, cb) {
-            new CleanCss({
-                advanced: false,
-                restructuring: false
-            }).minify(css, function(err, minCss) {
-                if (err) {
-                    throw err;
-                }
-                cb(minCss.styles);
-            });
-        }, css, cssPath, minCssPath, cb);
+        tasks.minify.css({
+            code: css,
+            filePath: cssPath,
+            callback: cb
+        });
+    }, css, cssPath, minCssPath, cb);
 }
 
 function compileAsync(options, mode, compileFn /*compileFn(text, textPath, cb(compiledText))*/,
