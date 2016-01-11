@@ -340,18 +340,38 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                         useTemplateDirs: options.usetemplatedirs
                     };
 
-                    if (options.outputbundlestats) {
-                        bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                    }
-
                     if (isMustache) {
+
+                        if (options.outputbundlestats) {
+                            bundleStatsCollector.ParseMustacheForStats(jsBundle, code);
+                        }
+
                         compile.mustache(compileOptions).then(next).catch(handleError);
+
                     } else if (isJsx) {
+
+                        if (options.outputbundlestats) {
+                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
+                        }
+
                         compile.jsx(compileOptions).then(next).catch(handleError);
+
                     } else if (isES6) {
+
+                        if (options.outputbundlestats) {
+                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
+                        }
+
                         compile.es6(compileOptions).then(next).catch(handleError);
+
                     } else {
+
+                        if (options.outputbundlestats) {
+                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
+                        }
+
                         next(code);
+
                     }
 
 
