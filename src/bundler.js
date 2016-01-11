@@ -52,7 +52,6 @@ var fs = require("fs"),
     coffee = require('coffee-script'),
     livescript = require('livescript'),
     react = require('react-tools'),
-    babel = require('babel-core'),
     CleanCss = require('clean-css'),
     Step = require('step'),
     startedAt = Date.now(),
@@ -71,7 +70,12 @@ var fs = require("fs"),
     directoryCrawler = require('./directory-crawler'),
     sourceMap = require('./source-map-utility'),
     tasks = {
-        minifyJs: require('./tasks/minify/minify-js')
+        compile: {
+            es6: require('./tasks/compile/compile-es6')
+        },
+        minify: {
+            js: require('./tasks/minify/minify-js')
+        }
     },
     urlVersioning = null;
 
@@ -562,21 +566,12 @@ function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
 
 function getOrCreateES6(options, es6Text, es6Path, jsPath, cb) {
     compileAsync(options, "compiling", function(es6Text, es6Path, cb) {
-            var babelOptions = {
-                    presets: [
-                        path.join(__dirname, "node_modules", "babel-preset-es2015"),
-                        path.join(__dirname, "node_modules", "babel-preset-react")
-                    ]
-                };
-
-            if (bundlerOptions.DefaultOptions.sourcemaps) {
-                babelOptions.sourceMaps = 'inline';
-                babelOptions.sourceFileName = sourceMap.getSourceFilePath(es6Path, bundlerOptions.DefaultOptions.siterootdirectory);
-            }
-
-            var result = babel.transform(es6Text, babelOptions);
-            cb(result.code);
-        }, es6Text, es6Path, jsPath, cb);
+        var nodeModulesPath = path.join(__dirname, 'node_modules');
+        cb(tasks.compile.es6(es6Text, es6Path, nodeModulesPath, {
+            sourceMap: bundlerOptions.DefaultOptions.sourcemaps,
+            siteRoot: bundlerOptions.DefaultOptions.siterootdirectory
+        }));
+    }, es6Text, es6Path, jsPath, cb);
 }
 
 function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)*/) {
@@ -600,7 +595,7 @@ function getOrCreateJsMustache(options, mustacheText, mPath, jsPath, cb /*cb(js)
 
 function getOrCreateMinJs(options, js, jsPath, minJsPath, cb /*cb(minJs)*/) {
     compileAsync(options, "minifying", function (js, jsPath, cb) {
-        cb(tasks.minifyJs(js, jsPath));
+        cb(tasks.minify.js(js, jsPath));
     }, js, jsPath, minJsPath, cb);
 }
 
