@@ -45,7 +45,6 @@ process.on("uncaughtException", handleError);
 var fs = require("fs"),
     path = require("path"),
     nib = require('nib'),
-    livescript = require('livescript'),
     Step = require('step'),
     startedAt = Date.now(),
     hashingRequire = require('./bundle-stats.js'),
@@ -322,12 +321,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         processedFiles[file] = true;
 
-        var isLiveScript = file.endsWith(".ls");
         var isMustache = file.endsWith(".mustache");
         var isJsx = file.endsWith(".jsx");
         var isES6 = file.endsWith(".es6");
-        var jsFile = isLiveScript ? file.replace(".ls", ".js")
-                   : isMustache ? file.replace(".mustache", ".js")
+        var jsFile = isMustache ? file.replace(".mustache", ".js")
                    : isJsx ? file.replace(".jsx", ".js")
                    : isES6 ? file.replace(".es6", ".js")
 	           : file;
@@ -342,11 +339,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         Step(
             function () {
                 var next = this;
-                if(isLiveScript){
-                    readTextFile(filePath, function(livescriptText){
-                        getOrCreateJsLiveScript(options, livescriptText, filePath, jsPath, next);
-                    });
-                } else if(isMustache){
+                if (isMustache){
 
                     jsPath = jsPathOutput;
                     readTextFile(filePath, function(mustacheText){
@@ -518,12 +511,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             }
         );
     });
-}
-
-function getOrCreateJsLiveScript(options, livescriptText, lsPath, jsPath, cb /*cb(js)*/) {
-    compileAsync(options, "compiling", function (livescriptText, lsPath, cb) {
-            cb(livescript.compile(livescriptText));
-        }, livescriptText, lsPath, jsPath, cb);
 }
 
 function getOrCreateJsx(options, jsxText, jsxPath, jsPath, cb) {
