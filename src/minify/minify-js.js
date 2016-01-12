@@ -37,7 +37,7 @@ function minify(options) {
 
 function generateSyntaxTree(js, filePath) {
 
-    uglify.base64.reset();
+    uglify.base54.reset();
 
     return uglify.parse(js, {
         filename: filePath
