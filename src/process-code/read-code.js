@@ -1,4 +1,5 @@
 var fs = require('fs');
+var exists = require('./exists');
 var Promise = require('bluebird');
 var readTextFile = require('../read-text-file');
 
@@ -8,15 +9,21 @@ function readCode(filePath, mapFilePath) {
 
         readTextFile(filePath, function(code) {
 
-            fs.stat(mapFilePath, function(err) {
+            exists(mapFilePath, function(err, mapExists) {
 
-                if (!err) {
+                if (err) {
+                    reject(err);
+                }
+
+                if (mapExists) {
 
                     readTextFile(mapFilePath, function(map) {
+
                         resolve({
-                            code: code,
-                            map: map
+                            code: removeSourceMapUrl(code),
+                            map: JSON.parse(map)
                         });
+
                     });
 
                 } else {
@@ -32,6 +39,12 @@ function readCode(filePath, mapFilePath) {
         });
 
     });
+
+}
+
+function removeSourceMapUrl(code) {
+
+    return code.replace(/\n\/\* # sourceMappingUrl=(.*)$/g, '');
 
 }
 
