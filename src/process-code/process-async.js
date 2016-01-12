@@ -1,9 +1,8 @@
+var files = require('../files');
 var fs = require('fs');
 var Promise = require('bluebird');
-var readCode = require('./read-code');
 var sourceMap = require('../source-map');
 var Step = require('step');
-var writeCode = require('./write-code');
 
 /**
  * @param {object} options
@@ -90,9 +89,7 @@ function processAsync(options, processFn) {
 
                         } else {
 
-                            result.map = sourceMap.clean(result.map, options.outputPath, options.siteRoot);
-
-                            writeCode(result.code, result.map, options.outputPath, options.mapOutputPath, options.siteRoot)
+                            files.write(result.code, result.map, options.outputPath, options.mapOutputPath, options.siteRoot)
                                 .then(resolve)
                                 .catch(reject);
 
@@ -105,7 +102,7 @@ function processAsync(options, processFn) {
 
                 } else {
 
-                    readCode(options.outputPath, options.mapOutputPath)
+                    files.read(options.outputPath, options.mapOutputPath)
                         .then(resolve)
                         .catch(reject);
 

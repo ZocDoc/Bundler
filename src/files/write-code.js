@@ -1,10 +1,13 @@
 var fs = require('fs');
 var Promise = require('bluebird');
-var sourceMap = require('../source-map-utility');
+var sourceMap = require('../source-map');
+var sourceMapUtil = require('../source-map-utility');
 
 function writeCode(code, map, outputPath, mapOutputPath, siteRoot) {
 
     return new Promise(function(resolve, reject) {
+
+        map = sourceMap.clean(map, mapOutputPath, siteRoot);
 
         fs.writeFile(outputPath, getCodeToWrite(code, map, mapOutputPath, siteRoot), 'utf-8', function(err) {
 
@@ -45,7 +48,7 @@ function getCodeToWrite(code, map, mapOutputPath, siteRoot) {
 
     if (map) {
 
-        var mapUrl = sourceMap.getSourceFilePath(mapOutputPath, siteRoot);
+        var mapUrl = sourceMapUtil.getSourceFilePath(mapOutputPath, siteRoot);
 
         code = code + '\n/* # sourceMappingURL=' + mapUrl + ' */';
 
