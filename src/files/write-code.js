@@ -7,9 +7,9 @@ function writeCode(code, map, outputPath, mapOutputPath, siteRoot) {
 
     return new Promise(function(resolve, reject) {
 
-        map = sourceMap.clean(map, mapOutputPath, siteRoot);
+        map = sourceMap.clean(map, siteRoot);
 
-        fs.writeFile(outputPath, getCodeToWrite(code, map, mapOutputPath, siteRoot), 'utf-8', function(err) {
+        fs.writeFile(outputPath, getCodeToWrite(code, map, outputPath, mapOutputPath, siteRoot), 'utf-8', function(err) {
 
             if (err) {
                 reject(err);
@@ -44,17 +44,27 @@ function writeCode(code, map, outputPath, mapOutputPath, siteRoot) {
 
 }
 
-function getCodeToWrite(code, map, mapOutputPath, siteRoot) {
+function getCodeToWrite(code, map, outputPath, mapOutputPath, siteRoot) {
 
     if (map) {
 
         var mapUrl = sourceMapUtil.getSourceFilePath(mapOutputPath, siteRoot);
 
-        code = code + '\n/* # sourceMappingURL=' + mapUrl + ' */';
+        code = code + '\n' + getSourceMappingURLComment(mapUrl, outputPath);
 
     }
 
     return code;
+
+}
+
+function getSourceMappingURLComment(mapUrl, outputPath) {
+
+    if (outputPath.endsWith('.js')) {
+        return '//# sourceMappingURL=' + mapUrl;
+    } else {
+        return '/*# sourceMappingURL=' + mapUrl + ' */';
+    }
 
 }
 

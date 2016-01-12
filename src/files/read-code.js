@@ -44,7 +44,7 @@ function readCode(filePath, mapFilePath) {
 
 function removeSourceMapUrl(code) {
 
-    return code.replace(/\n\/\* # sourceMappingURL=(.*)$/g, '');
+    return code.replace(/\n\/(\*|\/)# sourceMappingURL=(.*)$/g, '');
 
 }
 
