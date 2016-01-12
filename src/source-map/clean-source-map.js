@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var path = require('path');
 
-function clean(map, outputPath, siteRoot) {
+function clean(map, siteRoot) {
 
     if (!map) {
         return map;
@@ -9,34 +9,22 @@ function clean(map, outputPath, siteRoot) {
 
     return {
         version: map.version,
-        sources: cleanSources(map.sources, outputPath, siteRoot),
+        sources: cleanSources(map.sources, siteRoot),
         names: map.names,
         mappings: map.mappings
     };
 
 }
 
-function cleanSources(sources, outputPath, siteRoot) {
+function cleanSources(sources, siteRoot) {
 
     return sources.map(function(source) {
-        return getSourceFilePath(source, outputPath, siteRoot);
+        return getSourceFilePath(source, siteRoot);
     });
 
 }
 
-function getAbsolutePath(relativePath, outputPath) {
-
-    if (path.isAbsolute(relativePath)) {
-        return relativePath;
-    }
-
-    return path.resolve(path.dirname(outputPath), relativePath);
-
-}
-
-function getSourceMapRoot(filePath, outputPath, siteRoot) {
-
-    filePath = getAbsolutePath(filePath, outputPath);
+function getSourceMapRoot(filePath, siteRoot) {
 
     var directory = path.normalize(path.dirname(filePath));
 
@@ -46,12 +34,16 @@ function getSourceMapRoot(filePath, outputPath, siteRoot) {
 
 }
 
-function getSourceFilePath(filePath, outputPath, siteRoot) {
+function getSourceFilePath(filePath, siteRoot) {
 
-    var sourceMapRoot = getSourceMapRoot(filePath, outputPath, siteRoot),
-        sourceMapPath = path.join(sourceMapRoot, path.basename(filePath));
+    var sourceMapRoot = getSourceMapRoot(filePath, siteRoot),
+        sourceMapPath = path.join(sourceMapRoot, path.basename(filePath)).replace(/\\/g, '/');
 
-    return sourceMapPath.replace(/\\/g, '/')
+    if (!sourceMapPath.startsWith('/')) {
+        sourceMapPath = '/' + sourceMapPath;
+    }
+
+    return sourceMapPath;
 
 }
 
