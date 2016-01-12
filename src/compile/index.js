@@ -1,7 +1,14 @@
+var compileES6 = require('./compile-es6');
+var compileJSX = require('./compile-jsx');
+var compileLESS = require('./compile-less');
+var compileMustache = require('./compile-mustache');
+var compileSASS = require('./compile-sass');
+var processCode = require('../process-code');
+
 module.exports = {
-    es6: require('./compile-es6'),
-    jsx: require('./compile-jsx'),
-    less: require('./compile-less'),
-    mustache: require('./compile-mustache'),
-    sass: require('./compile-sass')
+    es6: processCode.with(compileES6),
+    jsx: processCode.with(compileJSX),
+    less: processCode.with(compileLESS),
+    mustache: processCode.with(compileMustache),
+    sass: processCode.with(compileSASS)
 };

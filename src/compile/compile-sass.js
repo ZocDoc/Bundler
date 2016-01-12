@@ -1,48 +1,52 @@
 var directoryCrawler = require('../directory-crawler');
 var path = require('path');
+var Promise = require('bluebird');
 var sass = require('node-sass');
 var sourceMap = require('../source-map-utility');
 
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {string} options.filePath
+ * @param {string} options.inputPath
  * @param {string} options.bundleDir
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
- * @param {function} options.success
- * @param {function} options.error
+ * @returns {bluebird}
  */
 function compile(options) {
 
-    try {
+    return new Promise(function(resolve, reject) {
 
-        var sassOptions = {
-            file: path.basename(options.filePath),
-            data: options.code,
-            includePaths: directoryCrawler.crawl(options.bundleDir)
-        };
+        try {
 
-        if (options.sourceMap) {
-            sassOptions.sourceMapRoot = sourceMap.getSourceMapRoot(options.filePath, options.siteRoot);
-            sassOptions.sourceMapEmbed = true;
-        }
+            var sassOptions = {
+                file: path.basename(options.inputPath),
+                data: options.code,
+                includePaths: directoryCrawler.crawl(options.bundleDir)
+            };
 
-        sass.render(sassOptions, function (err, result) {
-
-            if (err) {
-                options.error(err);
-            } else {
-                options.success(result.css.toString());
+            if (options.sourceMap) {
+                sassOptions.sourceMapRoot = sourceMap.getSourceMapRoot(options.inputPath, options.siteRoot);
+                sassOptions.sourceMapEmbed = true;
             }
 
-        });
+            sass.render(sassOptions, function (err, result) {
 
-    } catch(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result.css.toString());
+                }
 
-        options.error(err);
+            });
 
-    }
+        } catch (err) {
+
+            reject(err);
+
+        }
+
+    });
 
 }
 

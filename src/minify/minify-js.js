@@ -1,31 +1,35 @@
+var Promise = require('bluebird');
 var uglify = require('uglify-js');
 
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {string} options.filePath
- * @param {function} options.success
- * @param {function} options.error
+ * @param {string} options.inputPath
+ * @returns {bluebird}
  */
 function minify(options) {
 
-    try {
+    return new Promise(function(resolve, reject) {
 
-        var ast = generateSyntaxTree(options.code, options.filePath);
+        try {
 
-        ast = compress(ast);
+            var ast = generateSyntaxTree(options.code, options.inputPath);
 
-        mangle(ast);
+            ast = compress(ast);
 
-        var minifiedJs = generateCode(ast);
+            mangle(ast);
 
-        options.success(minifiedJs);
+            var minifiedJs = generateCode(ast);
 
-    } catch (err) {
+            resolve(minifiedJs);
 
-        options.error(err);
+        } catch (err) {
 
-    }
+            reject(err);
+
+        }
+
+    });
 
 }
 

@@ -1,36 +1,40 @@
 var hogan = require('hogan.js-template/lib/hogan.js');
 var path = require('path');
+var Promise = require('bluebird');
 
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {string} options.filePath
+ * @param {string} options.inputPath
  * @param {boolean} options.useTemplateDirs
- * @param {function} options.success
- * @param {function} options.error
+ * @returns {bluebird}
  */
 function compile(options) {
 
-    try {
+    return new Promise(function(resolve, reject) {
 
-        var templateName = getTemplateName(options.filePath, options.useTemplateDirs);
+        try {
 
-        var compiledTemplate = compileTemplate(options.code);
+            var templateName = getTemplateName(options.inputPath, options.useTemplateDirs);
 
-        var templateObject = '{ code: ' + compiledTemplate + ', partials: {}, subs: {} }';
+            var compiledTemplate = compileTemplate(options.code);
 
-        var result = 'window["JST"] = window["JST"] || {};'
-            + ' JST[\''
-            + templateName
-            + '\'] = new Hogan.Template(' + templateObject + ');';
+            var templateObject = '{ code: ' + compiledTemplate + ', partials: {}, subs: {} }';
 
-        options.success(result);
+            var result = 'window["JST"] = window["JST"] || {};'
+                + ' JST[\''
+                + templateName
+                + '\'] = new Hogan.Template(' + templateObject + ');';
 
-    } catch (err) {
+            resolve(result);
 
-        options.error(err);
+        } catch (err) {
 
-    }
+            reject(err);
+
+        }
+
+    });
 
 }
 
