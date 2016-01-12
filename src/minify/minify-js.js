@@ -4,7 +4,9 @@ var uglify = require('uglify-js');
 /**
  * @param {object} options
  * @param {string} options.code
+ * @param {object} options.map
  * @param {string} options.inputPath
+ * @param {boolean} options.sourceMap
  * @returns {bluebird}
  */
 function minify(options) {
@@ -19,11 +21,9 @@ function minify(options) {
 
             mangle(ast);
 
-            var minifiedJs = generateCode(ast);
+            var result = generateCode(ast, options);
 
-            resolve({
-                code: minifiedJs
-            });
+            resolve(result);
 
         } catch (err) {
 
@@ -36,6 +36,8 @@ function minify(options) {
 }
 
 function generateSyntaxTree(js, filePath) {
+
+    uglify.base64.reset();
 
     return uglify.parse(js, {
         filename: filePath
@@ -63,14 +65,32 @@ function mangle(ast) {
 
 }
 
-function generateCode(ast) {
+function generateCode(ast, options) {
 
     var output = {},
-        stream = uglify.OutputStream(output);
+        sourceMap,
+        result,
+        stream;
+
+    if (options.sourceMap) {
+        sourceMap = output.source_map = uglify.SourceMap({
+            orig: options.map
+        });
+    }
+
+    stream = uglify.OutputStream(output);
 
     ast.print(stream);
 
-    return stream.toString();
+    result = {
+        code: stream.toString()
+    };
+
+    if (options.sourceMap) {
+        result.map = JSON.parse(sourceMap.toString());
+    }
+
+    return result;
 
 }
 
