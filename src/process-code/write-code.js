@@ -14,7 +14,7 @@ function writeCode(code, map, outputPath, mapOutputPath, siteRoot) {
 
             if (map) {
 
-                fs.writeFile(mapOutputPath, map, 'utf-8', function(err) {
+                fs.writeFile(mapOutputPath, JSON.stringify(map), 'utf-8', function(err) {
 
                     if (err) {
                         reject(err);
@@ -47,7 +47,7 @@ function getCodeToWrite(code, map, mapOutputPath, siteRoot) {
 
         var mapUrl = sourceMap.getSourceFilePath(mapOutputPath, siteRoot);
 
-        code = code + '\n// # sourceMappingURL=' + mapUrl;
+        code = code + '\n/* # sourceMappingURL=' + mapUrl + ' */';
 
     }
 
