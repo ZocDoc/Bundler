@@ -327,7 +327,14 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessCodeOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessCodeOptions({
+                        code: code,
+                        inputPath: filePath,
+                        outputPath: jsPathOutput,
+                        bundleDir: bundleDir,
+                        bundleStatsCollector: bundleStatsCollector,
+                        bundlerOptions: options
+                    });
 
                     if (isMustache) {
 
@@ -392,8 +399,16 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                             code: code
                         });
                     });
-                }  else {
-                    var minifyOptions = getProcessCodeOptions(compiledJs.code, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
+                } else {
+                    var minifyOptions = getProcessCodeOptions({
+                        code: compiledJs.code,
+                        map: compiledJs.map,
+                        inputPath: jsPath,
+                        outputPath: minJsPath,
+                        bundleDir: bundleDir,
+                        bundleStatsCollector: bundleStatsCollector,
+                        bundlerOptions: options
+                    });
                     minify.js(minifyOptions).then(withMin).catch(handleError);
                 }
             }
@@ -480,7 +495,14 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessCodeOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessCodeOptions({
+                        code: code,
+                        inputPath: filePath,
+                        outputPath: cssPathOutput,
+                        bundleDir: bundleDir,
+                        bundleStatsCollector: bundleStatsCollector,
+                        bundlerOptions: options
+                    });
 
                     if (isLess) {
 
@@ -524,7 +546,15 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                         });
                     });
                 } else {
-                    var minifyOptions = getProcessCodeOptions(compiledCss.code, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
+                    var minifyOptions = getProcessCodeOptions({
+                        code: compiledCss.code,
+                        map: compiledCss.map,
+                        inputPath: cssPath,
+                        outputPath: minCssPath,
+                        bundleDir: bundleDir,
+                        bundleStatsCollector: bundleStatsCollector,
+                        bundlerOptions: options
+                    });
                     minify.css(minifyOptions).then(withMin).catch(handleError);
                 }
             }
@@ -532,21 +562,32 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     });
 }
 
-function getProcessCodeOptions(code, inputPath, outputPath, bundleDir, bundleStatsCollector, bundlerOptions) {
+/**
+ * @param {object} options
+ * @param {string} options.code
+ * @param {object} [options.map]
+ * @param {string} options.inputPath
+ * @param {string} options.outputPath
+ * @param {string} options.bundleDir
+ * @param {object} options.bundleStatsCollector
+ * @param {object} options.bundlerOptions
+ */
+function getProcessCodeOptions(options) {
 
     return {
-        code: code,
-        inputPath: inputPath,
-        outputPath: outputPath,
-        mapOutputPath: sourceMap.getSourceMapOutputPath(outputPath),
-        bundleDir: bundleDir,
+        code: options.code,
+        map: options.map,
+        inputPath: options.inputPath,
+        outputPath: options.outputPath,
+        mapOutputPath: sourceMap.getSourceMapOutputPath(options.outputPath),
+        bundleDir: options.bundleDir,
         nodeModulesPath: path.join(__dirname, 'node_modules'),
-        outputBundleOnly: bundlerOptions.outputbundleonly,
-        outputBundleStats: bundlerOptions.outputbundlestats,
-        bundleStatsCollector: bundleStatsCollector,
-        sourceMap: bundlerOptions.sourcemaps,
-        siteRoot: bundlerOptions.siterootdirectory,
-        useTemplateDirs: bundlerOptions.usetemplatedirs
+        outputBundleOnly: options.bundlerOptions.outputbundleonly,
+        outputBundleStats: options.bundlerOptions.outputbundlestats,
+        bundleStatsCollector: options.bundleStatsCollector,
+        sourceMap: options.bundlerOptions.sourcemaps,
+        siteRoot: options.bundlerOptions.siterootdirectory,
+        useTemplateDirs: options.bundlerOptions.usetemplatedirs
     };
 
 }
