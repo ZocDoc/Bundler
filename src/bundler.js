@@ -60,6 +60,8 @@ var fs = require("fs"),
     compile = require('./compile'),
     minify = require('./minify'),
     sourceMap = require('./source-map-utility'),
+    CodeFile = require('./code-file'),
+    files = require('./files'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -261,30 +263,43 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
     var processedFiles = {};
 
-    var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
+    var allJs = new CodeFile(),
+        allMinJs = new CodeFile(),
+        index = 0,
+        pending = 0;
+
     var whenDone = function () {
         if (options.nobundle) {
             setTimeout(cb, 0);
             return;
         }
 
-        var allJs = "", allMinJs = "";
-        for (var i = 0; i < allJsArr.length; i++) {
-            allJs += ";" + allJsArr[i] + "\n";
-            allMinJs += ";" + allMinJsArr[i] + "\n";
-        }
-
         var afterBundle = options.skipmin ? cb : function (_) {
             var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
+
+            var result = allMinJs.concatenate({
+                sourceMap: options.sourcemaps
+            });
 			
             if(options.outputbundlestats) {
-                bundleStatsCollector.AddFileHash(bundleName, allMinJs);
+                bundleStatsCollector.AddFileHash(bundleName, result.code);
             }
 
-            fs.writeFile(minFileName, allMinJs, cb);
+            files.write(result.code, result.map, minFileName, minFileName + '.map', options.siterootdirectory)
+                .then(cb)
+                .catch(handleError);
+
         };
         if (!options.bundleminonly) {
-            fs.writeFile(bundleName, allJs, afterBundle);
+
+            var result = allJs.concatenate({
+                sourceMap: options.sourcemaps
+            });
+
+            files.write(result.code, result.map, bundleName, bundleName + '.map', options.siterootdirectory)
+                .then(afterBundle)
+                .catch(handleError);
+
         } else {
             afterBundle();
         }
@@ -384,9 +399,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
             },
             function (compiledJs) {
-                allJsArr[i] = compiledJs.code;
+                allJs.addFile(compiledJs.code, compiledJs.map);
+
                 var withMin = function (minifiedJs) {
-                    allMinJsArr[i] = minifiedJs.code;
+                    allMinJs.addFile(minifiedJs.code, minifiedJs.map);
 
                     if (! --pending) whenDone();
                 };
