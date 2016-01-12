@@ -8,7 +8,6 @@ var Promise = require('bluebird');
  * @param {object} options.map
  * @param {string} options.inputPath
  * @param {boolean} options.sourceMap
- * @param {boolean} options.siteRoot
  * @returns {bluebird}
  */
 function minify(options) {
@@ -36,7 +35,7 @@ function minify(options) {
                 } else {
                     resolve({
                         code: result.styles,
-                        map: result.sourceMap ? JSON.parse(result.sourceMap) : undefined
+                        map: parseSourceMap(result.sourceMap, options.inputPath)
                     });
                 }
 
@@ -59,6 +58,28 @@ function getFilePath(inputPath, map) {
     } else {
         return inputPath;
     }
+
+}
+
+function parseSourceMap(sourceMap, inputPath) {
+
+    if (!sourceMap) {
+        return undefined;
+    }
+
+    var parsedSourceMap = JSON.parse(sourceMap);
+
+    parsedSourceMap.sources = parsedSourceMap.sources.map(function(source) {
+
+        if (path.dirname(source) === '.') {
+            return path.join(path.dirname(inputPath), source);
+        } else {
+            return source;
+        }
+
+    });
+
+    return parsedSourceMap;
 
 }
 

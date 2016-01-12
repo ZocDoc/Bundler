@@ -398,10 +398,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
             },
             function (compiledJs) {
-                allJs.addFile(i, compiledJs.code, compiledJs.map);
+                allJs.addFile(i, jsPath, compiledJs.code, compiledJs.map);
 
                 var withMin = function (minifiedJs) {
-                    allMinJs.addFile(i, minifiedJs.code, minifiedJs.map);
+                    allMinJs.addFile(i, minJsPath, minifiedJs.code, minifiedJs.map);
 
                     if (! --pending) whenDone();
                 };
@@ -553,10 +553,10 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
             },
             function (compiledCss) {
-                allCss.addFile(i, compiledCss.code, compiledCss.map);
+                allCss.addFile(i, cssPath, compiledCss.code, compiledCss.map);
 
                 var withMin = function (minifiedCss) {
-                    allMinCss.addFile(i, minifiedCss.code, minifiedCss.map);
+                    allMinCss.addFile(i, minCssPath, minifiedCss.code, minifiedCss.map);
 
                     if (! --pending) whenDone();
                 };

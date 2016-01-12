@@ -7,9 +7,10 @@ function CodeFile(type) {
 
 }
 
-CodeFile.prototype.addFile = function(index, code, map) {
+CodeFile.prototype.addFile = function(index, file, code, map) {
 
     this.files[index] = {
+        path: file,
         code: code,
         map: map
     };
@@ -22,7 +23,7 @@ CodeFile.prototype.concatenate = function(options) {
     var prefix = this.type === CodeFile.Type.JS ? ';' : '';
 
     this.files.forEach(function(file) {
-        concat.add(null, prefix + file.code, JSON.stringify(file.map));
+        concat.add(file.path, prefix + file.code, JSON.stringify(file.map));
     });
 
     return {
