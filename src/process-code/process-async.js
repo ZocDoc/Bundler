@@ -1,12 +1,14 @@
 var fs = require('fs');
 var Promise = require('bluebird');
 var readCode = require('./read-code');
+var sourceMap = require('../source-map');
 var Step = require('step');
 var writeCode = require('./write-code');
 
 /**
  * @param {object} options
  * @param {string} options.code
+ * @param {string} options.map
  * @param {string} options.inputPath
  * @param {string} options.outputPath
  * @param {string} options.mapOutputPath
@@ -87,6 +89,8 @@ function processAsync(options, processFn) {
                             resolve(result.code);
 
                         } else {
+
+                            result.map = sourceMap.clean(result.map, options.outputPath, options.siteRoot);
 
                             writeCode(result.code, result.map, options.outputPath, options.mapOutputPath, options.siteRoot)
                                 .then(resolve)

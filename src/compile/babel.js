@@ -1,7 +1,6 @@
 var babel = require('babel-core');
 var path = require('path');
 var Promise = require('bluebird');
-var sourceMap = require('../source-map-utility');
 
 /**
  * @param {string[]} presets
@@ -10,7 +9,6 @@ var sourceMap = require('../source-map-utility');
  * @param {string} options.inputPath
  * @param {string} options.nodeModulesPath
  * @param {boolean} options.sourceMap
- * @param {string} options.siteRoot
  * @returns {{code: string, map: object}}
  */
 function transform(presets, options) {
@@ -23,14 +21,14 @@ function transform(presets, options) {
 
     if (options.sourceMap) {
         babelOptions.sourceMaps = true;
-        babelOptions.sourceFileName = sourceMap.getSourceFilePath(options.inputPath, options.siteRoot);
+        babelOptions.sourceFileName = options.inputPath;
     }
 
     var result = babel.transform(options.code, babelOptions);
 
     return {
         code: result.code,
-        map: JSON.stringify(result.map)
+        map: result.map
     };
 
 }

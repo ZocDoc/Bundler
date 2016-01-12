@@ -7,7 +7,6 @@ var Promise = require('bluebird');
  * @param {string} options.inputPath
  * @param {string} options.nodeModulesPath
  * @param {boolean} options.sourceMap
- * @param {string} options.siteRoot
  * @returns {bluebird}
  */
 function compile(options) {
