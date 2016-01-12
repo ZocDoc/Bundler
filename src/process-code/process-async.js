@@ -1,7 +1,6 @@
 var files = require('../files');
 var fs = require('fs');
 var Promise = require('bluebird');
-var sourceMap = require('../source-map');
 var Step = require('step');
 
 /**
