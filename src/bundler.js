@@ -390,12 +390,12 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     }
 
+                    if (options.outputbundlestats) {
+                        bundleStatsCollector.AddDebugFile(jsBundle, jsPath);
+                    }
+
 
                 });
-
-                if (options.outputbundlestats) {
-                    bundleStatsCollector.AddDebugFile(jsBundle, jsPath);
-                }
 
             },
             function (compiledJs) {
@@ -538,11 +538,11 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                     }
 
-                });
+                    if (options.outputbundlestats) {
+                        bundleStatsCollector.AddDebugFile(cssBundle, cssPath);
+                    }
 
-                if (options.outputbundlestats) {
-                    bundleStatsCollector.AddDebugFile(cssBundle, cssPath);
-                }
+                });
 
             },
             function (compiledCss) {
