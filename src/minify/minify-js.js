@@ -4,9 +4,7 @@ var uglify = require('uglify-js');
 /**
  * @param {object} options
  * @param {string} options.code
- * @param {object} options.map
  * @param {string} options.inputPath
- * @param {boolean} options.sourceMap
  * @returns {bluebird}
  */
 function minify(options) {
@@ -21,7 +19,7 @@ function minify(options) {
 
             mangle(ast);
 
-            var result = generateCode(ast, options);
+            var result = generateCode(ast);
 
             resolve(result);
 
@@ -65,33 +63,18 @@ function mangle(ast) {
 
 }
 
-function generateCode(ast, options) {
+function generateCode(ast) {
 
     var output = {},
-        sourceMap,
-        result,
         stream;
-
-    if (options.sourceMap) {
-        sourceMap = output.source_map = uglify.SourceMap({
-            orig: options.map
-        });
-    }
 
     stream = uglify.OutputStream(output);
 
     ast.print(stream);
 
-    result = {
+    return {
         code: stream.toString()
     };
-
-    if (options.sourceMap) {
-        result.map = JSON.parse(sourceMap.toString());
-    }
-
-    return result;
-
 }
 
 module.exports = minify;
