@@ -44,7 +44,7 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
             test.assert.verifyFileAndContentsAre(
                 testDirectory + '/output-dir',
                 'file2.min.js',
-                'window.JST=window.JST||{},JST.file2=new Hogan.Template({code:function(i,e,n){var f=this;return f.b(n=n||""),f.b("<div> "),f.b(f.v(f.f("c",i,e,0))),f.b(" </div>"),f.fl()},partials:{},subs:{}});');
+                'window.JST=window.JST||{},JST.file2=new Hogan.Template({code:function(i,n,e){var a=this;return a.b(e=e||""),a.b("<div> "),a.b(a.v(a.f("c",i,n,0))),a.b(" </div>"),a.fl()},partials:{},subs:{}});');
         });
 
         it("If an output directory is specified, then any computed mustache files are put in it.", function () {

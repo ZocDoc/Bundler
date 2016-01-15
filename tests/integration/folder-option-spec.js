@@ -62,7 +62,7 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
             test.assert.verifyBundleIs(
                 ';var file1="file1";\n' +
                 ';var file2="file2";\n' +
-                ';window.JST=window.JST||{},JST.file3=new Hogan.Template({code:function(i,e,f){var l=this;return l.b(f=f||""),l.b("<div> "),l.b(l.v(l.f("c",i,e,0))),l.b(" </div>"),l.fl()},partials:{},subs:{}});\n'
+                ';window.JST=window.JST||{},JST.file3=new Hogan.Template({code:function(i,n,e){var a=this;return a.b(e=e||""),a.b("<div> "),a.b(a.v(a.f("c",i,n,0))),a.b(" </div>"),a.fl()},partials:{},subs:{}});\n'
             );
 
         });

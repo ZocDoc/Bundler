@@ -29,7 +29,7 @@ test.describeIntegrationTest("Js Bundling:", function() {
 
         test.assert.verifyBundleIs(
             ';window.JST=window.JST||{},JST.file1=new Hogan.Template({code:function(i,n,a){var e=this;return e.b(a=a||""),e.b("<div> "),e.b(e.v(e.f("a",i,n,0))),e.b(" </div>"),e.fl()},partials:{},subs:{}});\n' +
-            ';window.JST=window.JST||{},JST.file2=new Hogan.Template({code:function(i,n,e){var a=this;return a.b(e=e||""),a.b("<div> "),a.b(a.v(a.f("b",i,n,0))),a.b(" </div>"),a.fl()},partials:{},subs:{}});\n'
+            ';window.JST=window.JST||{},JST.file2=new Hogan.Template({code:function(i,n,b){var e=this;return e.b(b=b||""),e.b("<div> "),e.b(e.v(e.f("b",i,n,0))),e.b(" </div>"),e.fl()},partials:{},subs:{}});\n'
         );
 
     });
@@ -83,7 +83,7 @@ test.describeIntegrationTest("Js Bundling:", function() {
 
         test.assert.verifyBundleIs(
             ';"use strict";var odds=evens.map(function(e){return e+1});\n' +
-            ';"use strict";function _classCallCheck(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function _possibleConstructorReturn(t,e){if(!t)throw new ReferenceError("this hasn\'t been initialised - super() hasn\'t been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function _inherits(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}var Foo=function(t){function e(t){_classCallCheck(this,e);var r=_possibleConstructorReturn(this,Object.getPrototypeOf(e).call(this));return r.foo=t,r}return _inherits(e,t),e}(Bar);\n' +
+            ';"use strict";function _classCallCheck(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function _possibleConstructorReturn(t,e){if(!t)throw new ReferenceError("this hasn\'t been initialised - super() hasn\'t been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function _inherits(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}var Foo=function(t){function e(t){_classCallCheck(this,e);var o=_possibleConstructorReturn(this,Object.getPrototypeOf(e).call(this));return o.foo=t,o}return _inherits(e,t),e}(Bar);\n' +
             ';"use strict";var name="Bob",time="today",combined="Hello "+name+", how are you "+time+"?";\n'
         );
 
@@ -132,7 +132,7 @@ test.describeIntegrationTest("Js Bundling:", function() {
         test.actions.Bundle();
 
         test.assert.verifyBundleIs(
-            ';window.JST=window.JST||{},JST.file1=new Hogan.Template({code:function(i,e,a){var n=this;return n.b(a=a||""),n.b("<div> "),n.b(n.v(n.f("a",i,e,0))),n.b(" </div>"),n.fl()},partials:{},subs:{}});\n' +
+            ';window.JST=window.JST||{},JST.file1=new Hogan.Template({code:function(i,n,a){var e=this;return e.b(a=a||""),e.b("<div> "),e.b(e.v(e.f("a",i,n,0))),e.b(" </div>"),e.fl()},partials:{},subs:{}});\n' +
             ';var file2="file2";\n' +
             ';var file3=React.createClass({displayName:"file3",render:function(){return React.createElement("div",null,"file3 ",this.props.name)}});\n'
         );
