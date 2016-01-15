@@ -24,9 +24,21 @@ test.describeIntegrationTest("Generating source maps:", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'file1.js',
-                'var file1 = React.createClass({displayName: "file1",   render: function() {   return React.createElement("div", null, "file1 ", this.props.name);  }});\n'
-              + '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiL3Rlc3QvZmlsZTEuanN4Iiwic291cmNlcyI6WyIvdGVzdC9maWxlMS5qc3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsSUFBSSwyQkFBMkIscUJBQUEsR0FBRyxNQUFNLEVBQUUsV0FBVyxJQUFJLE9BQU8sb0JBQUEsS0FBSSxFQUFBLElBQUMsRUFBQSxRQUFBLEVBQU8sSUFBSSxDQUFDLEtBQUssQ0FBQyxJQUFXLENBQUEsQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbInZhciBmaWxlMSA9IFJlYWN0LmNyZWF0ZUNsYXNzKHsgICByZW5kZXI6IGZ1bmN0aW9uKCkgeyAgIHJldHVybiA8ZGl2PmZpbGUxIHt0aGlzLnByb3BzLm5hbWV9PC9kaXY+OyAgfX0pOyJdfQ==');
+            test.assert.verifyFileAndContentsAre(
+                test.given.TestDirectory,
+                'file1.js',
+                'var file1 = React.createClass({\n' +
+                '  displayName: "file1",\n' +
+                '  render: function () {\n' +
+                '    return React.createElement(\n' +
+                '      "div",\n' +
+                '      null,\n' +
+                '      "file1 ",\n' +
+                '      this.props.name\n' +
+                '    );\n' +
+                '  } });\n' +
+                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxJQUFJLEtBQUssR0FBRyxLQUFLLENBQUMsV0FBVyxDQUFDOztBQUFJLFFBQU0sRUFBRSxZQUFXO0FBQUksV0FBTzs7OztNQUFZLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSTtLQUFPLENBQUM7R0FBRyxFQUFDLENBQUMsQ0FBQyIsImZpbGUiOiJ1bmtub3duIiwic291cmNlc0NvbnRlbnQiOlsidmFyIGZpbGUxID0gUmVhY3QuY3JlYXRlQ2xhc3MoeyAgIHJlbmRlcjogZnVuY3Rpb24oKSB7ICAgcmV0dXJuIDxkaXY+ZmlsZTEge3RoaXMucHJvcHMubmFtZX08L2Rpdj47ICB9fSk7Il19'
+            );
 
         });
 

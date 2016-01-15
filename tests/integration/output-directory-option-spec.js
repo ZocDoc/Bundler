@@ -75,7 +75,17 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
             test.assert.verifyFileAndContentsAre(
                 testDirectory + '/output-dir',
                 'file2.js',
-                'var file2 = React.createClass({displayName: "file2",   render: function() {   return React.createElement("div", null, "file2 ", this.props.name);  }});');
+                'var file2 = React.createClass({\n' +
+                '  displayName: "file2",\n' +
+                '  render: function () {\n' +
+                '    return React.createElement(\n' +
+                '      "div",\n' +
+                '      null,\n' +
+                '      "file2 ",\n' +
+                '      this.props.name\n' +
+                '    );\n' +
+                '  } });'
+            );
         });
 
         it('If an output directory is specified, then any computed es6 files are put in it.', function() {
