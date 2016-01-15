@@ -37,7 +37,7 @@ test.describeIntegrationTest("Generating source maps:", function() {
                 '      this.props.name\n' +
                 '    );\n' +
                 '  } });\n' +
-                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxJQUFJLEtBQUssR0FBRyxLQUFLLENBQUMsV0FBVyxDQUFDOztBQUFJLFFBQU0sRUFBRSxZQUFXO0FBQUksV0FBTzs7OztNQUFZLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSTtLQUFPLENBQUM7R0FBRyxFQUFDLENBQUMsQ0FBQyIsImZpbGUiOiJ1bmtub3duIiwic291cmNlc0NvbnRlbnQiOlsidmFyIGZpbGUxID0gUmVhY3QuY3JlYXRlQ2xhc3MoeyAgIHJlbmRlcjogZnVuY3Rpb24oKSB7ICAgcmV0dXJuIDxkaXY+ZmlsZTEge3RoaXMucHJvcHMubmFtZX08L2Rpdj47ICB9fSk7Il19'
+                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxJQUFJLEtBQUssR0FBRyxLQUFLLENBQUMsV0FBVyxDQUFDOztBQUFJLFFBQU0sRUFBRSxZQUFXO0FBQUksV0FBTzs7OztNQUFZLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSTtLQUFPLENBQUM7R0FBRyxFQUFDLENBQUMsQ0FBQyJ9'
             );
 
         });
@@ -52,12 +52,16 @@ test.describeIntegrationTest("Generating source maps:", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'file1.js',
-                '"use strict";\n\n'
-              + 'var odds = evens.map(function (v) {\n'
-              + '  return v + 1;\n'
-              + '});\n'
-              + '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmVzNiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksSUFBSSxHQUFHLEtBQUssQ0FBQyxHQUFHLENBQUMsVUFBQSxDQUFDO1NBQUksQ0FBQyxHQUFHLENBQUM7Q0FBQSxDQUFDLENBQUMiLCJmaWxlIjoidW5rbm93biIsInNvdXJjZXNDb250ZW50IjpbInZhciBvZGRzID0gZXZlbnMubWFwKHYgPT4gdiArIDEpOyJdfQ==');
+            test.assert.verifyFileAndContentsAre(
+                test.given.TestDirectory,
+                'file1.js',
+                '"use strict";\n' +
+                '\n' +
+                'var odds = evens.map(function (v) {\n' +
+                '  return v + 1;\n' +
+                '});\n' +
+                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmVzNiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksSUFBSSxHQUFHLEtBQUssQ0FBQyxHQUFHLENBQUMsVUFBQSxDQUFDO1NBQUksQ0FBQyxHQUFHLENBQUM7Q0FBQSxDQUFDLENBQUMifQ=='
+            );
 
         });
 
@@ -79,8 +83,15 @@ test.describeIntegrationTest("Generating source maps:", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'less1.css',
-                ".less1 {\n  color: red;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2xlc3MxLmxlc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0E7RUFBUyxVQUFBIn0= */");
+            test.assert.verifyFileAndContentsAre(
+                test.given.TestDirectory,
+                'less1.css',
+                '.less1 {\n' +
+                '  color: red;\n' +
+                '}\n' +
+                '\n' +
+                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2xlc3MxLmxlc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0E7RUFBUyxVQUFBIn0= */'
+            );
 
         });
 
@@ -94,10 +105,14 @@ test.describeIntegrationTest("Generating source maps:", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyFileAndContentsAre(test.given.TestDirectory, 'scss1.css',
-                "#css-results #scss {\n"
-              + "  background: #008000; }\n\n"
-              + "/*# sourceMappingURL=data:application/json;base64,ewoJInZlcnNpb24iOiAzLAoJInNvdXJjZVJvb3QiOiAiL3Rlc3QiLAoJImZpbGUiOiAic2NzczEuY3NzIiwKCSJzb3VyY2VzIjogWwoJCSJzY3NzMS5zY3NzIgoJXSwKCSJtYXBwaW5ncyI6ICJBQUNBLFlBQVksQ0FBRyxLQUFLLENBQUM7RUFBRSxVQUFVLEVBRHpCLE9BQU8sR0FDOEIiLAoJIm5hbWVzIjogW10KfQ== */");
+            test.assert.verifyFileAndContentsAre(
+                test.given.TestDirectory,
+                'scss1.css',
+                '#css-results #scss {\n' +
+                '  background: #008000; }\n' +
+                '\n' +
+                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9zY3NzMS5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUNBLFlBQVksQ0FBRyxLQUFLLENBQUM7RUFBRSxVQUFVLEVBRHpCLE9BQU8sR0FDOEIifQ== */'
+            );
 
         });
 
