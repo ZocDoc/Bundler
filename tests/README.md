@@ -12,6 +12,10 @@ Or to run a particular suite of tests:
 
   * `PS C:\src\Bundler\tests> jasmine-node .\unit\styleguide\styleguide-spec.js`
 
+If you want to run all tests quickly, use the parallel test runner:
+
+  * `PS C:\src\Bundler> node .\test-runner`
+
 Integration Tests
 ===
 The tests run well on node version `4.2.3`.
