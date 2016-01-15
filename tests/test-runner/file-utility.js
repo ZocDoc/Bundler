@@ -12,7 +12,7 @@ FileUtility.prototype.GetTestFiles = function(directory, callback) {
     _this.fileSystem.readdir(directory, function(err, list) {
         if (err) return callback(err);
         var pending = list.length;
-        if (!pending) return directory(null, results);
+        if (!pending) return callback(null, results);
         list.forEach(function(file) {
             file =_this.path.resolve(directory, file);
             _this.fileSystem.stat(file, function(err, stat) {
