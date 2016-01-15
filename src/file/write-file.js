@@ -15,7 +15,8 @@ function write(code, map, fileType, outputPath, siteRoot) {
             }
 
             resolve({
-                code: code
+                code: code,
+                map: map
             });
 
         });
