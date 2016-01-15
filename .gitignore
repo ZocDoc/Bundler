@@ -40,5 +40,5 @@ release/latest/
 release/*
 
 src/node_modules/*
-test-runner/node_modules/*
+tests/node_modules/*
 
