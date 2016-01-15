@@ -1,7 +1,0 @@
-{
-    "description": "runs the tests in parallel for faster results",
-    "dependencies": {
-        "async": "~0.8.0"
-    },
-    "main": "parallel-test-runner.js"
-}
