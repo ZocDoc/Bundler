@@ -3,15 +3,17 @@ var type = require('../file-type');
 
 function getComment(map, fileType) {
 
-    var encodedMap = convert.fromObject(map).toComment();
+    var mapConverter = convert.fromObject(map);
 
     switch (fileType) {
 
         case type.CSS:
-            return '/*# sourceMappingURL=' + encodedMap + ' */';
+            return mapConverter.toComment({
+                multiline: true
+            });
 
         case type.JS:
-            return '//# sourceMappingURL=' + encodedMap;
+            return mapConverter.toComment();
 
     }
 
