@@ -6,7 +6,6 @@ var babel = require('./babel-compiler');
  * @param {string} options.inputPath
  * @param {string} options.nodeModulesPath
  * @param {boolean} options.sourceMap
- * @param {string} options.siteRoot
  * @returns {bluebird}
  */
 function compile(options) {
