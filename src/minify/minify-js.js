@@ -70,7 +70,9 @@ function generateCode(ast) {
 
     ast.print(stream);
 
-    return stream.toString();
+    return {
+        code: stream.toString()
+    };
 
 }
 

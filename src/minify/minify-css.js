@@ -23,7 +23,9 @@ function minify(options) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result.styles);
+                    resolve({
+                        code: result.styles
+                    });
                 }
 
             });
