@@ -1,4 +1,5 @@
 var fs = require('fs');
+var file = require('../file');
 var Promise = require('bluebird');
 var readTextFile = require('../read-text-file');
 var Step = require('step');
@@ -18,7 +19,7 @@ var Step = require('step');
  * @param {boolean} options.useTemplateDirs
  * @param {function} processFn
  */
-function processAsync(options, processFn) {
+function processAsync(fileType, options, processFn) {
 
     return new Promise(function(resolve, reject) {
 
@@ -78,23 +79,17 @@ function processAsync(options, processFn) {
 
                 if (shouldProcessCode) {
 
-                    var onAfterProcessed = function(code) {
+                    var onAfterProcessed = function(result) {
 
                         if (options.outputBundleOnly) {
 
-                            resolve(code);
+                            resolve(result.code);
 
                         } else {
 
-                            fs.writeFile(options.outputPath, code, 'utf-8', function(err) {
-
-                                if (err) {
-                                    reject(err);
-                                }
-
-                                resolve(code);
-
-                            });
+                            file.write(result.code, result.map, fileType, options.outputPath, options.siteRoot)
+                                .then(resolve)
+                                .catch(reject);
 
                         }
                     };
@@ -105,11 +100,9 @@ function processAsync(options, processFn) {
 
                 } else {
 
-                    try {
-                        readTextFile(options.outputPath, resolve);
-                    } catch (err) {
-                        reject(err);
-                    }
+                    file.read(options.outputPath)
+                        .then(resolve)
+                        .catch(reject);
 
                 }
 

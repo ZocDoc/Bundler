@@ -1,9 +1,9 @@
 var processAsync = require('./process-async');
 
 module.exports = {
-    with: function(processFn) {
+    with: function(fileType, processFn) {
         return function(options) {
-            return processAsync(options, processFn);
+            return processAsync(fileType, options, processFn);
         };
     }
 };
