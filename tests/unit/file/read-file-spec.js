@@ -56,6 +56,11 @@ describe('read file', function() {
 
                 done();
 
+            })
+            .catch(function(err) {
+
+                throw err;
+
             });
     
     });
