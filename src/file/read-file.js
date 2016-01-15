@@ -9,9 +9,7 @@ function read(filePath) {
 
         readTextFile(filePath, function(code) {
 
-            resolve({
-                code: sourceMap.stripComment(code)
-            });
+            resolve(sourceMap.extract(code));
 
         });
 
