@@ -228,7 +228,7 @@ describe('compile ES6', function() {
             code: code,
             sourceMap: sourceMap,
             inputPath: inputPath,
-            nodeModulesPath: path.join(__dirname, '..', '..', '..', 'src', 'node_modules')
+            nodeModulesPath: path.join(__dirname, '..', '..', '..', 'node_modules')
         });
 
     };
