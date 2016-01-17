@@ -1,6 +1,6 @@
 {
   "name": "bundler",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "repository": {
     "type": "git",
     "url": "https://github.com/ZocDoc/Bundler"
@@ -17,5 +17,16 @@
     "stylestats": "5.4.3",
     "uglify-js": "^2.6.1",
     "underscore": "1.8.3"
+  },
+  "devDependencies": {
+    "app-root-path": "^1.0.0",
+    "async": "~0.8.0",
+    "jasmine-node": "^1.14.5",
+    "rewire": "^2.5.1"
+  },
+  "scripts": {
+    "bundle": "node .\\src\\bundler.js",
+    "test": "jasmine-node",
+    "test-all": "node .\\tests\\test-runner\\parallel-test-runner.js"
   }
 }
