@@ -18,8 +18,6 @@ describe('compile ES6', function() {
 
         compile('[1, 2].map(num => num * 2);')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 '[1, 2].map(function (num) {\n' +
                 '  return num * 2;\n' +
                 '});',
@@ -33,8 +31,6 @@ describe('compile ES6', function() {
 
         compile('var name = "Bob"; var result = `Hello ${name}`;')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'var name = "Bob";var result = "Hello " + name;',
                 done
             ))
@@ -46,8 +42,6 @@ describe('compile ES6', function() {
 
         compile('var x = `this is a multi-\nline string`;')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'var x = "this is a multi-\\nline string";',
                 done
             ))
@@ -59,8 +53,6 @@ describe('compile ES6', function() {
 
         compile('var [a, b] = [1,2];')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'var a = 1;\n' +
                 'var b = 2;',
                 done
@@ -73,8 +65,6 @@ describe('compile ES6', function() {
 
         compile('var [a = 1] = [];')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'var _ref = [];\n' +
                 'var _ref$ = _ref[0];\n' +
                 'var a = _ref$ === undefined ? 1 : _ref$;',
@@ -88,8 +78,6 @@ describe('compile ES6', function() {
 
         compile('var [a, , b] = [1,2,3];')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'var _ref = [1, 2, 3];\n' +
                 'var a = _ref[0];\n' +
                 'var b = _ref[2];',
@@ -103,8 +91,6 @@ describe('compile ES6', function() {
 
         compile('var {a, b} = {a:1, b:2};')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'var _a$b = { a: 1, b: 2 };\n' +
                 'var a = _a$b.a;\n' +
                 'var b = _a$b.b;',
@@ -118,8 +104,6 @@ describe('compile ES6', function() {
 
         compile('function f(x = 1) { return x; }')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'function f() {\n' +
                 '  var x = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];\n' +
                 '  return x;\n' +
@@ -134,8 +118,6 @@ describe('compile ES6', function() {
 
         compile('function f(x, ...y) { return x + y.length; }')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'function f(x) {\n' +
                 '  return x + (arguments.length - 1);\n' +
                 '}',
@@ -149,8 +131,6 @@ describe('compile ES6', function() {
 
         compile('let x = 5;')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'var x = 5;',
                 done
             ))
@@ -162,8 +142,6 @@ describe('compile ES6', function() {
 
         compile('const x = 5;')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'var x = 5;',
                 done
             ))
@@ -175,8 +153,6 @@ describe('compile ES6', function() {
     
         compile('var x = { foo() { return 1; } };')
             .then(assertResultIs(
-                '"use strict";\n' +
-                '\n' +
                 'var x = {\n' +
                 '  foo: function foo() {\n' +
                 '    return 1;\n' +
@@ -196,14 +172,12 @@ describe('compile ES6', function() {
         compile('const x = 5;')
             .then(assertResultIs({
                     code:
-                        '"use strict";\n' +
-                        '\n' +
                         'var x = 5;',
                     map: {
                         version: 3,
                         sources: ['C:\\foo\\bar.es6'],
                         names: [],
-                        mappings: ';;AAAA,IAAM,CAAC,GAAG,CAAC,CAAC',
+                        mappings: 'AAAA,IAAM,CAAC,GAAG,CAAC,CAAC',
                         file: 'unknown',
                         sourcesContent: ['const x = 5;']
                     }
@@ -227,8 +201,7 @@ describe('compile ES6', function() {
         return compileES6({
             code: code,
             sourceMap: sourceMap,
-            inputPath: inputPath,
-            nodeModulesPath: path.join(__dirname, '..', '..', '..', 'node_modules')
+            inputPath: inputPath
         });
 
     };

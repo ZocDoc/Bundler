@@ -9,7 +9,6 @@ var Promise = require('bluebird');
  * @param {object} options
  * @param {string} options.code
  * @param {string} options.inputPath
- * @param {string} options.nodeModulesPath
  * @param {boolean} options.sourceMap
  * @returns {bluebird}
  */
@@ -18,16 +17,10 @@ function transform(babelOptions, options) {
     return new Promise(function(resolve, reject) {
 
         try {
-            var presets = babelOptions.presets || [];
-            var plugins = babelOptions.plugins || [];
 
             var settings = {
-                presets: presets.map(function (preset) {
-                    return path.join(options.nodeModulesPath, preset);
-                }),
-                plugins: plugins.map(function (plugin) {
-                    return path.join(options.nodeModulesPath, plugin);
-                })
+                presets: babelOptions.presets,
+                plugins: babelOptions.plugins
             };
 
             if (options.sourceMap) {
