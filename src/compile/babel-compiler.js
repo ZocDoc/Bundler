@@ -7,7 +7,6 @@ var Promise = require('bluebird');
  * @param {object} options
  * @param {string} options.code
  * @param {string} options.inputPath
- * @param {string} options.nodeModulesPath
  * @param {boolean} options.sourceMap
  * @returns {bluebird}
  */
@@ -17,9 +16,7 @@ function transform(presets, options) {
 
         try {
             var babelOptions = {
-                presets: presets.map(function (preset) {
-                    return path.join(options.nodeModulesPath, preset);
-                })
+                presets: presets
             };
 
             if (options.sourceMap) {
