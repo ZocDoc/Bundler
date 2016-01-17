@@ -1,3 +1,5 @@
+var path = require('path');
+var appRoot = require('app-root-path');
 
 function TestUtility(
   exec,
@@ -141,7 +143,8 @@ TestUtility.prototype.VerifyFileContents = function (dir, fileName, expectedCont
 TestUtility.prototype.Bundle = function (dir, options) {
     var _this = this;
     _this.runFunc(function () {
-        _this.RunCommandSync("node ./src/bundler.js ./" + dir + " " + (options || ""));
+        var bundler = path.join(appRoot.toString(), 'src', 'bundler.js');
+        _this.RunCommandSync("node " + bundler + " ./" + dir + " " + (options || ""));
     });
 }
 
