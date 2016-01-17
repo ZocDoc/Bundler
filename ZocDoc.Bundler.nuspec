@@ -11,6 +11,7 @@
     <description>ZocDoc fork of ServiceStack/Bundler.</description>
   </metadata>
   <files>
+	 <file src="node_modules\**\*" target="content" />
 	 <file src="src\**\*" target="content" />
   </files>
 </package>
