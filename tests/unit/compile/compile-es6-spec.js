@@ -10,7 +10,7 @@ describe('compile ES6', function() {
     beforeEach(function() {
 
         sourceMap = false;
-        inputPath = 'C:\\foo\\bar.js';
+        inputPath = 'C:\\foo\\bar.es6';
 
     });
 
