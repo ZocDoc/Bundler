@@ -1,0 +1,46 @@
+{
+  "name": "bundler",
+  "version": "1.0.7",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZocDoc/Bundler"
+  },
+  "dependencies": {
+    "babel-core": "6.3.21",
+    "babel-plugin-check-es2015-constants": "^6.3.13",
+    "babel-plugin-syntax-async-functions": "^6.3.13",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.4.0",
+    "babel-plugin-transform-es2015-block-scoped-functions": "^6.3.13",
+    "babel-plugin-transform-es2015-block-scoping": "^6.4.0",
+    "babel-plugin-transform-es2015-destructuring": "^6.4.0",
+    "babel-plugin-transform-es2015-function-name": "^6.4.0",
+    "babel-plugin-transform-es2015-literals": "^6.3.13",
+    "babel-plugin-transform-es2015-parameters": "^6.4.2",
+    "babel-plugin-transform-es2015-shorthand-properties": "^6.3.13",
+    "babel-plugin-transform-es2015-spread": "^6.4.0",
+    "babel-plugin-transform-es2015-sticky-regex": "^6.3.13",
+    "babel-plugin-transform-es2015-template-literals": "^6.3.13",
+    "babel-plugin-transform-es2015-unicode-regex": "^6.4.3",
+    "babel-plugin-transform-regenerator": "^6.4.4",
+    "babel-preset-react": "6.3.13",
+    "clean-css": "3.4.4",
+    "hogan.js-template": "2.0.0",
+    "less": "2.5.1",
+    "node-sass": "3.4.2",
+    "step": "0.0.5",
+    "stylestats": "5.4.3",
+    "uglify-js": "^2.6.1",
+    "underscore": "1.8.3"
+  },
+  "devDependencies": {
+    "app-root-path": "^1.0.0",
+    "async": "~0.8.0",
+    "jasmine-node": "^1.14.5",
+    "rewire": "^2.5.1"
+  },
+  "scripts": {
+    "bundle": "node .\\src\\bundler.js",
+    "test": "jasmine-node",
+    "test-all": "node .\\tests\\test-runner\\parallel-test-runner.js"
+  }
+}
