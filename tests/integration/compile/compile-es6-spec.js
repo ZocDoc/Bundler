@@ -148,9 +148,9 @@ describe('compile ES6', function() {
             .catch(throwError);
 
     });
-    
+
     it('Given ES6 code with function shorthand, compiles to ES5.', function(done) {
-    
+
         compile('var x = { foo() { return 1; } };')
             .then(assertResultIs(
                 'var x = {\n' +
@@ -161,7 +161,43 @@ describe('compile ES6', function() {
                 done
             ))
             .catch(throwError);
-    
+
+    });
+
+    it('Given ES6 code with async/await, compiles to ES5.', function(done) {
+
+        compile(
+                'async function foo() {\n' +
+                '    return await new Promise(function(resolve, reject) {\n' +
+                '        resolve(1);\n' +
+                '    });\n' +
+                '}'
+            )
+            .then(assertResultIs(
+                'function foo() {\n' +
+                '    return regeneratorRuntime.async(function foo$(_context) {\n' +
+                '        while (1) {\n' +
+                '            switch (_context.prev = _context.next) {\n' +
+                '                case 0:\n' +
+                '                    _context.next = 2;\n' +
+                '                    return regeneratorRuntime.awrap(new Promise(function (resolve, reject) {\n' +
+                '                        resolve(1);\n' +
+                '                    }));\n' +
+                '\n' +
+                '                case 2:\n' +
+                '                    return _context.abrupt("return", _context.sent);\n' +
+                '\n' +
+                '                case 3:\n' +
+                '                case "end":\n' +
+                '                    return _context.stop();\n' +
+                '            }\n' +
+                '        }\n' +
+                '    }, null, this);\n' +
+                '}',
+                done
+            ))
+            .catch(throwError);
+
     });
 
     it('Given ES6 code with source maps enabled, compiles to ES5 with source map.', function(done) {
