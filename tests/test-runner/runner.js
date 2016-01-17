@@ -35,9 +35,9 @@ Runner.prototype.RunTests = function(err, results, type, callback) {
             return;
         }
 
-        var file = "." + fileName.split('tests')[1];
+        var file = ".\\tests" + fileName.split('tests')[1];
         tasks.push(function(cb){
-            _this.exec("jasmine-node " + file, function(error, stdout, stderr) {
+            _this.exec("npm test " + file, function(error, stdout, stderr) {
 
                 var parsedOutput = _this.parser.Parse(file, stdout);
                 _this.output.OutputTestResult(file, parsedOutput);
