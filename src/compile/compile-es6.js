@@ -10,7 +10,9 @@ var babel = require('./babel-compiler');
  */
 function compile(options) {
 
-    return babel.transform(['babel-preset-es2015', 'babel-preset-react'], options);
+    return babel.transform({
+        presets: ['babel-preset-es2015', 'babel-preset-react']
+    }, options);
 
 }
 

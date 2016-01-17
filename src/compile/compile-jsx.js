@@ -10,7 +10,9 @@ var babel = require('./babel-compiler');
  */
 function compile(options) {
 
-    return babel.transform(['babel-preset-react'], options);
+    return babel.transform({
+        presets: ['babel-preset-react']
+    }, options);
 
 }
 
