@@ -170,6 +170,23 @@ describe('compile ES6', function() {
             .catch(throwError);
 
     });
+    
+    it('Given ES6 code with function shorthand, compiles to ES5.', function(done) {
+    
+        compile('var x = { foo() { return 1; } };')
+            .then(assertResultIs(
+                '"use strict";\n' +
+                '\n' +
+                'var x = {\n' +
+                '  foo: function foo() {\n' +
+                '    return 1;\n' +
+                '  }\n' +
+                '};',
+                done
+            ))
+            .catch(throwError);
+    
+    });
 
     it('Given ES6 code with source maps enabled, compiles to ES5 with source map.', function(done) {
 
@@ -194,6 +211,14 @@ describe('compile ES6', function() {
                 done
             ))
             .catch(throwError);
+
+    });
+
+    it('Given invalid ES6 code, throws error.', function(done) {
+
+        compile('let x =')
+            .then(assertResultWasNotReturned)
+            .catch(assertErrorIsThrown(done));
 
     });
 
@@ -230,6 +255,24 @@ describe('compile ES6', function() {
             } else {
                 expect(result).toEqual(expected);
             }
+
+            done();
+
+        };
+
+    };
+
+    var assertResultWasNotReturned = function() {
+
+        throw 'Compile should not have succeeded!';
+
+    };
+
+    var assertErrorIsThrown = function(done) {
+
+        return function(err) {
+
+            expect(err).not.toBeUndefined();
 
             done();
 
