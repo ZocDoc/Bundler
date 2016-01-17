@@ -200,6 +200,33 @@ describe('compile ES6', function() {
 
     });
 
+    it('Given ES6 JSX code, compiles to ES5.', function(done) {
+
+        compile(
+            'var file1 = React.createClass({\n' +
+            '    render() {\n' +
+            '        return <div>file1 {this.props.name}</div>;\n' +
+            '    }\n' +
+            '});'
+        )
+            .then(assertResultIs(
+                'var file1 = React.createClass({\n' +
+                '    displayName: "file1",\n' +
+                '    render: function render() {\n' +
+                '        return React.createElement(\n' +
+                '            "div",\n' +
+                '            null,\n' +
+                '            "file1 ",\n' +
+                '            this.props.name\n' +
+                '        );\n' +
+                '    }\n' +
+                '});',
+                done
+            ))
+            .catch(throwError);
+
+    });
+
     it('Given ES6 code with source maps enabled, compiles to ES5 with source map.', function(done) {
 
         givenInputFileIs('C:\\foo\\bar.es6');
