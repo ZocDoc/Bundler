@@ -12,7 +12,7 @@ var output = new (require('./output.js')).Outputter(console, parameters, timer);
 var runner = new (require('./runner.js')).Runner(async, exec, parameters, output, parser);
 
 timer.Start();
-process.chdir(require.main.filename.split('test-runner')[0] + 'tests');
+process.chdir(require.main.filename.split('test-runner')[0]);
 
 var testDirectories = [ 'unit', 'integration'];
 var walkTasks = [];
