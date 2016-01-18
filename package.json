@@ -27,6 +27,7 @@
     "hogan.js-template": "2.0.0",
     "less": "2.5.1",
     "node-sass": "3.4.2",
+    "sprity": "^1.0.8",
     "step": "0.0.5",
     "stylestats": "5.4.3",
     "uglify-js": "^2.6.1",
@@ -40,6 +41,7 @@
   },
   "scripts": {
     "bundle": "node .\\src\\bundler.js",
+    "sprite": "node .\\src\\generate-sprites.js",
     "test": "jasmine-node",
     "test-all": "node .\\tests\\test-runner\\parallel-test-runner.js"
   }
