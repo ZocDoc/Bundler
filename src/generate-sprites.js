@@ -17,7 +17,7 @@ sprity.create({
     src: spriteTilesPath,
     split: true,
     out: generatedSpritePath,
-    spriteUrlBase: options.spriteUrlBase,
+    cssPath: options.spriteUrlBase,
     name: 'sprite',
     prefix: 'sgv-icon',
     'style-indent-size': 4,
