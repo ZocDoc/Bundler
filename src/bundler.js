@@ -542,7 +542,6 @@ function getProcessCodeOptions(code, inputPath, outputPath, bundleDir, bundleSta
         inputPath: inputPath,
         outputPath: outputPath,
         bundleDir: bundleDir,
-        nodeModulesPath: path.join(__dirname, 'node_modules'),
         outputBundleOnly: bundlerOptions.outputbundleonly,
         outputBundleStats: bundlerOptions.outputbundlestats,
         bundleStatsCollector: bundleStatsCollector,
