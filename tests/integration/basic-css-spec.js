@@ -28,8 +28,10 @@ test.describeIntegrationTest("Css Bundling:", function() {
 
         test.actions.Bundle();
 
-	    test.assert.verifyBundleIs(".file1{color:red}\n"
-                      + ".file2{color:red}\n");
+	    test.assert.verifyBundleIs(
+            ".file1{color:red}\n" +
+            ".file2{color:red}\n"
+        );
 
 	});
 
@@ -41,8 +43,11 @@ test.describeIntegrationTest("Css Bundling:", function() {
 
         test.actions.Bundle();
 
-        test.assert.verifyBundleIs(".less1{color:red}\n"
-                      + ".less3{color:red}\n");
+        test.assert.verifyBundleIs(
+            ".less1{color:red}\n" +
+            ".less3{color:red}\n"
+        );
+
 	});
 
     it("Given .scss files, then they are compiled and concatenated into the output bundle.", function () {
@@ -53,8 +58,11 @@ test.describeIntegrationTest("Css Bundling:", function() {
 
         test.actions.Bundle();
 
-        test.assert.verifyBundleIs("#css-results #scss{background:green}\n"
-                             + "#css-results3 #scss3{background:navy}\n");
+        test.assert.verifyBundleIs(
+            "#css-results #scss{background:green}\n" +
+            "#css-results3 #scss3{background:navy}\n"
+        );
+
     });
 
 	it("Given Css and Less files together, then it compiles and concatenates everything into the output bundle.", function () {
@@ -68,10 +76,13 @@ test.describeIntegrationTest("Css Bundling:", function() {
 
         test.actions.Bundle();
 
-        test.assert.verifyBundleIs(".file1{color:red}\n"
-                      + ".file2{color:red}\n"
-                      + ".less1{color:red}\n"
-                      + ".less3{color:red}\n");
+        test.assert.verifyBundleIs(
+            ".file1{color:red}\n" +
+            ".file2{color:red}\n" +
+            ".less1{color:red}\n" +
+            ".less3{color:red}\n"
+        );
+
 	});
 
 	it("Given rewrite image option, then it versions image urls with a hash of the image contents if the image exists on disk.", function () {
@@ -90,9 +101,12 @@ test.describeIntegrationTest("Css Bundling:", function() {
 
         test.actions.Bundle();
 
-        test.assert.verifyBundleIs(".file1{color:red}.aa{background:url('combined/version__d30407c38e441f3cb94732074bdfd05f__/img/an-image-there.jpg') center no-repeat}.bb{background:url('img/an-image-not-there.jpg') center no-repeat}\n"
-                      + ".a{background:url('combined/version__d30407c38e441f3cb94732074bdfd05f__/an-image-there.jpg') center no-repeat}.b{background:url('an-image-not-there.jpg') center no-repeat}\n");
-	})
+        test.assert.verifyBundleIs(
+            ".file1{color:red}.aa{background:url('combined/version__d30407c38e441f3cb94732074bdfd05f__/img/an-image-there.jpg') center no-repeat}.bb{background:url('img/an-image-not-there.jpg') center no-repeat}\n" +
+            ".a{background:url('combined/version__d30407c38e441f3cb94732074bdfd05f__/an-image-there.jpg') center no-repeat}.b{background:url('an-image-not-there.jpg') center no-repeat}\n"
+        );
+
+	});
 
 	var givenImages = function (imgFile) {
 	    var imgDir = test.given.TestDirectory + "/img";

@@ -59,6 +59,7 @@ var fs = require("fs"),
     readTextFile = require('./read-text-file'),
     compile = require('./compile'),
     minify = require('./minify'),
+    file = require('./file'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -324,13 +325,20 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                 var next = this;
 
+                if (isMustache || isJsx || isES6) {
+                    jsPath = jsPathOutput;
+                }
+
+                if (options.outputbundlestats) {
+                    bundleStatsCollector.AddDebugFile(jsBundle, jsPath);
+                }
+
                 readTextFile(filePath, function(code) {
 
                     var compileOptions = getProcessCodeOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isMustache) {
 
-                        jsPath = jsPathOutput;
                         if (options.outputbundlestats) {
                             bundleStatsCollector.ParseMustacheForStats(jsBundle, code);
                         }
@@ -339,7 +347,6 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     } else if (isJsx) {
 
-                        jsPath = jsPathOutput;
                         if (options.outputbundlestats) {
                             bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         }
@@ -348,7 +355,6 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     } else if (isES6) {
 
-                        jsPath = jsPathOutput;
                         if (options.outputbundlestats) {
                             bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         }
@@ -361,32 +367,34 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                             bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         }
 
-                        next(code);
+                        next({
+                            code: code
+                        });
 
                     }
 
 
                 });
 
-                if (options.outputbundlestats) {
-                    bundleStatsCollector.AddDebugFile(jsBundle, jsPath);
-                }
-
             },
             function (js) {
-                allJsArr[i] = js;
+                allJsArr[i] = js.code;
                 var withMin = function (minJs) {
-                    allMinJsArr[i] = minJs;
+                    allMinJsArr[i] = minJs.code;
 
                     if (! --pending) whenDone();
                 };
 
                 if (options.skipmin) {
-                    withMin('');
+                    withMin({});
                 } else if (/(\.min\.|\.pack\.)/.test(file) && options.skipremin) {
-                    readTextFile(jsPath, withMin);
+                    readTextFile(jsPath, function(code) {
+                        withMin({
+                            code: code
+                        })
+                    });
                 }  else {
-                    var minifyOptions = getProcessCodeOptions(js, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
+                    var minifyOptions = getProcessCodeOptions(js.code, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
                     minify.js(minifyOptions).then(withMin).catch(handleError);
                 }
             }
@@ -471,47 +479,55 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                 var next = this;
 
+                if (isLess || isSass) {
+                    cssPath = cssPathOutput;
+                }
+
+                if (options.outputbundlestats) {
+                    bundleStatsCollector.AddDebugFile(cssBundle, cssPath);
+                }
+
                 readTextFile(filePath, function(code) {
 
                     var compileOptions = getProcessCodeOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isLess) {
 
-                        cssPath = cssPathOutput;
                         compile.less(compileOptions).then(next).catch(handleError);
 
                     } else if (isSass) {
 
-                        cssPath = cssPathOutput;
                         compile.sass(compileOptions).then(next).catch(handleError);
 
                     } else {
 
-                        next(code);
+                        next({
+                            code: code
+                        });
 
                     }
 
                 });
 
-                if (options.outputbundlestats) {
-                    bundleStatsCollector.AddDebugFile(cssBundle, cssPath);
-                }
-
             },
             function (css) {
-                allCssArr[i] = css;
+                allCssArr[i] = css.code;
                 var withMin = function (minCss) {
-                    allMinCssArr[i] = minCss;
+                    allMinCssArr[i] = minCss.code;
 
                     if (! --pending) whenDone();
                 };
 
                 if (options.skipmin) {
-                    withMin('');
+                    withMin({});
                 } else if (/(\.min\.|\.pack\.)/.test(file) && options.skipremin) {
-                    readTextFile(cssPath, withMin);
+                    readTextFile(cssPath, function(code) {
+                        withMin({
+                            code: code
+                        })
+                    });
                 } else {
-                    var minifyOptions = getProcessCodeOptions(css, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
+                    var minifyOptions = getProcessCodeOptions(css.code, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
                     minify.css(minifyOptions).then(withMin).catch(handleError);
                 }
             }

@@ -73,11 +73,13 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs('.style1{color:red}\n'
-                         + '.style2{color:#00f}\n'
-                         + '.style3{color:#fff}\n'
-                         + '.importColor{color:#000}\n'
-                         + '.deeperImportColor{color:#000}\n');
+            test.assert.verifyBundleIs(
+                '.style1{color:red}\n' +
+                '.style2{color:#00f}\n' +
+                '.style3{color:#fff}\n' +
+                '.importColor{color:#000}\n' +
+                '.deeperImportColor{color:#000}\n'
+            );
 
         });
         
@@ -87,11 +89,13 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs('.newstyle1{color:#ff0}\n'
-                         + '.style2{color:#00f}\n'
-                         + '.style3{color:#fff}\n'
-                         + '.importColor{color:#000}\n'
-                         + '.deeperImportColor{color:#000}\n');
+            test.assert.verifyBundleIs(
+                '.newstyle1{color:#ff0}\n' +
+                '.style2{color:#00f}\n' +
+                '.style3{color:#fff}\n' +
+                '.importColor{color:#000}\n' +
+                '.deeperImportColor{color:#000}\n'
+            );
         });
 
         it("An updated less file causes the contents of the bundle to change when re-bundled.", function () {
@@ -100,11 +104,13 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs('.style1{color:red}\n'
-                         + '.style2{color:#00f}\n'
-                         + '.style4{color:green}\n'
-                         + '.importColor{color:#000}\n'
-                         + '.deeperImportColor{color:#000}\n');
+            test.assert.verifyBundleIs(
+                '.style1{color:red}\n' +
+                '.style2{color:#00f}\n' +
+                '.style4{color:green}\n' +
+                '.importColor{color:#000}\n' +
+                '.deeperImportColor{color:#000}\n'
+            );
 
         });
         
@@ -114,11 +120,13 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs('.style1{color:red}\n'
-                         + '.style2{color:#00f}\n'
-                         + '.style3{color:#fff}\n'
-                         + '.importColor{color:#00f}\n'
-                         + '.deeperImportColor{color:#000}\n');
+            test.assert.verifyBundleIs(
+                '.style1{color:red}\n' +
+                '.style2{color:#00f}\n' +
+                '.style3{color:#fff}\n' +
+                '.importColor{color:#00f}\n' +
+                '.deeperImportColor{color:#000}\n'
+            );
 
         });
 
@@ -128,11 +136,13 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
 
             test.actions.Bundle();
 
-            test.assert.verifyBundleIs('.style1{color:red}\n'
-                         + '.style2{color:#00f}\n'
-                         + '.style3{color:#fff}\n'
-                         + '.importColor{color:#000}\n'
-                         + '.deeperImportColor{color:#00f}\n');
+            test.assert.verifyBundleIs(
+                '.style1{color:red}\n' +
+                '.style2{color:#00f}\n' +
+                '.style3{color:#fff}\n' +
+                '.importColor{color:#000}\n' +
+                '.deeperImportColor{color:#00f}\n'
+            );
 
         });
     });

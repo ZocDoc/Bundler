@@ -26,7 +26,9 @@ function compile(options) {
                 + templateName
                 + '\'] = new Hogan.Template(' + templateObject + ');';
 
-            resolve(result);
+            resolve({
+                code: result
+            });
 
         } catch (err) {
 
