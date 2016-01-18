@@ -77,9 +77,9 @@ test.describeIntegrationTest("Js Bundling:", function() {
         test.actions.Bundle();
 
         test.assert.verifyBundleIs(
-            ';var odds=evens.map(function(n){return n+1});\n' +
-            ';var x=5;\n' +
-            ';var name="Bob",time="today",combined="Hello "+name+", how are you "+time+"?";\n'
+            ';"use strict";var odds=evens.map(function(e){return e+1});\n' +
+            ';"use strict";var x=5;\n' +
+            ';"use strict";var name="Bob",time="today",combined="Hello "+name+", how are you "+time+"?";\n'
         );
 
     });
@@ -108,9 +108,9 @@ test.describeIntegrationTest("Js Bundling:", function() {
         test.actions.Bundle();
 
         test.assert.verifyBundleIs(
-            ';var file1=React.createClass({displayName:"file1",render:function(){return React.createElement("div",null,"file1 ",this.props.name)}});\n' +
-            ';var file2=React.createClass({displayName:"file2",render:function(){return React.createElement("div",null,"file2 ",this.props.name)}});\n' +
-            ';var file3=React.createClass({displayName:"file3",render:function(){return React.createElement("div",null,"file3 ",this.props.name)}});\n'
+            ';"use strict";var file1=React.createClass({displayName:"file1",render:function(){return React.createElement("div",null,"file1 ",this.props.name)}});\n' +
+            ';"use strict";var file2=React.createClass({displayName:"file2",render:function(){return React.createElement("div",null,"file2 ",this.props.name)}});\n' +
+            ';"use strict";var file3=React.createClass({displayName:"file3",render:function(){return React.createElement("div",null,"file3 ",this.props.name)}});\n'
         );
 
     });

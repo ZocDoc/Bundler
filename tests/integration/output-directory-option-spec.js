@@ -100,7 +100,7 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
             test.assert.verifyFileAndContentsAre(
                 testDirectory + '/output-dir',
                 'file2.js',
-                'var odds = evens.map(function (v) {\n  return v + 1;\n});');
+                '"use strict";\n\nvar odds = evens.map(function (v) {\n  return v + 1;\n});');
 
         });
     });

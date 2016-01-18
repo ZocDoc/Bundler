@@ -55,10 +55,12 @@ test.describeIntegrationTest("Generating source maps:", function() {
             test.assert.verifyFileAndContentsAre(
                 test.given.TestDirectory,
                 'file1.js',
+                '"use strict";\n' +
+                '\n' +
                 'var odds = evens.map(function (v) {\n' +
                 '  return v + 1;\n' +
                 '});\n' +
-                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmVzNiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxJQUFJLElBQUksR0FBRyxLQUFLLENBQUMsR0FBRyxDQUFDLFVBQUEsQ0FBQztTQUFJLENBQUMsR0FBRyxDQUFDO0NBQUEsQ0FBQyxDQUFDIn0='
+                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmVzNiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksSUFBSSxHQUFHLEtBQUssQ0FBQyxHQUFHLENBQUMsVUFBQSxDQUFDO1NBQUksQ0FBQyxHQUFHLENBQUM7Q0FBQSxDQUFDLENBQUMifQ=='
             );
 
         });
