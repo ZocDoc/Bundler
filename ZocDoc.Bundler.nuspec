@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>ZocDoc-Bundler</id>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <title>ZocDoc - Bundler</title>
     <authors>ZocDoc, Inc.</authors>
     <owners>ZocDoc, Inc.</owners>
@@ -11,7 +11,7 @@
     <description>ZocDoc fork of ServiceStack/Bundler.</description>
   </metadata>
   <files>
-	 <file src="node_modules\**\*" target="content" />
+	 <file src="node_modules\**\*" target="content\node_modules" />
 	 <file src="src\**\*" target="content" />
   </files>
 </package>
