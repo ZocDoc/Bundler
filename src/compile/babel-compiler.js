@@ -3,28 +3,32 @@ var path = require('path');
 var Promise = require('bluebird');
 
 /**
- * @param {string[]} presets
+ * @param {object} babelOptions
+ * @param {string[]} [babelOptions.presets]
+ * @param {string[]} [babelOptions.plugins]
  * @param {object} options
  * @param {string} options.code
  * @param {string} options.inputPath
  * @param {boolean} options.sourceMap
  * @returns {bluebird}
  */
-function transform(presets, options) {
+function transform(babelOptions, options) {
 
     return new Promise(function(resolve, reject) {
 
         try {
-            var babelOptions = {
-                presets: presets
+
+            var settings = {
+                presets: babelOptions.presets,
+                plugins: babelOptions.plugins
             };
 
             if (options.sourceMap) {
-                babelOptions.sourceMaps = true;
-                babelOptions.sourceFileName = options.inputPath;
+                settings.sourceMaps = true;
+                settings.sourceFileName = options.inputPath;
             }
 
-            var result = babel.transform(options.code, babelOptions);
+            var result = babel.transform(options.code, settings);
 
             resolve({
                 code: result.code,

@@ -25,12 +25,12 @@ Parser.prototype.Parse = function(file, output) {
         if(contains(line, timeText)) {
             parsedOutput.time = line.replace(timeText,"");
         }
-        else if(contains(line, "assertions") && contains(line, "failure") && contains(line, "skipped")) {
+        else if(contains(line, "assertion") && contains(line, "failure") && contains(line, "skipped")) {
             var metrics = line.split(',');
             metrics.forEach(function(metric){
 
-                if(contains(metric, "tests")) {
-                    var total = metric.replace(" tests", "")
+                if(contains(metric, "test")) {
+                    var total = metric.replace(/ test(s?)/, "")
                     parsedOutput.total = parseInt(total, 10);
                 }
                 else if(contains(metric, "failure") || contains(metric, "failures")) {
