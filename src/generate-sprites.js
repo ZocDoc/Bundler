@@ -8,7 +8,7 @@ var spriteTilesPath = path.join(options.imagesPath, '**', '*.png');
 
 var generatedSpritePath = options.spriteOutputPath;
 
-var lessTemplatePath = path.join('.', 'templates', 'sprite-less-template.hbs');
+var lessTemplatePath = path.relative(".", path.join(__dirname, 'templates', 'sprite-less-template.hbs'));
 
 var lessAbsolutePath = path.join(options.lessOutputPath, 'sprites.mixin.generated.less');
 var lessRelativePath = path.relative(generatedSpritePath, lessAbsolutePath);
