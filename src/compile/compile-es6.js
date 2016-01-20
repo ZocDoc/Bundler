@@ -25,7 +25,8 @@ function compile(options) {
             require("babel-plugin-transform-es2015-destructuring"),
             require("babel-plugin-transform-es2015-block-scoping"),
             require("babel-plugin-syntax-async-functions"),
-            require("babel-plugin-transform-regenerator")
+            require("babel-plugin-transform-regenerator"),
+            require("babel-plugin-transform-strict-mode")
         ],
         presets: [
             require('babel-preset-react')
