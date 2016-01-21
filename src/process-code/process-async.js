@@ -1,22 +1,25 @@
+var dependencies = require('../dependencies');
 var fs = require('fs');
 var file = require('../file');
+var path = require('path');
 var Promise = require('bluebird');
-var readTextFile = require('../read-text-file');
 var Step = require('step');
 
 /**
+ * @param {string} fileType
  * @param {object} options
  * @param {string} options.code
+ * @param {string[]} options.deps
  * @param {string} options.inputPath
  * @param {string} options.outputPath
  * @param {string} options.bundleDir
- * @param {string} options.nodeModulesPath
  * @param {boolean} options.outputBundleOnly
  * @param {boolean} options.outputBundleStats
  * @param {object} options.bundleStatsCollector
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
  * @param {boolean} options.useTemplateDirs
+ * @param {boolean} options.require
  * @param {function} processFn
  */
 function processAsync(fileType, options, processFn) {
@@ -77,18 +80,20 @@ function processAsync(fileType, options, processFn) {
             },
             function processCode(shouldProcessCode) {
 
+                var next = this;
+
                 if (shouldProcessCode) {
 
                     var onAfterProcessed = function(result) {
 
                         if (options.outputBundleOnly) {
 
-                            resolve(result.code);
+                            resolve(result);
 
                         } else {
 
                             file.write(result.code, result.map, fileType, options.outputPath, options.siteRoot)
-                                .then(resolve)
+                                .then(next)
                                 .catch(reject);
 
                         }
@@ -101,8 +106,29 @@ function processAsync(fileType, options, processFn) {
                 } else {
 
                     file.read(options.outputPath)
-                        .then(resolve)
+                        .then(next)
                         .catch(reject);
+
+                }
+
+            },
+            function parseDependencies(result) {
+
+                try {
+
+                    result.path = path.normalize(options.inputPath);
+
+                    if (options.require) {
+                        result.deps = dependencies(result.code, options.inputPath);
+                    } else if (options.deps) {
+                        result.deps = deps;
+                    }
+
+                    resolve(result);
+
+                } catch (err) {
+
+                    reject(err);
 
                 }
 
