@@ -13,6 +13,14 @@ function Actions(
 exports.Actions = Actions;
 
 Actions.prototype.Bundle = function() {
-    this.Utility.CreateFile(this.Givens.TestDirectory, "test." + this.Suffix + ".bundle", this.Givens.BundleContents);
+    var bundle;
+
+    if (this.Givens.BundleFileOptions.length) {
+        bundle = "#options " + this.Givens.BundleFileOptions.join(', ') + "\n" + this.Givens.BundleContents;
+    } else {
+        bundle = this.Givens.BundleContents;
+    }
+
+    this.Utility.CreateFile(this.Givens.TestDirectory, "test." + this.Suffix + ".bundle", bundle);
     this.Utility.Bundle(this.Givens.TestDirectory, this.Givens.BundleOptions);
 };

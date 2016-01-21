@@ -5,6 +5,7 @@ function Givens(
 {
     this.Utility = testUtility;
     this.BundleOptions = "";
+    this.BundleFileOptions = [];
     this.BundleContents = "";
     this.TestDirectory = "";
     this.BaseTestDirectory = "";
@@ -24,6 +25,7 @@ Givens.prototype.CleanTestSpace = function(testDirBase) {
     this.Utility.CreateDirectory(this.TestDirectory);
     this.Utility.CreateDirectory(this.ImportDirectory);
     this.BundleOptions = "";
+    this.BundleFileOptions = [];
     this.BundleContents = "";
     this.StagingDirectory = "";
     this.OutputDirectory = "./" + this.TestDirectory;
@@ -58,6 +60,10 @@ Givens.prototype.SubDirectory = function (directory) {
 
 Givens.prototype.BundleOption = function (option) {
     this.BundleOptions += " " + option;
+};
+
+Givens.prototype.BundleFileOption = function(option) {
+    this.BundleFileOptions.push(option);
 };
 
 Givens.prototype.OutputDirectoryIs = function (directory) {
