@@ -60,6 +60,7 @@ var fs = require("fs"),
     compile = require('./compile'),
     minify = require('./minify'),
     file = require('./file'),
+    combine = require('./combine'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -261,7 +262,12 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
     var processedFiles = {};
 
-    var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
+    var allJsArr = [],
+        allMinJsArr = [],
+        allJsCode = combine.js(),
+        index = 0,
+        pending = 0;
+
     var whenDone = function () {
         if (options.nobundle) {
             setTimeout(cb, 0);
@@ -274,20 +280,21 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
             allMinJs += ";" + allMinJsArr[i] + "\n";
         }
 
-        var afterBundle = options.skipmin ? cb : function (_) {
+        allJsCode.prepare({
+            require: options.require
+        });
+
+        var afterBundle = function () {
             var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
 			
-            if(options.outputbundlestats) {
+            if (options.outputbundlestats) {
                 bundleStatsCollector.AddFileHash(bundleName, allMinJs);
             }
 
-            fs.writeFile(minFileName, allMinJs, cb);
+            fs.writeFile(minFileName, allJsCode.combine(), cb);
         };
-        if (!options.bundleminonly) {
-            fs.writeFile(bundleName, allJs, afterBundle);
-        } else {
-            afterBundle();
-        }
+
+        fs.writeFile(bundleName, allJs, afterBundle);
     };
 
     if(options.outputbundlestats) {
@@ -335,7 +342,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessCodeOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessCodeOptions({
+                        code: code
+                    }, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isMustache) {
 
@@ -367,9 +376,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                             bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         }
 
-                        next({
-                            code: code
-                        });
+                        compile.js(compileOptions).then(next).catch(handleError);
 
                     }
 
@@ -378,25 +385,19 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
             },
             function (js) {
+
                 allJsArr[i] = js.code;
+
                 var withMin = function (minJs) {
                     allMinJsArr[i] = minJs.code;
+                    //allJsCode.add(i, minJs);
 
                     if (! --pending) whenDone();
                 };
 
-                if (options.skipmin) {
-                    withMin({});
-                } else if (/(\.min\.|\.pack\.)/.test(file) && options.skipremin) {
-                    readTextFile(jsPath, function(code) {
-                        withMin({
-                            code: code
-                        })
-                    });
-                }  else {
-                    var minifyOptions = getProcessCodeOptions(js.code, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
-                    minify.js(minifyOptions).then(withMin).catch(handleError);
-                }
+                var minifyOptions = getProcessCodeOptions(js, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
+                minify.js(minifyOptions).then(withMin).catch(handleError);
+
             }
         );
     });
@@ -489,7 +490,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessCodeOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessCodeOptions({
+                        code: code
+                    }, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isLess) {
 
@@ -527,7 +530,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                         })
                     });
                 } else {
-                    var minifyOptions = getProcessCodeOptions(css.code, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
+                    var minifyOptions = getProcessCodeOptions(css, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
                     minify.css(minifyOptions).then(withMin).catch(handleError);
                 }
             }
@@ -535,10 +538,12 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     });
 }
 
-function getProcessCodeOptions(code, inputPath, outputPath, bundleDir, bundleStatsCollector, bundlerOptions) {
+function getProcessCodeOptions(file, inputPath, outputPath, bundleDir, bundleStatsCollector, bundlerOptions) {
 
     return {
-        code: code,
+        code: file.code,
+        map: file.map,
+        deps: file.deps,
         inputPath: inputPath,
         outputPath: outputPath,
         bundleDir: bundleDir,
@@ -547,7 +552,8 @@ function getProcessCodeOptions(code, inputPath, outputPath, bundleDir, bundleSta
         bundleStatsCollector: bundleStatsCollector,
         sourceMap: bundlerOptions.sourcemaps,
         siteRoot: bundlerOptions.siterootdirectory,
-        useTemplateDirs: bundlerOptions.usetemplatedirs
+        useTemplateDirs: bundlerOptions.usetemplatedirs,
+        require: bundlerOptions.require
     };
 
 }

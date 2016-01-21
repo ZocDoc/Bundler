@@ -1,16 +1,31 @@
 var file = require('../file');
+var dependencies = require('../dependencies');
 var path = require('path');
+
+var CodeType = {
+    COMPILED: 'compiled',
+    MINIFIED: 'minified'
+};
 
 function FileCombiner(fileType) {
 
     this.type = fileType;
-    this.files = [];
+
+    this.orderedFiles = [];
+    this.filesByPath = {};
 
 }
 
-FileCombiner.prototype.add = function add(index, file) {
+FileCombiner.prototype.add = function add(index, path, compiled, minified) {
 
-    this.files[index] = file;
+    var file = {
+        path: path,
+        compiled: compiled,
+        minified: minified
+    };
+
+    this.orderedFiles[index] = file;
+    this.filesByPath[path] = file;
 
 };
 
@@ -18,29 +33,40 @@ FileCombiner.prototype.add = function add(index, file) {
  * @param {Object} [options]
  * @param {Boolean} [options.require]
  */
-FileCombiner.prototype.combine = function combine(options) {
-
-    var allCode = [],
-        files;
+FileCombiner.prototype.prepare = function prepare(options) {
 
     options = options || [];
 
     if (options.require && this.type === file.type.JS) {
 
-        files = order(this.files);
-
-    } else {
-
-        files = this.files;
+        this.orderedFiles = order(this.orderedFiles);
 
     }
+
+};
+
+FileCombiner.prototype.combine = function combine() {
+
+    return this._combineFiles(CodeType.COMPILED);
+
+};
+
+FileCombiner.prototype.combineMin = function combineMin() {
+
+    return this._combineFiles(CodeType.MINIFIED);
+
+};
+
+FileCombiner.prototype._combineFiles = function _combineFiles(codeType) {
+
+    var allCode = [];
 
     switch (this.type) {
 
         case file.type.CSS:
 
-            files.forEach(function(file) {
-                allCode.push(file.code);
+            this.orderedFiles.forEach(function(file) {
+                allCode.push(file[codeType].code);
                 allCode.push('\n');
             });
 
@@ -48,9 +74,9 @@ FileCombiner.prototype.combine = function combine(options) {
 
         case file.type.JS:
 
-            files.forEach(function(file) {
+            this.orderedFiles.forEach(function(file) {
                 allCode.push(';');
-                allCode.push(file.code);
+                allCode.push(file[codeType].code);
                 allCode.push('\n');
             });
 

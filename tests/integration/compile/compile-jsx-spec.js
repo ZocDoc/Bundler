@@ -102,8 +102,7 @@ describe('compile JSX', function() {
         return compileJSX({
             code: code,
             sourceMap: sourceMap,
-            inputPath: inputPath,
-            nodeModulesPath: path.join(__dirname, '..', '..', '..', 'node_modules')
+            inputPath: inputPath
         });
 
     };

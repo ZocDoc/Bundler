@@ -1,7 +1,5 @@
-var dependencies = require('../dependencies');
 var fs = require('fs');
 var file = require('../file');
-var path = require('path');
 var Promise = require('bluebird');
 var Step = require('step');
 
@@ -80,8 +78,6 @@ function processAsync(fileType, options, processFn) {
             },
             function processCode(shouldProcessCode) {
 
-                var next = this;
-
                 if (shouldProcessCode) {
 
                     var onAfterProcessed = function(result) {
@@ -93,7 +89,7 @@ function processAsync(fileType, options, processFn) {
                         } else {
 
                             file.write(result.code, result.map, fileType, options.outputPath, options.siteRoot)
-                                .then(next)
+                                .then(resolve)
                                 .catch(reject);
 
                         }
@@ -106,29 +102,8 @@ function processAsync(fileType, options, processFn) {
                 } else {
 
                     file.read(options.outputPath)
-                        .then(next)
+                        .then(resolve)
                         .catch(reject);
-
-                }
-
-            },
-            function parseDependencies(result) {
-
-                try {
-
-                    result.path = path.normalize(options.inputPath);
-
-                    if (options.require) {
-                        result.deps = dependencies(result.code, options.inputPath);
-                    } else if (options.deps) {
-                        result.deps = deps;
-                    }
-
-                    resolve(result);
-
-                } catch (err) {
-
-                    reject(err);
 
                 }
 
