@@ -1,7 +1,2 @@
-var minifyCSS = require('./minify-css');
-var minifyJS = require('./minify-js');
-
-module.exports = {
-    css: minifyCSS,
-    js: minifyJS
-};
+exports.css = require('./minify-css');
+exports.js = require('./minify-js');
