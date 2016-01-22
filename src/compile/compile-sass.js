@@ -1,5 +1,4 @@
 var directoryCrawler = require('../directory-crawler');
-var path = require('path');
 var Promise = require('bluebird');
 var sass = require('node-sass');
 
