@@ -57,9 +57,10 @@ var fs = require("fs"),
     collection = require('./collection'),
     cssValidator = require('./css-validator'),
     readTextFile = require('./read-text-file'),
+    processAsync = require('./process-async'),
     compile = require('./compile'),
     minify = require('./minify'),
-    file = require('./file'),
+    fileType = require('./file').type,
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -335,7 +336,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessCodeOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessAsyncOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isMustache) {
 
@@ -343,7 +344,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                             bundleStatsCollector.ParseMustacheForStats(jsBundle, code);
                         }
 
-                        compile.mustache(compileOptions).then(next).catch(handleError);
+                        processAsync(fileType.JS, compileOptions, compile.mustache)
+                            .then(next)
+                            .catch(handleError);
 
                     } else if (isJsx) {
 
@@ -351,7 +354,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                             bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         }
 
-                        compile.jsx(compileOptions).then(next).catch(handleError);
+                        processAsync(fileType.JS, compileOptions, compile.jsx)
+                            .then(next)
+                            .catch(handleError);
 
                     } else if (isES6) {
 
@@ -359,7 +364,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                             bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         }
 
-                        compile.es6(compileOptions).then(next).catch(handleError);
+                        processAsync(fileType.JS, compileOptions, compile.es6)
+                            .then(next)
+                            .catch(handleError);
 
                     } else {
 
@@ -394,8 +401,11 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                         })
                     });
                 }  else {
-                    var minifyOptions = getProcessCodeOptions(js.code, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
-                    minify.js(minifyOptions).then(withMin).catch(handleError);
+                    var minifyOptions = getProcessAsyncOptions(js.code, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
+
+                    processAsync(fileType.JS, minifyOptions, minify.js)
+                        .then(withMin)
+                        .catch(handleError);
                 }
             }
         );
@@ -489,15 +499,19 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessCodeOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessAsyncOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isLess) {
 
-                        compile.less(compileOptions).then(next).catch(handleError);
+                        processAsync(fileType.CSS, compileOptions, compile.less)
+                            .then(next)
+                            .catch(handleError);
 
                     } else if (isSass) {
 
-                        compile.sass(compileOptions).then(next).catch(handleError);
+                        processAsync(fileType.CSS, compileOptions, compile.sass)
+                            .then(next)
+                            .catch(handleError);
 
                     } else {
 
@@ -527,15 +541,18 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                         })
                     });
                 } else {
-                    var minifyOptions = getProcessCodeOptions(css.code, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
-                    minify.css(minifyOptions).then(withMin).catch(handleError);
+                    var minifyOptions = getProcessAsyncOptions(css.code, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
+
+                    processAsync(fileType.CSS, minifyOptions, minify.css)
+                        .then(withMin)
+                        .catch(handleError);
                 }
             }
         );
     });
 }
 
-function getProcessCodeOptions(code, inputPath, outputPath, bundleDir, bundleStatsCollector, bundlerOptions) {
+function getProcessAsyncOptions(code, inputPath, outputPath, bundleDir, bundleStatsCollector, bundlerOptions) {
 
     return {
         code: code,
