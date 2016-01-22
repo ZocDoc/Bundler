@@ -336,49 +336,30 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessAsyncOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessAsyncOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options),
+                        compiler;
+
+                    if (options.outputbundlestats) {
+                        if (isMustache) {
+                            bundleStatsCollector.ParseMustacheForStats(jsBundle, code);
+                        } else {
+                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
+                        }
+                    }
 
                     if (isMustache) {
-
-                        if (options.outputbundlestats) {
-                            bundleStatsCollector.ParseMustacheForStats(jsBundle, code);
-                        }
-
-                        processAsync(fileType.JS, compileOptions, compile.mustache)
-                            .then(next)
-                            .catch(handleError);
-
+                        compiler = compile.mustache;
                     } else if (isJsx) {
-
-                        if (options.outputbundlestats) {
-                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                        }
-
-                        processAsync(fileType.JS, compileOptions, compile.jsx)
-                            .then(next)
-                            .catch(handleError);
-
+                        compiler = compile.jsx;
                     } else if (isES6) {
-
-                        if (options.outputbundlestats) {
-                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                        }
-
-                        processAsync(fileType.JS, compileOptions, compile.es6)
-                            .then(next)
-                            .catch(handleError);
-
+                        compiler = compile.es6;
                     } else {
-
-                        if (options.outputbundlestats) {
-                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                        }
-
-                        next({
-                            code: code
-                        });
-
+                        compiler = compile.js;
                     }
+
+                    processAsync(fileType.JS, compileOptions, compiler)
+                        .then(next)
+                        .catch(handleError);
 
 
                 });
@@ -501,25 +482,19 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                     var compileOptions = getProcessAsyncOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
 
+                    var compiler;
+
                     if (isLess) {
-
-                        processAsync(fileType.CSS, compileOptions, compile.less)
-                            .then(next)
-                            .catch(handleError);
-
+                        compiler = compile.less;
                     } else if (isSass) {
-
-                        processAsync(fileType.CSS, compileOptions, compile.sass)
-                            .then(next)
-                            .catch(handleError);
-
+                        compiler = compile.sass;
                     } else {
-
-                        next({
-                            code: code
-                        });
-
+                        compiler = compile.css;
                     }
+
+                    processAsync(fileType.CSS, compileOptions, compiler)
+                        .then(next)
+                        .catch(handleError);
 
                 });
 
