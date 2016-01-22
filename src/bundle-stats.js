@@ -24,6 +24,7 @@ var fs = require("fs"),
     hasher = require('crypto'),
     path = require('path'),
     collection = require('./collection'),
+    parse = require('./parse'),
     HASH_FILE_NAME = 'bundle-hashes.json',
     DEBUG_FILE_NAME = 'bundle-debug.json',
     LOCALIZATION_FILE_NAME = 'bundle-localization-strings.json',
@@ -43,15 +44,6 @@ function BundleStatsCollector(
     this.LocalizedStrings = { };
     this.AbConfigs = {};
     this.LessImports = {};
-    this.MustacheLocalizationRegex = new RegExp("\{\{# *i18n *}}[^\{]*\{\{/ *i18n *}}", "gim");
-    this.JsLocalizationRegex = new RegExp("(// @localize .*|i18n.t\\((\"|')[^(\"|')]*(\"|')\\))", "g");
-    this.JsAbConfigRegex = new RegExp("AB.(isOn|getVariant)\\((\"|')[^(\"|')]*(\"|')\\)", "g");
-    this.LocalizationStartRegex = new RegExp("\{\{# *i18n *}}", "gim");
-    this.LocalizationEndRegex = new RegExp("\{\{/ *i18n *}}", "gim");
-    this.JsLocalizationRegexStart1 = new RegExp("// @localize ", "i");
-    this.JsLocalizationRegexStart2 = new RegExp("i18n.t\\((\"|')", "i");
-    this.JsLocalizationEndRegex = new RegExp("(\"|')\\)", "gim");
-    this.JsAbConfigRegexStart = new RegExp("AB.(isOn|getVariant)\\((\"|')", "i");
 
     this.LessImportRegex = new RegExp("@import url\\((\"|')[^(\"|')]*(\"|')\\)", "g");
     this.LessImportRegexStart = new RegExp("@import url\\((\"|')", "i");
@@ -155,19 +147,13 @@ BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
 
 
 BundleStatsCollector.prototype.ParseMustacheForStats = function (bundleName, text) {
+
     var _this = this;
 
-    parseAndAddToCollection(
-        bundleName,
-        text,
-        _this.LocalizedStrings,
-        _this.MustacheLocalizationRegex,
-        function(item) {
-            return item.replace(_this.LocalizationStartRegex,'')
-                .replace(_this.LocalizationEndRegex, '')
-                .replace(/(\r\n|\n|\r)/gim, '');
-        }
-    );
+    parse.localizedStrings(text).forEach(function(localizedString) {
+        _this.LocalizedStrings.add(bundleName, localizedString);
+    });
+
 };
 
 var parseLessForImports = function (_this, fileName, text) {
@@ -228,29 +214,15 @@ BundleStatsCollector.prototype.GetImportsForFile = function (fileName) {
 };
 
 BundleStatsCollector.prototype.ParseJsForStats = function (bundleName, text) {
+
     var _this = this;
 
-    parseAndAddToCollection(
-        bundleName,
-        text,
-        _this.LocalizedStrings,
-        _this.JsLocalizationRegex,
-        function(item) {
-            return item.replace(_this.JsLocalizationRegexStart1,'')
-                       .replace(_this.JsLocalizationRegexStart2, '')
-                       .replace(_this.JsLocalizationEndRegex, '');
-        }
-    );
+    parse.localizedStrings(text).forEach(function(localizedString) {
+        _this.LocalizedStrings.add(bundleName, localizedString);
+    });
 
-    parseAndAddToCollection(
-        bundleName,
-        text,
-        _this.AbConfigs,
-        _this.JsAbConfigRegex,
-        function(item) {
-            return item.replace(_this.JsAbConfigRegexStart, '')
-                .replace(_this.JsLocalizationEndRegex, '');
-        }
-    );
+    parse.abConfigs(text).forEach(function(abConfig) {
+        _this.AbConfigs.add(bundleName, abConfig);
+    });
 
 };
