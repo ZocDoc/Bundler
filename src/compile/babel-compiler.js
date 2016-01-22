@@ -1,5 +1,4 @@
 var babel = require('babel-core');
-var path = require('path');
 var Promise = require('bluebird');
 
 /**
