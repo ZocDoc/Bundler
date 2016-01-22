@@ -4,6 +4,7 @@ var Promise = require('bluebird');
 var Step = require('step');
 
 /**
+ * @param {file.type} fileType
  * @param {object} options
  * @param {string} options.code
  * @param {string} options.inputPath
