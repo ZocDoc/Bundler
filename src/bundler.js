@@ -480,9 +480,12 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessAsyncOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessAsyncOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options),
+                        compiler;
 
-                    var compiler;
+                    if (options.outputbundlestats && isLess) {
+                        bundleStatsCollector.SearchForLessImports(filePath, code);
+                    }
 
                     if (isLess) {
                         compiler = compile.less;
