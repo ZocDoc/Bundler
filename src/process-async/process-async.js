@@ -1,5 +1,5 @@
 var fs = require('fs');
-var file = require('../file');
+var file = require('../tasks/file');
 var Promise = require('bluebird');
 var Step = require('step');
 

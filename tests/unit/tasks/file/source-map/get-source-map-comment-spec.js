@@ -1,5 +1,5 @@
-var getComment = require('../../../../src/file/source-map/get-source-map-comment');
-var file = require('../../../../src/file');
+var getComment = require('../../../../../src/tasks/file/source-map/get-source-map-comment');
+var fileType = require('../../../../../src/tasks/file').type;
 
 describe('get source map comment', function() {
 
@@ -12,7 +12,7 @@ describe('get source map comment', function() {
             sources: ['foo.js'],
             names: ['a', 'b'],
             mappings: ['AAAA', 'BBBB']
-        }, file.type.JS);
+        }, fileType.JS);
 
         assertCommentIs('//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZvby5qcyJdLCJuYW1lcyI6WyJhIiwiYiJdLCJtYXBwaW5ncyI6WyJBQUFBIiwiQkJCQiJdfQ==');
 
@@ -25,7 +25,7 @@ describe('get source map comment', function() {
             sources: ['foo.less'],
             names: ['a', 'b'],
             mappings: ['AAAA', 'BBBB']
-        }, file.type.CSS);
+        }, fileType.CSS);
 
         assertCommentIs('/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZvby5sZXNzIl0sIm5hbWVzIjpbImEiLCJiIl0sIm1hcHBpbmdzIjpbIkFBQUEiLCJCQkJCIl19 */');
 

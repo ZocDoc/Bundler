@@ -1,5 +1,5 @@
 var rewire = require('rewire');
-var read = rewire('../../../src/file/read-file');
+var read = rewire('../../../../src/tasks/file/read-file');
 
 describe('read file', function() {
 

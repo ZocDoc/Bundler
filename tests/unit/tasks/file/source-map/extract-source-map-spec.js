@@ -1,4 +1,4 @@
-var extract = require('../../../../src/file/source-map/extract-source-map');
+var extract = require('../../../../../src/tasks/file/source-map/extract-source-map');
 
 describe('extract source map', function() {
 

@@ -1,4 +1,4 @@
-var clean = require('../../../../src/file/source-map/clean-source-map');
+var clean = require('../../../../../src/tasks/file/source-map/clean-source-map');
 
 describe('clean source map', function() {
 

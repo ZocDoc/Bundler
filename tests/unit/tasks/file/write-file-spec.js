@@ -1,6 +1,6 @@
 var rewire = require('rewire');
-var write = rewire('../../../src/file/write-file');
-var file = require('../../../src/file');
+var write = rewire('../../../../src/tasks/file/write-file');
+var fileType = require('../../../../src/tasks/file').type;
 
 describe('write file', function() {
 
@@ -185,7 +185,7 @@ describe('write file', function() {
 
     var writeFile = function(code, map) {
         
-        return write(code, map, file.type.JS, 'foo-output.js', '');
+        return write(code, map, fileType.JS, 'foo-output.js', '');
 
     };
 

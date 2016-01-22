@@ -60,7 +60,7 @@ var fs = require("fs"),
     processAsync = require('./process-async'),
     compile = require('./tasks').compile,
     minify = require('./tasks').minify,
-    fileType = require('./file').type,
+    fileType = require('./tasks/file').type,
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);

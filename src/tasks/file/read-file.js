@@ -1,11 +1,10 @@
-var fs = require('fs');
 var Promise = require('bluebird');
-var readTextFile = require('../read-text-file');
+var readTextFile = require('../../read-text-file');
 var sourceMap = require('./source-map');
 
 function read(filePath) {
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
 
         readTextFile(filePath, function(code) {
 

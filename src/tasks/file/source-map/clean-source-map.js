@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var path = require('path');
 
 function clean(map, siteRoot) {
