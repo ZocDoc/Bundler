@@ -1,4 +1,4 @@
-var compileES6 = require('../../../src/compile/compile-es6');
+var compileES6 = require('../../../src/tasks/compile/compile-es6');
 var _ = require('underscore');
 var path = require('path');
 

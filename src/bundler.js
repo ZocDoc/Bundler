@@ -58,8 +58,8 @@ var fs = require("fs"),
     cssValidator = require('./css-validator'),
     readTextFile = require('./read-text-file'),
     processAsync = require('./process-async'),
-    compile = require('./compile'),
-    minify = require('./minify'),
+    compile = require('./tasks').compile,
+    minify = require('./tasks').minify,
     fileType = require('./file').type,
     urlVersioning = null;
 

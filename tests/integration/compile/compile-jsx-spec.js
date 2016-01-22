@@ -1,4 +1,4 @@
-var compileJSX = require('../../../src/compile/compile-jsx');
+var compileJSX = require('../../../src/tasks/compile/compile-jsx');
 var _ = require('underscore');
 var path = require('path');
 
