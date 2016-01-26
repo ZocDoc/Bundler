@@ -1,5 +1,4 @@
-var _ = require('underscore'),
-    path = require('path'),
+var path = require('path'),
     styleguide = require('../styleguide'),
     ArrayCollection = require('./array-collection.js'),
     LessImportError = require('../errors/less-import-error.js');

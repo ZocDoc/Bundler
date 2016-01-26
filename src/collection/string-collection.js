@@ -1,5 +1,4 @@
-var _ = require('underscore'),
-    Collection = require('./collection.js');
+var Collection = require('./collection.js');
 
 var StringCollection = Collection.extend({
 

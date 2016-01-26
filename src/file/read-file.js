@@ -1,4 +1,3 @@
-var fs = require('fs');
 var Promise = require('bluebird');
 var readTextFile = require('../read-text-file');
 var sourceMap = require('./source-map');
