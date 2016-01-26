@@ -11,7 +11,7 @@ var Promise = require('bluebird');
  * @param {boolean} options.sourceMap
  * @returns {bluebird}
  */
-function transform(babelOptions, options) {
+function compile(babelOptions, options) {
 
     return new Promise(function(resolve, reject) {
 
@@ -45,5 +45,5 @@ function transform(babelOptions, options) {
 }
 
 module.exports = {
-    transform: transform
+    compile: compile
 };

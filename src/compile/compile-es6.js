@@ -9,7 +9,7 @@ var babel = require('./babel-compiler');
  */
 function compile(options) {
 
-    return babel.transform({
+    return babel.compile({
         plugins: [
             require("babel-plugin-transform-es2015-template-literals"),
             require("babel-plugin-transform-es2015-literals"),
