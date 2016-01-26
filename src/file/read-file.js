@@ -4,7 +4,7 @@ var sourceMap = require('./source-map');
 
 function read(filePath) {
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
 
         readTextFile(filePath, function(code) {
 
