@@ -22,7 +22,7 @@ function compile(options) {
             var result = outputTemplate({
                 templateName: templateName,
                 compiledTemplate: compiledTemplate
-            });
+            }).replace(/\r\n/g, '\n');
 
             return {
                 code: result
