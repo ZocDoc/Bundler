@@ -59,6 +59,7 @@ var fs = require("fs"),
     readTextFile = require('./read-text-file'),
     compile = require('./compile'),
     minify = require('./minify'),
+    concat = require('./concat'),
     file = require('./file'),
     urlVersioning = null;
 
@@ -268,11 +269,8 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
             return;
         }
 
-        var allJs = "", allMinJs = "";
-        for (var i = 0; i < allJsArr.length; i++) {
-            allJs += ";" + allJsArr[i] + "\n";
-            allMinJs += ";" + allMinJsArr[i] + "\n";
-        }
+        var allJs = concat(allJsArr, file.type.JS),
+            allMinJs = concat(allMinJsArr, file.type.JS);
 
         var afterBundle = options.skipmin ? cb : function (_) {
             var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
@@ -378,9 +376,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
             },
             function (js) {
-                allJsArr[i] = js.code;
+                allJsArr[i] = js;
                 var withMin = function (minJs) {
-                    allMinJsArr[i] = minJs.code;
+                    allMinJsArr[i] = minJs;
 
                     if (! --pending) whenDone();
                 };
@@ -413,11 +411,8 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             return;
         }
 
-        var allCss = "", allMinCss = "";
-        for (var i = 0; i < allCssArr.length; i++) {
-            allCss += allCssArr[i] + "\n";
-            allMinCss += allMinCssArr[i] + "\n";
-        }
+        var allCss = concat(allCssArr, file.type.CSS),
+            allMinCss = concat(allMinCssArr, file.type.CSS);
 
         var afterBundle = options.skipmin ? cb : function (_) {
 
@@ -511,9 +506,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
             },
             function (css) {
-                allCssArr[i] = css.code;
+                allCssArr[i] = css;
                 var withMin = function (minCss) {
-                    allMinCssArr[i] = minCss.code;
+                    allMinCssArr[i] = minCss;
 
                     if (! --pending) whenDone();
                 };
