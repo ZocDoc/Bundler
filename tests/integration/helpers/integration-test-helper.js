@@ -136,7 +136,7 @@ TestUtility.prototype.VerifyFileContents = function (dir, fileName, expectedCont
     var _this = this;
     _this.runFunc(function () {
         var bundleContents = _this.FileSystem.readFileSync(dir + '/' + fileName, 'utf8');
-        expect(bundleContents).toBe(expectedContents);
+        expect(bundleContents.replace(/\s/g, '')).toBe(expectedContents.replace(/\s/g, ''));
     });
 }
 
