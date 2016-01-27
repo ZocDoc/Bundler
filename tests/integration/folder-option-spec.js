@@ -62,7 +62,7 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
             test.assert.verifyBundleIs(
                 ';var file1="file1";\n' +
                 ';var file2="file2";\n' +
-                ';(function(){vare,i,t="undefined"!=typeofmodule&&module.exports;e=t?require("hogan"):this.Hogan,i=newe.Template({code:function(e,i,t){varo=this;returno.b(t=t||""),o.b("<div>"),o.b(o.v(o.f("c",e,i,0))),o.b("</div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file3=i)}).call(this);\n'
+                ';(function(){var e,i,t="undefined"!=typeof module&&module.exports;e=t?require("hogan"):this.Hogan,i=new e.Template({code:function(e,i,t){var o=this;return o.b(t=t||""),o.b("<div> "),o.b(o.v(o.f("c",e,i,0))),o.b(" </div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file3=i)}).call(this);\n'
             );
 
         });
