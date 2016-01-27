@@ -136,7 +136,17 @@ TestUtility.prototype.VerifyFileContents = function (dir, fileName, expectedCont
     var _this = this;
     _this.runFunc(function () {
         var bundleContents = _this.FileSystem.readFileSync(dir + '/' + fileName, 'utf8');
-        expect(bundleContents.replace(/\s/g, '')).toBe(expectedContents.replace(/\s/g, ''));
+        if (expectedContents.length !== bundleContents.length) {
+            _this.Console.log('Expected string of length ' + expectedContents.length + ', but actually was string of length ' + bundleContents.length);
+        }
+        for (var i = 0; i < bundleContents.length && i < expectedContents.length; i++) {
+            if (bundleContents[i] !== expectedContents[i]) {
+                _this.Console.log('Mismatch at character ' + i + ': expected ' + JSON.stringify(expectedContents[i]) + ', but was ' + JSON.stringify(bundleContents[i]));
+                _this.Console.log('Expected: ' + JSON.stringify(expectedContents.substr(0, i) + ', actual: ' + JSON.stringify(bundleContents.substr(0, i))));
+                break;
+            }
+        }
+        expect(bundleContents).toBe(expectedContents);
     });
 }
 
