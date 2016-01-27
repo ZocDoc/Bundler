@@ -1,6 +1,8 @@
+var Handlebars = require('handlebars');
 var hogan = require('hogan.js-template/lib/hogan.js');
 var path = require('path');
 var Promise = require('bluebird');
+var fs = Promise.promisifyAll(require('fs'));
 
 /**
  * @param {object} options
@@ -11,32 +13,44 @@ var Promise = require('bluebird');
  */
 function compile(options) {
 
-    return new Promise(function(resolve, reject) {
+    var templateName = getTemplateName(options.inputPath, options.useTemplateDirs);
+    var compiledTemplate = compileTemplate(options.code);
 
-        try {
+    return getOutputTemplate()
+        .then(function(outputTemplate) {
 
-            var templateName = getTemplateName(options.inputPath, options.useTemplateDirs);
-
-            var compiledTemplate = compileTemplate(options.code);
-
-            var templateObject = '{ code: ' + compiledTemplate + ', partials: {}, subs: {} }';
-
-            var result = 'window["JST"] = window["JST"] || {};'
-                + ' JST[\''
-                + templateName
-                + '\'] = new Hogan.Template(' + templateObject + ');';
-
-            resolve({
-                code: result
+            var result = outputTemplate({
+                templateName: templateName,
+                compiledTemplate: compiledTemplate
             });
 
-        } catch (err) {
+            return {
+                code: result
+            };
 
-            reject(err);
+        });
 
-        }
+}
 
-    });
+var template;
+
+function getOutputTemplate() {
+
+    if (template) {
+
+        return Promise.method(function() {
+            return template;
+        });
+
+    }
+
+    var templatePath = path.join(__dirname, 'mustache.hbs');
+
+    return fs.readFileAsync(templatePath)
+        .then(function(templateText) {
+            template = Handlebars.compile(templateText.toString('utf8'));
+            return template;
+        });
 
 }
 
