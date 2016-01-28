@@ -9,41 +9,29 @@ var Promise = require('bluebird');
  * @param {string} options.code
  * @param {string} options.inputPath
  * @param {boolean} options.sourceMap
- * @returns {bluebird}
+ * @returns {Promise}
  */
 function compile(babelOptions, options) {
 
-    return new Promise(function(resolve, reject) {
+    var settings = {
+        presets: babelOptions.presets,
+        plugins: babelOptions.plugins
+    };
 
-        try {
+    if (options.sourceMap) {
+        settings.sourceMaps = true;
+        settings.sourceFileName = options.inputPath;
+    }
 
-            var settings = {
-                presets: babelOptions.presets,
-                plugins: babelOptions.plugins
-            };
+    var result = babel.transform(options.code, settings);
 
-            if (options.sourceMap) {
-                settings.sourceMaps = true;
-                settings.sourceFileName = options.inputPath;
-            }
-
-            var result = babel.transform(options.code, settings);
-
-            resolve({
-                code: result.code,
-                map: result.map
-            });
-
-        } catch (err) {
-
-            reject(err);
-
-        }
-
-    });
+    return {
+        code: result.code,
+        map: result.map
+    };
 
 }
 
 module.exports = {
-    compile: compile
+    compile: Promise.method(compile)
 };
