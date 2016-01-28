@@ -12,19 +12,9 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
 
     describe("Hashing: ", function() {
 
-        it(" hashes not computed if the option is not specified.", function () {
+        it("Computes a hash for all bundles and puts it in the output directory.", function () {
 
             test.actions.Bundle();
-
-            test.assert.verifyFileDoesNotExist(test.given.OutputDirectory, 'bundle-hashes.json');
-        });
-
-        it("The stats option computes a hash for all bundles and puts it in the output directory.", function () {
-
-            test.given.BundleOption('-outputbundlestats');
-
-            test.actions.Bundle();
-
 
             test.assert.verifyJson(
                 test.given.OutputDirectory,
@@ -41,16 +31,7 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
 
     describe("Debug Files: ", function () {
 
-        it("No debug files are computed if the option is not specified.", function () {
-
-            test.actions.Bundle();
-
-            test.assert.verifyFileDoesNotExist(test.given.OutputDirectory, 'bundle-debug.json');
-        });
-
-        it("The stats option computes a collection of files for all bundles and puts it in the output directory.", function () {
-
-            test.given.BundleOption('-outputbundlestats');
+        it("Computes a collection of files for all bundles and puts it in the output directory.", function () {
 
             test.actions.Bundle();
 
@@ -68,15 +49,7 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
 
     describe("Localization Files: ", function () {
 
-        it("No localization files are computed if the option is not specified.", function () {
-            test.actions.Bundle();
-
-            test.assert.verifyFileDoesNotExist(test.given.OutputDirectory, 'bundle-localization-strings.json');
-        });
-
-        it("The stats option computes a set of localized strings for all bundles and puts it in the output directory.", function () {
-
-            test.given.BundleOption('-outputbundlestats');
+        it("Computes a set of localized strings for all bundles and puts it in the output directory.", function () {
 
             test.given.FileToBundle('file3.js', "// @localize js1.string\ni18n.t('js2.string');\ni18n.t(\"js3.string\");");
             test.given.FileToBundle('file4.mustache', "{{# i18n }}js4.string{{/ i18n }}");
@@ -101,14 +74,7 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
 
     describe("Ab Config Files: ", function () {
 
-        it("No ab config files are computed if the option is not specified.", function () {
-            test.actions.Bundle();
-
-            test.assert.verifyFileDoesNotExist(test.given.OutputDirectory, 'bundle-ab-configs.json');
-        });
-
-        it("The stats option computes a set of localized strings for all bundles and puts it in the output directory.", function () {
-            test.given.BundleOption('-outputbundlestats');
+        it("Computes a set of localized strings for all bundles and puts it in the output directory.", function () {
 
             test.given.FileToBundle('file3.js', "{AB.isOn('ab.config.1');}\nvar x=12;i18n.t('ab.config.2');");
             test.given.FileToBundle('file4.js', "AB.isOn('ab.config.3');");

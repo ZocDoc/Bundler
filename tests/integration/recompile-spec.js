@@ -6,7 +6,6 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
 
     beforeEach(function () {
         test.given.OutputDirectoryIs('output-dir');
-        test.given.BundleOption('-outputbundlestats');
     });
 
     

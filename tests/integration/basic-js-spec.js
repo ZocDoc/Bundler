@@ -4,6 +4,12 @@ var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory);
 
 test.describeIntegrationTest("Js Bundling:", function() {
 
+    beforeEach(function() {
+
+        test.given.OutputDirectoryIs('output-dir');
+
+    });
+
     it("Given js files, then they are concatenated into the output bundle.", function() {
 
         test.given.FileToBundle('file1.js',    'var file1 = "file1";');
