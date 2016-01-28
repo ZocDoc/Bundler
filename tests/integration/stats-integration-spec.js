@@ -1,6 +1,6 @@
 var testDirectory = 'stats-test-suite';
 var integrationTest = require('./helpers/jasmine-wrapper.js');
-var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory);
+var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory, console);
 
 test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", function() {
 
@@ -40,8 +40,8 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
                 'bundle-debug.json',
                 function (json) {
                     validateJsonObject(json, function (b) {
-                        expect(b.indexOf('stats-test-suite\\test\\file1.js') >= 0).toBe(true);
-                        expect(b.indexOf('stats-test-suite\\test\\file2.js') >= 0).toBe(true);
+                        expect(b.indexOf('stats-test-suite\\test\\file1.js')).toBe(0);
+                        expect(b.indexOf('stats-test-suite\\test\\file2.js')).toBe(1);
                     });
                 });
         });

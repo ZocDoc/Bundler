@@ -265,6 +265,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         };
 
         fs.writeFile(bundleName, allJs, afterBundle);
+
+        allJsArr.forEach(function(jsFile) {
+            bundleStatsCollector.AddDebugFile(jsBundle, jsFile.path);
+        });
     };
 
     bundleStatsCollector.ClearStatsForBundle(jsBundle);
@@ -303,8 +307,6 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 if (isMustache || isJsx || isES6) {
                     jsPath = jsPathOutput;
                 }
-
-                bundleStatsCollector.AddDebugFile(jsBundle, jsPath);
 
                 readTextFile(filePath, function(code) {
 
@@ -389,6 +391,10 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         bundleStatsCollector.AddFileHash(bundleName, allMinCss);
 
         fs.writeFile(bundleName, allCss, afterBundle);
+
+        allCssArr.forEach(function(cssFile) {
+            bundleStatsCollector.AddDebugFile(cssBundle, cssFile.path);
+        });
     };
 
     bundleStatsCollector.ClearStatsForBundle(cssBundle);
@@ -425,8 +431,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 if (isLess || isSass) {
                     cssPath = cssPathOutput;
                 }
-
-                bundleStatsCollector.AddDebugFile(cssBundle, cssPath);
 
                 readTextFile(filePath, function(code) {
 
