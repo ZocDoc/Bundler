@@ -164,37 +164,31 @@ function scanDir(allFiles, cb) {
 
                     bundleName = bundleFileUtility.getOutputFilePath(bundleName, bundleName, options);
 
-                    if(options.directory !== undefined) {
-                        var tmpFiles = collection.createBundleFiles(jsBundle);
+                    var tmpFiles = collection.createBundleFiles(jsBundle);
 
-                        jsFiles.forEach(function(name) { 
+                    jsFiles.forEach(function(name) {
 
-                            if(name.startsWith('#')) { return; }
+                        if(name.startsWith('#')) { return; }
 
-                            var currentItem = bundleDir + '/' +  name;
-                            var stat = fs.statSync(currentItem);
-                            if(!stat.isDirectory()) {
-                                tmpFiles.addFile(name);
-                            }
-                            else if(currentItem != bundleDir + '/'){
+                        var currentItem = bundleDir + '/' +  name;
+                        var stat = fs.statSync(currentItem);
+                        if(!stat.isDirectory()) {
+                            tmpFiles.addFile(name);
+                        }
+                        else if(currentItem != bundleDir + '/'){
 
-                                var filesInDir = allFiles.getFilesInDirectory(
-                                                    bundlefiles.BundleType.Javascript,
-                                                    currentItem,
-                                                    name
-                                                );
-                                _.chain(filesInDir).filter(function(a) { return a.endsWith(".mustache")}).each(tmpFiles.addFile, tmpFiles);
-                                _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6"); }).each(tmpFiles.addFile, tmpFiles);
-                            }
-                        });
+                            var filesInDir = allFiles.getFilesInDirectory(
+                                                bundlefiles.BundleType.Javascript,
+                                                currentItem,
+                                                name
+                                            );
+                            _.chain(filesInDir).filter(function(a) { return a.endsWith(".mustache")}).each(tmpFiles.addFile, tmpFiles);
+                            _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6"); }).each(tmpFiles.addFile, tmpFiles);
+                        }
+                    });
 
-                        jsFiles = tmpFiles.toJSON();
-                    }
-                    else if (options.folder !== undefined) {
-                        options.nobundle = !options.forcebundle;
-                        var recursive = options.folder === 'recursive';
-                        jsFiles = allFiles.getFilesInFolder(bundlefiles.BundleType.Javascript, bundleDir, recursive, path);
-                    }
+                    jsFiles = tmpFiles.toJSON();
+
                     processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, nextBundle);
                 });
             };
@@ -219,36 +213,30 @@ function scanDir(allFiles, cb) {
 
                     bundleName = bundleFileUtility.getOutputFilePath(bundleName, bundleName, options);
 
-                    if(options.directory !== undefined) {
-                        var tmpFiles = collection.createBundleFiles(cssBundle);
+                    var tmpFiles = collection.createBundleFiles(cssBundle);
 
-                        cssFiles.forEach(function(name) { 
+                    cssFiles.forEach(function(name) {
 
-                            if(name.startsWith('#')) { return; }
+                        if(name.startsWith('#')) { return; }
 
-                            var currentItem = bundleDir + '/' +  name;
-                            var stat = fs.statSync(currentItem);
-                            if(!stat.isDirectory()) {
-                                tmpFiles.addFile(name);
-                            }
-                            else if(currentItem != bundleDir + '/'){
+                        var currentItem = bundleDir + '/' +  name;
+                        var stat = fs.statSync(currentItem);
+                        if(!stat.isDirectory()) {
+                            tmpFiles.addFile(name);
+                        }
+                        else if(currentItem != bundleDir + '/'){
 
-                                var cssFiles = allFiles.getFilesInDirectory(
-                                    bundlefiles.BundleType.Css,
-                                    currentItem,
-                                    name);
+                            var cssFiles = allFiles.getFilesInDirectory(
+                                bundlefiles.BundleType.Css,
+                                currentItem,
+                                name);
 
-                                _.each(cssFiles, tmpFiles.addFile, tmpFiles);
-                            }
-                        });
+                            _.each(cssFiles, tmpFiles.addFile, tmpFiles);
+                        }
+                    });
 
-                        cssFiles = tmpFiles.toJSON();
-                    }
-                    else if (options.folder !== undefined) {
-                        options.nobundle = !options.forcebundle;
-                        var recursive = options.folder === 'recursive';
-                        cssFiles = allFiles.getFilesInFolder(bundlefiles.BundleType.Css, bundleDir, recursive, path);
-                    }
+                    cssFiles = tmpFiles.toJSON();
+
                     processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, nextBundle);
                 });
             }
