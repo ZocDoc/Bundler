@@ -1,16 +1,17 @@
 var FileType = require('../file').type;
 
 /**
- * @param {Array<Object>} files
- * @param {string} fileType
+ * @param {object} options
+ * @param {Array<object>} options.files
+ * @param {string} options.fileType
  */
-function concat(files, fileType) {
+function concat(options) {
 
     var code = [];
 
-    files.forEach(function(file) {
+    options.files.forEach(function(file) {
 
-        switch (fileType) {
+        switch (options.fileType) {
 
             case FileType.CSS:
                 code.push(file.code);

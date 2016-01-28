@@ -53,7 +53,10 @@ describe('concat', function() {
 
     var concat = function() {
 
-        code = concatCode(files, fileType);
+        code = concatCode({
+            files: files,
+            fileType: fileType
+        });
 
     };
 
