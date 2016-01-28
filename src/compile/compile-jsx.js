@@ -5,7 +5,7 @@ var babel = require('./babel-compiler');
  * @param {string} options.code
  * @param {string} options.inputPath
  * @param {boolean} options.sourceMap
- * @returns {bluebird}
+ * @returns {Promise}
  */
 function compile(options) {
 

@@ -9,7 +9,7 @@ var fs = Promise.promisifyAll(require('fs'));
  * @param {string} options.code
  * @param {string} options.inputPath
  * @param {boolean} options.useTemplateDirs
- * @returns {bluebird}
+ * @returns {Promise}
  */
 function compile(options) {
 

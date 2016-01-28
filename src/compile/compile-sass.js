@@ -9,44 +9,36 @@ var sass = require('node-sass');
  * @param {string} options.outputPath
  * @param {string} options.bundleDir
  * @param {boolean} options.sourceMap
- * @returns {bluebird}
+ * @returns {Promise}
  */
 function compile(options) {
 
     return new Promise(function(resolve, reject) {
 
-        try {
+        var sassOptions = {
+            file: options.inputPath,
+            data: options.code,
+            includePaths: directoryCrawler.crawl(options.bundleDir)
+        };
 
-            var sassOptions = {
-                file: options.inputPath,
-                data: options.code,
-                includePaths: directoryCrawler.crawl(options.bundleDir)
-            };
+        if (options.sourceMap) {
+            sassOptions.sourceMap = true;
+            sassOptions.omitSourceMapUrl = true;
+            sassOptions.outFile = options.outputPath;
+        }
 
-            if (options.sourceMap) {
-                sassOptions.sourceMap = true;
-                sassOptions.omitSourceMapUrl = true;
-                sassOptions.outFile = options.outputPath;
+        sass.render(sassOptions, function (err, result) {
+
+            if (err) {
+                reject(err);
+            } else {
+                resolve({
+                    code: result.css.toString(),
+                    map: result.map ? JSON.parse(result.map.toString()) : undefined
+                });
             }
 
-            sass.render(sassOptions, function (err, result) {
-
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve({
-                        code: result.css.toString(),
-                        map: result.map ? JSON.parse(result.map.toString()) : undefined
-                    });
-                }
-
-            });
-
-        } catch (err) {
-
-            reject(err);
-
-        }
+        });
 
     });
 

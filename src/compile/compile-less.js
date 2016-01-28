@@ -9,46 +9,38 @@ var Promise = require('bluebird');
  * @param {boolean} options.sourceMap
  * @param {boolean} options.outputBundleStats
  * @param {object} options.bundleStatsCollector
- * @returns {bluebird}
+ * @returns {Promise}
  */
 function compile(options) {
 
     return new Promise(function(resolve, reject) {
 
-        try {
+        var lessDir = path.dirname(options.inputPath),
+            lessOptions = {
+                paths: ['.', lessDir], // Specify search paths for @import directives
+                filename: options.inputPath
+            };
 
-            var lessDir = path.dirname(options.inputPath),
-                lessOptions = {
-                    paths: ['.', lessDir], // Specify search paths for @import directives
-                    filename: options.inputPath
-                };
-
-            if (options.sourceMap) {
-                lessOptions.sourceMap = true;
-            }
-
-            if (options.outputBundleStats) {
-                options.bundleStatsCollector.SearchForLessImports(options.inputPath, options.code);
-            }
-
-            less.render(options.code, lessOptions, function (err, result) {
-
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve({
-                        code: result.css,
-                        map: result.map ? JSON.parse(result.map) : undefined
-                    });
-                }
-
-            });
-
-        } catch (err) {
-
-            reject(err);
-
+        if (options.sourceMap) {
+            lessOptions.sourceMap = true;
         }
+
+        if (options.outputBundleStats) {
+            options.bundleStatsCollector.SearchForLessImports(options.inputPath, options.code);
+        }
+
+        less.render(options.code, lessOptions, function (err, result) {
+
+            if (err) {
+                reject(err);
+            } else {
+                resolve({
+                    code: result.css,
+                    map: result.map ? JSON.parse(result.map) : undefined
+                });
+            }
+
+        });
 
     });
 
