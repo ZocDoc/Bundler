@@ -1,7 +1,7 @@
-var _ = require('underscore'),
-    path = require('path'),
-    styleguide = require('../styleguide'),
-    StyleguideBundleError = require('../errors/styleguide-bundle-error.js');
+var _ = require('underscore');
+var path = require('path');
+var styleguide = require('../styleguide');
+var StyleguideBundleError = require('../errors/styleguide-bundle-error');
 
 var BundleFileCollection = function(bundleFile) {
     this._bundleFile = path.resolve(bundleFile);

@@ -1,7 +1,7 @@
-var path = require('path'),
-    styleguide = require('../styleguide'),
-    ArrayCollection = require('./array-collection.js'),
-    LessImportError = require('../errors/less-import-error.js');
+var path = require('path');
+var styleguide = require('../styleguide');
+var ArrayCollection = require('./array-collection');
+var LessImportError = require('../errors/less-import-error');
 
 var isMixinFile = function(filePath) {
     return filePath.indexOf('mixin') > -1

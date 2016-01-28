@@ -1,5 +1,5 @@
-var _ = require('underscore'),
-    path = require('path');
+var _ = require('underscore');
+var path = require('path');
 
 var Collection = function(map) {
     this._map = _.extend({}, map);

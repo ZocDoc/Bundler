@@ -1,4 +1,4 @@
-var Collection = require('./collection.js');
+var Collection = require('./collection');
 
 var ArrayCollection = Collection.extend({
 

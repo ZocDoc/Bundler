@@ -1,5 +1,5 @@
-var _ = require('underscore'),
-    path = require('path');
+var _ = require('underscore');
+var path = require('path');
 
 var StyleguideBundleError = function(bundleFile, referencedFile) {
     this.bundleFile = bundleFile;

@@ -1,7 +1,7 @@
-var ArrayCollection = require('./array-collection.js');
-var StringCollection = require('./string-collection.js');
-var LessImportCollection = require('./less-import-collection.js');
-var BundleFileCollection = require('./bundle-file-collection.js');
+var ArrayCollection = require('./array-collection');
+var StringCollection = require('./string-collection');
+var LessImportCollection = require('./less-import-collection');
+var BundleFileCollection = require('./bundle-file-collection');
 
 module.exports = {
     createAbConfigs: function(abConfigs) {
