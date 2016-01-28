@@ -1,11 +1,9 @@
 var FileType = require('../file').type;
-var ConcatType = require('./concat-type');
 
 /**
  * @param {object} options
  * @param {Array<object>} options.files
  * @param {string} options.fileType
- * @param {ConcatType} options.concatType
  */
 function concat(options) {
 

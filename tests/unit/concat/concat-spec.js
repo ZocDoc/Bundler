@@ -16,7 +16,6 @@ describe('concat files', function() {
     
     it('Given JS files, prefixes all lines with semi-colons and adds new lines between files.', function() {
 
-        givenConcatTypeIs(concat.type.Debug);
         givenFileTypeIs(FileType.JS);
         givenFile({
             code: 'var x = 1;'
@@ -36,7 +35,6 @@ describe('concat files', function() {
 
     it('Given CSS files, adds new lines between files.', function() {
 
-        givenConcatTypeIs(concat.type.Debug);
         givenFileTypeIs(FileType.CSS);
         givenFile({
             code: '.foo { background: red; }'
@@ -72,12 +70,6 @@ describe('concat files', function() {
     var givenFileTypeIs = function(type) {
 
         fileType = type;
-
-    };
-
-    var givenConcatTypeIs = function(type) {
-
-        concatType = type;
 
     };
 
