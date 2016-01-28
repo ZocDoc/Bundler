@@ -252,11 +252,6 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
     var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
     var whenDone = function () {
-        if (options.nobundle) {
-            setTimeout(cb, 0);
-            return;
-        }
-
         var allJs = concat(allJsArr, file.type.JS),
             allMinJs = concat(allMinJsArr, file.type.JS);
 
@@ -381,11 +376,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
     var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
     var whenDone = function () {
-        if (options.nobundle) {
-            setTimeout(cb, 0);
-            return;
-        }
-
         var allCss = concat(allCssArr, file.type.CSS),
             allMinCss = concat(allMinCssArr, file.type.CSS);
 
