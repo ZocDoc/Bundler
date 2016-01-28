@@ -37,7 +37,7 @@ describe('read file', function() {
 
         givenExtractedCodeIs({
             code: 'var x = 1;',
-            sourceMap: {
+            map: {
                 version: 3,
                 sources: ['foo.js']
             }
@@ -47,8 +47,9 @@ describe('read file', function() {
             .then(function(result) {
 
                 expect(result).toEqual({
+                    path: 'C:\\foo.js',
                     code: 'var x = 1;',
-                    sourceMap: {
+                    map: {
                         version: 3,
                         sources: ['foo.js']
                     }

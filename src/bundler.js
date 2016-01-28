@@ -247,13 +247,15 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
     var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
     var whenDone = function () {
-        var allJs = concat({
+        var allJs = concat.files({
                 files: allJsArr,
-                fileType: file.type.JS
+                fileType: file.type.JS,
+                concatType: concat.type.Debug
             }),
-            allMinJs = concat({
+            allMinJs = concat.files({
                 files: allMinJsArr,
-                fileType: file.type.JS
+                fileType: file.type.JS,
+                concatType: concat.type.Min
             });
 
         var afterBundle = function () {
@@ -360,13 +362,15 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
     var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
     var whenDone = function () {
-        var allCss = concat({
+        var allCss = concat.files({
                 files: allCssArr,
-                fileType: file.type.CSS
+                fileType: file.type.CSS,
+                concatType: concat.type.Debug
             }),
-            allMinCss = concat({
+            allMinCss = concat.files({
                 files: allMinCssArr,
-                fileType: file.type.CSS
+                fileType: file.type.CSS,
+                concatType: concat.type.Min
             });
 
         var afterBundle = function () {

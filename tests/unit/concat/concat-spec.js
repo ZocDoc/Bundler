@@ -1,10 +1,11 @@
-var concatCode = require('../../../src/concat');
+var concat = require('../../../src/concat');
 var FileType = require('../../../src/file').type;
 
-describe('concat', function() {
+describe('concat files', function() {
 
     var files,
         fileType,
+        concatType,
         code;
 
     beforeEach(function() {
@@ -14,7 +15,8 @@ describe('concat', function() {
     });
     
     it('Given JS files, prefixes all lines with semi-colons and adds new lines between files.', function() {
-    
+
+        givenConcatTypeIs(concat.type.Debug);
         givenFileTypeIs(FileType.JS);
         givenFile({
             code: 'var x = 1;'
@@ -23,7 +25,7 @@ describe('concat', function() {
             code: 'var y = 2;'
         });
 
-        concat();
+        concatFiles();
 
         assertConcatenatedCodeIs(
             ';var x = 1;\n' +
@@ -34,6 +36,7 @@ describe('concat', function() {
 
     it('Given CSS files, adds new lines between files.', function() {
 
+        givenConcatTypeIs(concat.type.Debug);
         givenFileTypeIs(FileType.CSS);
         givenFile({
             code: '.foo { background: red; }'
@@ -42,7 +45,7 @@ describe('concat', function() {
             code: '#bar { font-size: 10px; }'
         });
 
-        concat();
+        concatFiles();
 
         assertConcatenatedCodeIs(
             '.foo { background: red; }\n' +
@@ -51,9 +54,9 @@ describe('concat', function() {
 
     });
 
-    var concat = function() {
+    var concatFiles = function() {
 
-        code = concatCode({
+        code = concat.files({
             files: files,
             fileType: fileType
         });
@@ -69,6 +72,12 @@ describe('concat', function() {
     var givenFileTypeIs = function(type) {
 
         fileType = type;
+
+    };
+
+    var givenConcatTypeIs = function(type) {
+
+        concatType = type;
 
     };
 
