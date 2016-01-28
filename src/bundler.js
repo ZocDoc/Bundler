@@ -87,7 +87,7 @@ if(bundlerOptions.DefaultOptions.rewriteimagefileroot && bundlerOptions.DefaultO
 
 if(bundlerOptions.DefaultOptions.outputbundlestats) {
     bundleStatsCollector.Console = console;
-    bundleStatsCollector.LoadStatsFromDisk(bundlerOptions.DefaultOptions.outputdirectory ||  process.cwd());
+    bundleStatsCollector.LoadStatsFromDisk(bundlerOptions.DefaultOptions.outputdirectory || process.cwd());
 }
 
 var walk = function (dir, done) {
@@ -282,11 +282,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
             fs.writeFile(minFileName, allMinJs, cb);
         };
 
-        if (!options.bundleminonly) {
-            fs.writeFile(bundleName, allJs, afterBundle);
-        } else {
-            afterBundle();
-        }
+        fs.writeFile(bundleName, allJs, afterBundle);
     };
 
     if(options.outputbundlestats) {
@@ -422,17 +418,13 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             });
         };
 
-        if (!options.bundleminonly) {
-            if(options.outputbundlestats) {
-                bundleStatsCollector.AddFileHash(bundleName, allMinCss);
-            }
-            fs.writeFile(bundleName, allCss, afterBundle);
-        } else {
-            afterBundle();
+        if (options.outputbundlestats) {
+            bundleStatsCollector.AddFileHash(bundleName, allMinCss);
         }
+        fs.writeFile(bundleName, allCss, afterBundle);
     };
 
-    if(options.outputbundlestats) {
+    if (options.outputbundlestats) {
         bundleStatsCollector.ClearStatsForBundle(cssBundle);
     }
 
