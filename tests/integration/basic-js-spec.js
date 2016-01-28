@@ -28,8 +28,8 @@ test.describeIntegrationTest("Js Bundling:", function() {
         test.actions.Bundle();
 
         test.assert.verifyBundleIs(
-            ';window.JST=window.JST||{},JST.file1=new Hogan.Template({code:function(i,n,a){var e=this;return e.b(a=a||""),e.b("<div> "),e.b(e.v(e.f("a",i,n,0))),e.b(" </div>"),e.fl()},partials:{},subs:{}});\n' +
-            ';window.JST=window.JST||{},JST.file2=new Hogan.Template({code:function(i,n,b){var e=this;return e.b(b=b||""),e.b("<div> "),e.b(e.v(e.f("b",i,n,0))),e.b(" </div>"),e.fl()},partials:{},subs:{}});\n'
+            ';(function(){var e,i,t="undefined"!=typeof module&&module.exports;e=t?require("hogan"):this.Hogan,i=new e.Template({code:function(e,i,t){var o=this;return o.b(t=t||""),o.b("<div> "),o.b(o.v(o.f("a",e,i,0))),o.b(" </div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file1=i)}).call(this);\n' +
+            ';(function(){var e,i,t="undefined"!=typeof module&&module.exports;e=t?require("hogan"):this.Hogan,i=new e.Template({code:function(e,i,t){var o=this;return o.b(t=t||""),o.b("<div> "),o.b(o.v(o.f("b",e,i,0))),o.b(" </div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file2=i)}).call(this);\n'
         );
 
     });
@@ -139,7 +139,7 @@ test.describeIntegrationTest("Js Bundling:", function() {
         test.actions.Bundle();
 
         test.assert.verifyBundleIs(
-            ';window.JST=window.JST||{},JST.file1=new Hogan.Template({code:function(i,n,a){var e=this;return e.b(a=a||""),e.b("<div> "),e.b(e.v(e.f("a",i,n,0))),e.b(" </div>"),e.fl()},partials:{},subs:{}});\n' +
+            ';(function(){var e,i,t="undefined"!=typeof module&&module.exports;e=t?require("hogan"):this.Hogan,i=new e.Template({code:function(e,i,t){var o=this;return o.b(t=t||""),o.b("<div> "),o.b(o.v(o.f("a",e,i,0))),o.b(" </div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file1=i)}).call(this);\n' +
             ';var file2="file2";\n' +
             ';var file3=React.createClass({displayName:"file3",render:function(){return React.createElement("div",null,"file3 ",this.props.name)}});\n'
         );
