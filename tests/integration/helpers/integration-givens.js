@@ -4,7 +4,7 @@ function Givens(
 )
 {
     this.Utility = testUtility;
-    this.BundleOptions = "";
+    this.CommandLineOptions = "";
     this.BundleContents = "";
     this.TestDirectory = "";
     this.BaseTestDirectory = "";
@@ -23,7 +23,7 @@ Givens.prototype.CleanTestSpace = function(testDirBase) {
     this.Utility.CreateDirectory(this.BaseTestDirectory);
     this.Utility.CreateDirectory(this.TestDirectory);
     this.Utility.CreateDirectory(this.ImportDirectory);
-    this.BundleOptions = "";
+    this.CommandLineOptions = "";
     this.BundleContents = "";
     this.StagingDirectory = "";
     this.OutputDirectory = "./" + this.TestDirectory;
@@ -56,8 +56,8 @@ Givens.prototype.SubDirectory = function (directory) {
     this.Utility.CreateDirectory(subDir);
 };
 
-Givens.prototype.BundleOption = function (option) {
-    this.BundleOptions += " " + option;
+Givens.prototype.CommandLineOption = function (option) {
+    this.CommandLineOptions += " " + option;
 };
 
 Givens.prototype.OutputDirectoryIs = function (directory) {
@@ -65,7 +65,7 @@ Givens.prototype.OutputDirectoryIs = function (directory) {
     this.Utility.CreateDirectory(rootedDir);
     this.OutputDirectory = "./" + rootedDir;
 
-    this.BundleOption("-outputdirectory:" + this.OutputDirectory);
+    this.CommandLineOption("-outputdirectory:" + this.OutputDirectory);
 };
 
 Givens.prototype.StagingDirectoryIs = function (directory) {
@@ -73,7 +73,7 @@ Givens.prototype.StagingDirectoryIs = function (directory) {
     this.Utility.CreateDirectory(rootedDir);
     this.StagingDirectory = "./" + rootedDir;
 
-    this.BundleOption("-stagingdirectory:" + this.StagingDirectory);
+    this.CommandLineOption("-stagingdirectory:" + this.StagingDirectory);
 };
 
 Givens.prototype.ImportFile = function(fileName, contents) {
