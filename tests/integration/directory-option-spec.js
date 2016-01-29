@@ -4,17 +4,13 @@ var test = new integrationTest.Test(integrationTest.TestType.Undecided, testDire
 
 test.describeIntegrationTest("Directory Option:", function() {
 
-	beforeEach(function () {
-	    test.given.BundleOption("-directory");
-    });
-
     describe("Js files", function () {
 
         beforeEach(function () {
             test.resetTestType(integrationTest.TestType.Js);
         });
 
-        it("The directory option allows entire subdirectories to be included", function () {
+        it("Allows entire subdirectories to be included", function () {
             
             test.given.SubDirectory('folder1');
             test.given.FileNotInBundleInSubDirectory('folder1', 'file1.js', 'var file1 = "file1";');
@@ -31,7 +27,7 @@ test.describeIntegrationTest("Directory Option:", function() {
                 + ';var file2="file2";\n');
         });
 
-        it("The directory option is recursive", function () {
+        it("Recursively scans directories", function () {
             test.given.SubDirectory('folder1');
             test.given.SubDirectory('folder1/folder2');
             test.given.FileNotInBundleInSubDirectory('folder1', 'file1.js', 'var file1 = "file1";');
@@ -45,7 +41,7 @@ test.describeIntegrationTest("Directory Option:", function() {
                 + ';var file2="file2";\n');
         });
 
-        it("The directory option can be combined with direct file references", function () {
+        it("Directories can be combined with direct file references", function () {
             test.given.SubDirectory('folder1');
             test.given.FileNotInBundleInSubDirectory('folder1', 'file1.js', 'var file1 = "file1";');
             test.given.FileNotInBundleInSubDirectory('folder1', 'file2.js', 'var file2 = "file2";');
@@ -83,7 +79,7 @@ test.describeIntegrationTest("Directory Option:", function() {
             test.resetTestType(integrationTest.TestType.Css);
         });
 
-        it("The directory option allows entire subdirectories to be included", function () {
+        it("Allows entire subdirectories to be included", function () {
             test.given.SubDirectory('folder1');
             test.given.FileNotInBundleInSubDirectory('folder1', 'file1.css', '.file1 { color: red; }');
             test.given.FileNotInBundleInSubDirectory('folder1', 'file2.less', '.less1 { color: green; }');
@@ -99,7 +95,7 @@ test.describeIntegrationTest("Directory Option:", function() {
                          + '.less1{color:green}\n');
         });
 
-        it("The directory option is recursive", function () {
+        it("Recursively scans directories", function () {
             test.given.SubDirectory('folder1');
             test.given.SubDirectory('folder1/folder2');
             test.given.FileNotInBundleInSubDirectory('folder1', 'file1.css', '.file1 { color: red; }');
@@ -113,7 +109,7 @@ test.describeIntegrationTest("Directory Option:", function() {
                 + '.less1{color:green}\n');
         });
 
-        it("The directory option can be combined with direct file references", function () {
+        it("Directories can be combined with direct file references", function () {
             test.given.SubDirectory('folder1');
             test.given.FileNotInBundleInSubDirectory('folder1', 'file1.css', '.file1 { color: red; }');
             test.given.FileNotInBundleInSubDirectory('folder1', 'file2.less', '.less1 { color: green; }');

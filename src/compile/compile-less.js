@@ -7,7 +7,6 @@ var Promise = require('bluebird');
  * @param {string} options.code
  * @param {string} options.inputPath
  * @param {boolean} options.sourceMap
- * @param {boolean} options.outputBundleStats
  * @param {object} options.bundleStatsCollector
  * @returns {Promise}
  */
@@ -25,9 +24,7 @@ function compile(options) {
             lessOptions.sourceMap = true;
         }
 
-        if (options.outputBundleStats) {
-            options.bundleStatsCollector.SearchForLessImports(options.inputPath, options.code);
-        }
+        options.bundleStatsCollector.SearchForLessImports(options.inputPath, options.code);
 
         less.render(options.code, lessOptions, function (err, result) {
 

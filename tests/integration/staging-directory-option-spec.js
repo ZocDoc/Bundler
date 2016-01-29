@@ -4,6 +4,12 @@ var test = new integrationTest.Test(integrationTest.TestType.Undecided, testDire
 
 test.describeIntegrationTest("Outputting processed files into a staging folder:", function() {
 
+    beforeEach(function() {
+
+        test.given.OutputDirectoryIs('output-dir');
+
+    });
+
     describe("Js files", function () {
 
         beforeEach(function () {
@@ -19,11 +25,11 @@ test.describeIntegrationTest("Outputting processed files into a staging folder:"
 
             test.actions.Bundle();
 
-            test.assert.verifyFileExists(test.given.TestDirectory, 'file1.min.js');
-            test.assert.verifyFileExists(test.given.TestDirectory, 'file2.min.js');
-            test.assert.verifyFileExists(test.given.TestDirectory, 'file3.js');
-            test.assert.verifyFileExists(test.given.TestDirectory, 'file3.min.js');
-            test.assert.verifyFileExists(test.given.TestDirectory, 'test.js');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'file1.min.js');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'file2.min.js');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'file3.js');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'file3.min.js');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'test.js');
         });
 
         it("given option is specified, does not output bundling artificats to the test directory", function () {
@@ -50,7 +56,7 @@ test.describeIntegrationTest("Outputting processed files into a staging folder:"
             test.assert.verifyFileExists(test.given.StagingDirectory, 'testjs/test-file3.js');
             test.assert.verifyFileExists(test.given.StagingDirectory, 'testjs/test.js');
         });
-      
+
     });
 
     describe("Css Files", function () {
@@ -68,11 +74,11 @@ test.describeIntegrationTest("Outputting processed files into a staging folder:"
 
             test.actions.Bundle();
 
-            test.assert.verifyFileExists(test.given.TestDirectory, 'file1.min.css');
-            test.assert.verifyFileExists(test.given.TestDirectory, 'file2.min.css');
-            test.assert.verifyFileExists(test.given.TestDirectory, 'file3.css');
-            test.assert.verifyFileExists(test.given.TestDirectory, 'file3.min.css');
-            test.assert.verifyFileExists(test.given.TestDirectory, 'test.css');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'file1.min.css');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'file2.min.css');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'file3.css');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'file3.min.css');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'test.css');
         });
 
         it("given option is specified, does not output bundling artificats to the test directory", function () {

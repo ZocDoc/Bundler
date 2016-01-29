@@ -4,6 +4,12 @@ var test = new integrationTest.Test(integrationTest.TestType.Css, testDirectory)
 
 test.describeIntegrationTest("Css Bundling:", function() {
 
+    beforeEach(function() {
+
+        test.given.OutputDirectoryIs('output-dir');
+
+    });
+
     it("Given an invalid less file, then bundling fails and an error is thrown.", function () {
         test.given.FileToBundle('less1.less', '@color: red;\n.less1 { color: @color; ');
 

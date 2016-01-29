@@ -4,6 +4,16 @@ var test = new integrationTest.Test(integrationTest.TestType.Undecided, testDire
 
 test.describeIntegrationTest("Generating source maps:", function() {
 
+    beforeEach(function() {
+
+        test.given.StagingDirectoryIs('staging-dir');
+        test.given.OutputDirectoryIs('output-dir');
+
+        test.given.BundleOption('-sourcemaps');
+        test.given.BundleOption('-siterootdirectory:' + test.given.BaseTestDirectory);
+
+    });
+
     describe("Js files", function () {
 
         beforeEach(function () {
@@ -11,9 +21,6 @@ test.describeIntegrationTest("Generating source maps:", function() {
         });
 
         it("Given source maps option and JSX file, then JSX is compiled with inline source maps.", function () {
-
-            test.given.BundleOption('-sourcemaps');
-            test.given.BundleOption('-siterootdirectory:' + test.given.BaseTestDirectory);
 
             test.given.FileToBundle('file1.jsx',
                 'var file1 = React.createClass({'
@@ -25,8 +32,8 @@ test.describeIntegrationTest("Generating source maps:", function() {
             test.actions.Bundle();
 
             test.assert.verifyFileAndContentsAre(
-                test.given.TestDirectory,
-                'file1.js',
+                test.given.StagingDirectory + '/testjs',
+                'test-file1.js',
                 'var file1 = React.createClass({\n' +
                 '  displayName: "file1",\n' +
                 '  render: function () {\n' +
@@ -44,17 +51,14 @@ test.describeIntegrationTest("Generating source maps:", function() {
 
         it("Given source maps option and ES6 file, then ES6 is compiled with inline source maps.", function () {
 
-            test.given.BundleOption('-sourcemaps');
-            test.given.BundleOption('-siterootdirectory:' + test.given.BaseTestDirectory);
-
             test.given.FileToBundle('file1.es6',
                 'var odds = evens.map(v => v + 1);');
 
             test.actions.Bundle();
 
             test.assert.verifyFileAndContentsAre(
-                test.given.TestDirectory,
-                'file1.js',
+                test.given.StagingDirectory + '/testjs',
+                'test-file1.js',
                 '"use strict";\n' +
                 '\n' +
                 'var odds = evens.map(function (v) {\n' +
@@ -75,17 +79,14 @@ test.describeIntegrationTest("Generating source maps:", function() {
 
         it("Given source maps option and less file, then less is compiled with inline source maps.", function () {
 
-            test.given.BundleOption('-sourcemaps');
-            test.given.BundleOption('-siterootdirectory:' + test.given.BaseTestDirectory);
-
             test.given.FileToBundle('less1.less',
                 '@color: red;\n.less1 { color: @color; }');
 
             test.actions.Bundle();
 
             test.assert.verifyFileAndContentsAre(
-                test.given.TestDirectory,
-                'less1.css',
+                test.given.StagingDirectory + '/testcss',
+                'test-less1.css',
                 '.less1 {\n' +
                 '  color: red;\n' +
                 '}\n' +
@@ -97,21 +98,18 @@ test.describeIntegrationTest("Generating source maps:", function() {
 
         it("Given source maps option and scss file, then lscssess is compiled with inline source maps.", function () {
 
-            test.given.BundleOption('-sourcemaps');
-            test.given.BundleOption('-siterootdirectory:' + test.given.BaseTestDirectory);
-
             test.given.FileToBundle('scss1.scss',
                 '$green: #008000;\n#css-results { #scss { background: $green; } }');
 
             test.actions.Bundle();
 
             test.assert.verifyFileAndContentsAre(
-                test.given.TestDirectory,
-                'scss1.css',
+                test.given.StagingDirectory + '/testcss',
+                'test-scss1.css',
                 '#css-results #scss {\n' +
                 '  background: #008000; }\n' +
                 '\n' +
-                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9zY3NzMS5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUNBLFlBQVksQ0FBRyxLQUFLLENBQUM7RUFBRSxVQUFVLEVBRHpCLE9BQU8sR0FDOEIifQ== */'
+                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi8uLi8uLi90ZXN0L3Njc3MxLnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsWUFBWSxDQUFHLEtBQUssQ0FBQztFQUFFLFVBQVUsRUFEekIsT0FBTyxHQUM4QiJ9 */'
             );
 
         });

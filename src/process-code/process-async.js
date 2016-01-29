@@ -11,8 +11,6 @@ var Step = require('step');
  * @param {string} options.outputPath
  * @param {string} options.bundleDir
  * @param {string} options.nodeModulesPath
- * @param {boolean} options.outputBundleOnly
- * @param {boolean} options.outputBundleStats
  * @param {object} options.bundleStatsCollector
  * @param {boolean} options.sourceMap
  * @param {string} options.siteRoot
@@ -51,7 +49,7 @@ function processAsync(fileType, options, processFn) {
 
                             var shouldReprocess = outputFileStat.mtime.getTime() < inputFileStat.mtime.getTime();
 
-                            if (options.outputBundleStats && !shouldReprocess) {
+                            if (!shouldReprocess) {
 
                                 var imports = options.bundleStatsCollector.GetImportsForFile(options.inputPath) || [];
 
@@ -81,17 +79,10 @@ function processAsync(fileType, options, processFn) {
 
                     var onAfterProcessed = function(result) {
 
-                        if (options.outputBundleOnly) {
+                        file.write(result.code, result.map, fileType, options.outputPath, options.siteRoot)
+                            .then(resolve)
+                            .catch(reject);
 
-                            resolve(result.code);
-
-                        } else {
-
-                            file.write(result.code, result.map, fileType, options.outputPath, options.siteRoot)
-                                .then(resolve)
-                                .catch(reject);
-
-                        }
                     };
 
                     processFn(options)
