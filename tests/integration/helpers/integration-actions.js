@@ -13,6 +13,6 @@ function Actions(
 exports.Actions = Actions;
 
 Actions.prototype.Bundle = function() {
-    this.Utility.CreateFile(this.Givens.TestDirectory, "test." + this.Suffix + ".bundle", this.Givens.BundleContents);
+    this.Utility.CreateFile(this.Givens.TestDirectory, "test." + this.Suffix + ".bundle", this.Givens.GetBundleContents());
     this.Utility.Bundle(this.Givens.TestDirectory, this.Givens.CommandLineOptions);
 };

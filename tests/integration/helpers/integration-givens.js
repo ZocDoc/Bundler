@@ -5,6 +5,7 @@ function Givens(
 {
     this.Utility = testUtility;
     this.CommandLineOptions = "";
+    this.BundleOptions = [];
     this.BundleContents = "";
     this.TestDirectory = "";
     this.BaseTestDirectory = "";
@@ -24,6 +25,7 @@ Givens.prototype.CleanTestSpace = function(testDirBase) {
     this.Utility.CreateDirectory(this.TestDirectory);
     this.Utility.CreateDirectory(this.ImportDirectory);
     this.CommandLineOptions = "";
+    this.BundleOptions = [];
     this.BundleContents = "";
     this.StagingDirectory = "";
     this.OutputDirectory = "./" + this.TestDirectory;
@@ -54,6 +56,10 @@ Givens.prototype.DirectoryToBundle = function(directoryName) {
 Givens.prototype.SubDirectory = function (directory) {
     var subDir = this.TestDirectory + "/" + directory;
     this.Utility.CreateDirectory(subDir);
+};
+
+Givens.prototype.BundleOption = function (option) {
+    this.BundleOptions.push(option);
 };
 
 Givens.prototype.CommandLineOption = function (option) {
@@ -96,3 +102,11 @@ Givens.prototype.UpdatedFile = function(fileName, contents) {
 Givens.prototype.UpdatedImport = function(fileName, contents) {
     updateFile(this, this.ImportDirectory, fileName, contents);
 };
+
+Givens.prototype.GetBundleContents = function() {
+    if (this.BundleOptions.length > 0) {
+        return '#options ' + this.BundleOptions.join(', ') + '\n\n' + this.BundleContents;
+    } else {
+        return this.BundleContents;
+    }
+}
