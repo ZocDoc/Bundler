@@ -266,9 +266,14 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
         fs.writeFile(bundleName, allJs, afterBundle);
 
-        allJsArr.forEach(function(jsFile) {
-            bundleStatsCollector.AddDebugFile(jsBundle, jsFile.path);
-        });
+        if (options.require) {
+            bundleStatsCollector.AddDebugFile(jsBundle, bundleName);
+        } else {
+            allJsArr.forEach(function(jsFile) {
+                bundleStatsCollector.AddDebugFile(jsBundle, jsFile.path);
+            });
+        }
+
     };
 
     bundleStatsCollector.ClearStatsForBundle(jsBundle);

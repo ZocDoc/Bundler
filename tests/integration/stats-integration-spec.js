@@ -1,10 +1,11 @@
 var testDirectory = 'stats-test-suite';
 var integrationTest = require('./helpers/jasmine-wrapper.js');
-var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory, console);
+var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory);
 
 test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", function() {
 
     beforeEach(function () {
+        test.given.StagingDirectoryIs('staging-dir');
         test.given.OutputDirectoryIs('output-dir');
         test.given.FileToBundle('file1.js',    'var file1 = "file1";');
         test.given.FileToBundle('file2.js',    'var file2 = "file2";');
@@ -40,11 +41,33 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
                 'bundle-debug.json',
                 function (json) {
                     validateJsonObject(json, function (b) {
-                        expect(b.indexOf('stats-test-suite\\test\\file1.js')).toBe(0);
-                        expect(b.indexOf('stats-test-suite\\test\\file2.js')).toBe(1);
+                        expect(b).toEqual([
+                            'stats-test-suite\\test\\file1.js',
+                            'stats-test-suite\\test\\file2.js'
+                        ]);
                     });
                 });
         });
+
+        it('Given require option, computes a collection with just the combined, unminified bundle file and puts it in the output directory.', function() {
+
+            test.given.BundleOption('require');
+
+            test.actions.Bundle();
+
+            test.assert.verifyJson(
+                test.given.OutputDirectory,
+                'bundle-debug.json',
+                function (json) {
+                    validateJsonObject(json, function (b) {
+                        expect(b).toEqual([
+                            test.given.StagingDirectory + '/testjs/test.js'
+                        ]);
+                    });
+                });
+
+        });
+
     });
 
     describe("Localization Files: ", function () {
