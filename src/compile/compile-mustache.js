@@ -13,22 +13,34 @@ var fs = Promise.promisifyAll(require('fs'));
  */
 function compile(options) {
 
-    var templateName = getTemplateName(options.inputPath, options.useTemplateDirs);
-    var compiledTemplate = compileTemplate(options.code);
+    return new Promise(function(resolve, reject) {
 
-    return getOutputTemplate()
-        .then(function(outputTemplate) {
+        try {
 
-            var result = outputTemplate({
-                templateName: templateName,
-                compiledTemplate: compiledTemplate
-            }).replace(/\r\n/g, '\n');
+            var templateName = getTemplateName(options.inputPath, options.useTemplateDirs);
+            var compiledTemplate = compileTemplate(options.code);
 
-            return {
-                code: result
-            };
+            getOutputTemplate()
+                .then(function (outputTemplate) {
 
-        });
+                    var result = outputTemplate({
+                        templateName: templateName,
+                        compiledTemplate: compiledTemplate
+                    }).replace(/\r\n/g, '\n');
+
+                    resolve({
+                        code: result
+                    });
+
+                });
+
+        } catch (err) {
+
+            reject(err);
+
+        }
+
+    });
 
 }
 
@@ -38,8 +50,10 @@ function getOutputTemplate() {
 
     if (template) {
 
-        return Promise.method(function() {
-            return template;
+        return new Promise(function(resolve) {
+
+            resolve(template);
+
         });
 
     }
