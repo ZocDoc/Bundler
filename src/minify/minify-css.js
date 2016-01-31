@@ -1,10 +1,16 @@
 var CleanCss = require('clean-css');
 var Promise = require('bluebird');
+var _ = require('underscore');
+var path = require('path');
+var getSourceFilePath = require('../file/source-map').getSourceFilePath;
 
 /**
  * @param {object} options
  * @param {string} options.code
+ * @param {object} options.map
  * @param {string} options.inputPath
+ * @param {boolean} options.sourceMap
+ * @param {string} options.siteRoot
  * @returns {bluebird}
  */
 function minify(options) {
@@ -13,18 +19,31 @@ function minify(options) {
 
         try {
 
-            var cleaner = new CleanCss({
+            var cleanerInput = {},
+                cleaner;
+
+            cleaner = new CleanCss({
                 advanced: false,
-                restructuring: false
+                restructuring: false,
+                sourceMap: options.sourceMap
             });
 
-            cleaner.minify(options.code, function (err, result) {
+            cleanerInput[options.inputPath] = {
+                styles: options.code
+            };
+
+            if (options.sourceMap && options.map) {
+                cleanerInput[options.inputPath].sourceMap = getSourceMap(options);
+            }
+
+            cleaner.minify(cleanerInput, function (err, result) {
 
                 if (err) {
                     reject(err);
                 } else {
                     resolve({
-                        code: result.styles
+                        code: result.styles,
+                        map: result.sourceMap ? JSON.parse(result.sourceMap.toString()) : undefined
                     });
                 }
 
@@ -37,6 +56,18 @@ function minify(options) {
         }
 
     });
+
+}
+
+function getSourceMap(options) {
+
+    var map = _.clone(options.map);
+
+    map.sources = map.sources.map(function(source) {
+        return path.relative(getSourceFilePath(options.inputPath, options.siteRoot), source);
+    });
+
+    return JSON.stringify(map);
 
 }
 
