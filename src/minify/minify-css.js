@@ -25,7 +25,8 @@ function minify(options) {
             cleaner = new CleanCss({
                 advanced: false,
                 restructuring: false,
-                sourceMap: options.sourceMap
+                sourceMap: options.sourceMap,
+                root: options.siteRoot
             });
 
             cleanerInput[options.inputPath] = {
@@ -64,7 +65,7 @@ function getSourceMap(options) {
     var map = _.clone(options.map);
 
     map.sources = map.sources.map(function(source) {
-        return path.relative(getSourceFilePath(options.inputPath, options.siteRoot), source);
+        return path.relative(path.dirname(options.inputPath), path.join(options.siteRoot, source));
     });
 
     return JSON.stringify(map);

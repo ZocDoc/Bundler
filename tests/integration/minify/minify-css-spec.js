@@ -76,7 +76,7 @@ describe('minify CSS', function() {
                         '.less1{color:red}',
                     map: {
                         version: 3,
-                        sources: [ '../../bar.less' ],
+                        sources: [ 'foo/bar.less' ],
                         names: [  ],
                         mappings: 'AACA,OAAS,MAAA'
                     }
