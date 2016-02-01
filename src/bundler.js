@@ -315,7 +315,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessCodeOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessCodeOptions(code, undefined, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isMustache) {
 
@@ -354,7 +354,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                     if (! --pending) whenDone();
                 };
 
-                var minifyOptions = getProcessCodeOptions(js.code, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
+                var minifyOptions = getProcessCodeOptions(js.code, js.map, jsPath, minJsPath, bundleDir, bundleStatsCollector, options);
                 minify.js(minifyOptions).then(withMin).catch(handleError);
             }
         );
@@ -439,7 +439,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                 readTextFile(filePath, function(code) {
 
-                    var compileOptions = getProcessCodeOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
+                    var compileOptions = getProcessCodeOptions(code, undefined, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
 
                     if (isLess) {
 
@@ -469,17 +469,18 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                     if (! --pending) whenDone();
                 };
 
-                var minifyOptions = getProcessCodeOptions(css.code, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
+                var minifyOptions = getProcessCodeOptions(css.code, css.map, cssPath, minCssPath, bundleDir, bundleStatsCollector, options);
                 minify.css(minifyOptions).then(withMin).catch(handleError);
             }
         );
     });
 }
 
-function getProcessCodeOptions(code, inputPath, outputPath, bundleDir, bundleStatsCollector, bundlerOptions) {
+function getProcessCodeOptions(code, map, inputPath, outputPath, bundleDir, bundleStatsCollector, bundlerOptions) {
 
     return {
         code: code,
+        map: map,
         inputPath: inputPath,
         outputPath: outputPath,
         bundleDir: bundleDir,
