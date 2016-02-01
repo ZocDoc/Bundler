@@ -75,7 +75,7 @@ describe('concat files', function() {
 
     var assertConcatenatedCodeIs = function(expected) {
 
-        expect(code).toEqual(expected);
+        expect(code.code).toEqual(expected);
 
     };
 

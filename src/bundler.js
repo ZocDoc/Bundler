@@ -259,12 +259,17 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var afterBundle = function () {
             var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
 
-            bundleStatsCollector.AddFileHash(bundleName, allMinJs);
+            bundleStatsCollector.AddFileHash(bundleName, allMinJs.code);
 
-            fs.writeFile(minFileName, allMinJs, cb);
+            file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory)
+                .then(cb)
+                .catch(handleError);
+
         };
 
-        fs.writeFile(bundleName, allJs, afterBundle);
+        file.write(allJs.code, allJs.map, file.type.JS, bundleName, options.siterootdirectory)
+            .then(afterBundle)
+            .catch(handleError);
 
         if (options.require) {
             bundleStatsCollector.AddDebugFile(jsBundle, bundleName);
@@ -379,23 +384,29 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         var afterBundle = function () {
 
             if(urlVersioning) {
-                allMinCss = urlVersioning.VersionUrls(allMinCss);
+                allMinCss.code = urlVersioning.VersionUrls(allMinCss.code);
             }
 
-            cssValidator.validate(cssBundle, allMinCss, function(err) {
+            cssValidator.validate(cssBundle, allMinCss.code, function(err) {
                 if (err) {
                     handleError(err);
                     return;
                 }
 
                 var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
-                fs.writeFile(minFileName, allMinCss, cb);
+
+                file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory)
+                    .then(cb)
+                    .catch(handleError);
+
             });
         };
 
-        bundleStatsCollector.AddFileHash(bundleName, allMinCss);
+        bundleStatsCollector.AddFileHash(bundleName, allMinCss.code);
 
-        fs.writeFile(bundleName, allCss, afterBundle);
+        file.write(allCss.code, allCss.map, file.type.CSS, bundleName, options.siterootdirectory)
+            .then(afterBundle)
+            .catch(handleError);
 
         allCssArr.forEach(function(cssFile) {
             bundleStatsCollector.AddDebugFile(cssBundle, cssFile.path);

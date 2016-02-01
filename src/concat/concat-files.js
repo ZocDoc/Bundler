@@ -28,7 +28,9 @@ function concat(options) {
 
     });
 
-    return code.join('');
+    return {
+        code: code.join('')
+    };
 
 }
 
