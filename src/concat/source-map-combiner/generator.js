@@ -3,7 +3,7 @@ var SourceMapGenerator = require('source-map').SourceMapGenerator;
 function Generator() {
 
     this.generator = new SourceMapGenerator({
-        file: 'generated.js',
+        file: '',
         sourceRoot: ''
     });
 

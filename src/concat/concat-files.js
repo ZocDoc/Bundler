@@ -1,13 +1,23 @@
 var FileType = require('../file').type;
+var Combiner = require('./source-map-combiner');
 
 /**
  * @param {object} options
  * @param {Array<object>} options.files
  * @param {string} options.fileType
+ * @param {boolean} options.sourceMap
  */
 function concat(options) {
 
-    var code = [];
+    var code = [],
+        offset,
+        combiner,
+        result;
+
+    if (options.sourceMap) {
+        offset = 0;
+        combiner = new Combiner();
+    }
 
     options.files.forEach(function(file) {
 
@@ -26,11 +36,36 @@ function concat(options) {
 
         }
 
+        if (options.sourceMap) {
+            combiner.addFile(file.path, file.code, file.map, {
+                line: offset
+            });
+            offset += newlinesIn(file.code) + 1;
+        }
+
     });
 
-    return {
+    result = {
         code: code.join('')
     };
+
+    if (options.sourceMap) {
+        result.map = combiner.toSourceMap();
+    }
+
+    return result;
+
+}
+
+function newlinesIn(code) {
+
+    if (!code){
+        return 0;
+    }
+
+    var newlines = code.match(/\n/g);
+
+    return newlines ? newlines.length : 0;
 
 }
 
