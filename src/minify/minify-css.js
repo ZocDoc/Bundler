@@ -2,7 +2,6 @@ var CleanCss = require('clean-css');
 var Promise = require('bluebird');
 var _ = require('underscore');
 var path = require('path');
-var getSourceFilePath = require('../file/source-map').getSourceFilePath;
 
 /**
  * @param {object} options
@@ -25,6 +24,7 @@ function minify(options) {
             cleaner = new CleanCss({
                 advanced: false,
                 restructuring: false,
+                rebase: false,
                 sourceMap: options.sourceMap,
                 root: options.siteRoot
             });
