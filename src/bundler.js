@@ -247,8 +247,14 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
     var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
     var whenDone = function () {
-        var allJs = concat(allJsArr, file.type.JS),
-            allMinJs = concat(allMinJsArr, file.type.JS);
+        var allJs = concat.files({
+                files: allJsArr,
+                fileType: file.type.JS
+            }),
+            allMinJs = concat.files({
+                files: allMinJsArr,
+                fileType: file.type.JS
+            });
 
         var afterBundle = function () {
             var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
@@ -259,6 +265,15 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         };
 
         fs.writeFile(bundleName, allJs, afterBundle);
+
+        if (options.require) {
+            bundleStatsCollector.AddDebugFile(jsBundle, bundleName);
+        } else {
+            allJsArr.forEach(function(jsFile) {
+                bundleStatsCollector.AddDebugFile(jsBundle, jsFile.path);
+            });
+        }
+
     };
 
     bundleStatsCollector.ClearStatsForBundle(jsBundle);
@@ -298,8 +313,6 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                     jsPath = jsPathOutput;
                 }
 
-                bundleStatsCollector.AddDebugFile(jsBundle, jsPath);
-
                 readTextFile(filePath, function(code) {
 
                     var compileOptions = getProcessCodeOptions(code, filePath, jsPathOutput, bundleDir, bundleStatsCollector, options);
@@ -323,6 +336,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                         bundleStatsCollector.ParseJsForStats(jsBundle, code);
                         next({
+                            path: jsPath,
                             code: code
                         });
 
@@ -353,8 +367,14 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
     var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
     var whenDone = function () {
-        var allCss = concat(allCssArr, file.type.CSS),
-            allMinCss = concat(allMinCssArr, file.type.CSS);
+        var allCss = concat.files({
+                files: allCssArr,
+                fileType: file.type.CSS
+            }),
+            allMinCss = concat.files({
+                files: allMinCssArr,
+                fileType: file.type.CSS
+            });
 
         var afterBundle = function () {
 
@@ -376,6 +396,10 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         bundleStatsCollector.AddFileHash(bundleName, allMinCss);
 
         fs.writeFile(bundleName, allCss, afterBundle);
+
+        allCssArr.forEach(function(cssFile) {
+            bundleStatsCollector.AddDebugFile(cssBundle, cssFile.path);
+        });
     };
 
     bundleStatsCollector.ClearStatsForBundle(cssBundle);
@@ -413,8 +437,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                     cssPath = cssPathOutput;
                 }
 
-                bundleStatsCollector.AddDebugFile(cssBundle, cssPath);
-
                 readTextFile(filePath, function(code) {
 
                     var compileOptions = getProcessCodeOptions(code, filePath, cssPathOutput, bundleDir, bundleStatsCollector, options);
@@ -430,6 +452,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                     } else {
 
                         next({
+                            path: cssPath,
                             code: code
                         });
 

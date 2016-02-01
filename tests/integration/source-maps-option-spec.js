@@ -9,8 +9,8 @@ test.describeIntegrationTest("Generating source maps:", function() {
         test.given.StagingDirectoryIs('staging-dir');
         test.given.OutputDirectoryIs('output-dir');
 
-        test.given.BundleOption('-sourcemaps');
-        test.given.BundleOption('-siterootdirectory:' + test.given.BaseTestDirectory);
+        test.given.CommandLineOption('-sourcemaps');
+        test.given.CommandLineOption('-siterootdirectory:' + test.given.BaseTestDirectory);
 
     });
 

@@ -95,7 +95,7 @@ test.describeIntegrationTest("Css Bundling:", function() {
 
 	    givenImages('an-image-there.jpg');
 
-        test.given.BundleOption("-rewriteimagefileroot:" + test.given.TestDirectory + " -rewriteimageoutputroot:combined");
+        test.given.CommandLineOption("-rewriteimagefileroot:" + test.given.TestDirectory + " -rewriteimageoutputroot:combined");
 
 
         test.given.FileToBundle('file1.css', '.file1 { color: red; }\n'
