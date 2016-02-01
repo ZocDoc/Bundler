@@ -23,6 +23,16 @@ function cleanSources(sources, siteRoot) {
 
 }
 
+function getSourceMapRoot(filePath, siteRoot) {
+
+    var directory = path.normalize(path.dirname(filePath));
+
+    siteRoot = path.normalize(siteRoot);
+
+    return directory.replace(siteRoot, '');
+
+}
+
 function getSourceFilePath(filePath, siteRoot) {
 
     var sourceMapRoot = getSourceMapRoot(filePath, siteRoot),
@@ -33,16 +43,6 @@ function getSourceFilePath(filePath, siteRoot) {
     }
 
     return sourceMapPath;
-
-}
-
-function getSourceMapRoot(filePath, siteRoot) {
-
-    var directory = path.normalize(path.dirname(filePath));
-
-    siteRoot = path.normalize(siteRoot);
-
-    return directory.replace(siteRoot, '');
 
 }
 
