@@ -29,21 +29,19 @@ function getRawDependencies(allFiles) {
 
 function resolveDependencies(allFiles, rawDeps) {
 
-    var resolvedFiles = {};
+    var fileDeps = {};
 
     _.each(rawDeps, function(deps, filePath) {
 
-        resolvedFiles[filePath] = _.extend({}, allFiles[filePath], {
-            deps: {}
-        });
+        fileDeps[filePath] = {};
 
         deps.forEach(function(dep) {
-            resolvedFiles[filePath].deps[dep] = resolveDependency(allFiles, filePath, dep);
+            fileDeps[filePath][dep] = resolveDependency(allFiles, filePath, dep);
         });
 
     });
 
-    return resolvedFiles;
+    return fileDeps;
 
 }
 

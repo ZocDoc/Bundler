@@ -25,16 +25,8 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\foo\\file1.js': {
-                originalPath: 'C:\\foo\\file1.js',
-                code: 'var x = 1;',
-                deps: {}
-            },
-            'C:\\bar\\file2.js': {
-                originalPath: 'C:\\bar\\file2.js',
-                code: 'module.exports = function(x) { return x * 2; };',
-                deps: {}
-            }
+            'C:\\foo\\file1.js': {},
+            'C:\\bar\\file2.js': {}
         });
     
     });
@@ -53,19 +45,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\foo\\file1.js': {
-                originalPath: 'C:\\foo\\file1.js',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\foo\\file1.js': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'./file1.js\');',
-                deps: {
-                    './file1.js': {
-                        name: 'C:\\foo\\file1.js',
-                        isPath: true
-                    }
+                './file1.js': {
+                    name: 'C:\\foo\\file1.js',
+                    isPath: true
                 }
             }
         });
@@ -86,19 +70,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\foo\\file1.js': {
-                originalPath: 'C:\\foo\\file1.js',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\foo\\file1.js': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'./file1\');',
-                deps: {
-                    './file1': {
-                        name: 'C:\\foo\\file1.js',
-                        isPath: true
-                    }
+                './file1': {
+                    name: 'C:\\foo\\file1.js',
+                    isPath: true
                 }
             }
         });
@@ -119,19 +95,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\foo\\file1.es6': {
-                originalPath: 'C:\\foo\\file1.es6',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\foo\\file1.es6': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'./file1\');',
-                deps: {
-                    './file1': {
-                        name: 'C:\\foo\\file1.es6',
-                        isPath: true
-                    }
+                './file1': {
+                    name: 'C:\\foo\\file1.es6',
+                    isPath: true
                 }
             }
         });
@@ -152,19 +120,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\foo\\bar\\index.js': {
-                originalPath: 'C:\\foo\\bar\\index.js',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\foo\\bar\\index.js': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'./bar\');',
-                deps: {
-                    './bar': {
-                        name: 'C:\\foo\\bar\\index.js',
-                        isPath: true
-                    }
+                './bar': {
+                    name: 'C:\\foo\\bar\\index.js',
+                    isPath: true
                 }
             }
         });
@@ -185,19 +145,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\foo\\bar\\index.es6': {
-                originalPath: 'C:\\foo\\bar\\index.es6',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\foo\\bar\\index.es6': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'./bar\');',
-                deps: {
-                    './bar': {
-                        name: 'C:\\foo\\bar\\index.es6',
-                        isPath: true
-                    }
+                './bar': {
+                    name: 'C:\\foo\\bar\\index.es6',
+                    isPath: true
                 }
             }
         });
@@ -218,19 +170,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\bar\\file1.js': {
-                originalPath: 'C:\\bar\\file1.js',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\bar\\file1.js': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'../bar/file1.js\');',
-                deps: {
-                    '../bar/file1.js': {
-                        name: 'C:\\bar\\file1.js',
-                        isPath: true
-                    }
+                '../bar/file1.js': {
+                    name: 'C:\\bar\\file1.js',
+                    isPath: true
                 }
             }
         });
@@ -251,19 +195,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\bar\\file1.es6': {
-                originalPath: 'C:\\bar\\file1.es6',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\bar\\file1.es6': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'../bar/file1.es6\');',
-                deps: {
-                    '../bar/file1.es6': {
-                        name: 'C:\\bar\\file1.es6',
-                        isPath: true
-                    }
+                '../bar/file1.es6': {
+                    name: 'C:\\bar\\file1.es6',
+                    isPath: true
                 }
             }
         });
@@ -284,19 +220,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\bar\\file1.js': {
-                originalPath: 'C:\\bar\\file1.js',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\bar\\file1.js': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'../bar/file1\');',
-                deps: {
-                    '../bar/file1': {
-                        name: 'C:\\bar\\file1.js',
-                        isPath: true
-                    }
+                '../bar/file1': {
+                    name: 'C:\\bar\\file1.js',
+                    isPath: true
                 }
             }
         });
@@ -317,19 +245,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\bar\\file1.es6': {
-                originalPath: 'C:\\bar\\file1.es6',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\bar\\file1.es6': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'../bar/file1\');',
-                deps: {
-                    '../bar/file1': {
-                        name: 'C:\\bar\\file1.es6',
-                        isPath: true
-                    }
+                '../bar/file1': {
+                    name: 'C:\\bar\\file1.es6',
+                    isPath: true
                 }
             }
         });
@@ -350,19 +270,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\bar\\index.js': {
-                originalPath: 'C:\\bar\\index.js',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\bar\\index.js': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'../bar\');',
-                deps: {
-                    '../bar': {
-                        name: 'C:\\bar\\index.js',
-                        isPath: true
-                    }
+                '../bar': {
+                    name: 'C:\\bar\\index.js',
+                    isPath: true
                 }
             }
         });
@@ -383,19 +295,11 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\bar\\index.es6': {
-                originalPath: 'C:\\bar\\index.es6',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\bar\\index.es6': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'../bar\');',
-                deps: {
-                    '../bar': {
-                        name: 'C:\\bar\\index.es6',
-                        isPath: true
-                    }
+                '../bar': {
+                    name: 'C:\\bar\\index.es6',
+                    isPath: true
                 }
             }
         });
@@ -413,13 +317,9 @@ describe('parse dependencies', function() {
 
         assertResultIs({
             'C:\\bar\\index.js': {
-                originalPath: 'C:\\bar\\index.js',
-                code: 'require(\'foo\');',
-                deps: {
-                    'foo': {
-                        name: 'foo',
-                        isPath: false
-                    }
+                'foo': {
+                    name: 'foo',
+                    isPath: false
                 }
             }
         });
@@ -440,23 +340,15 @@ describe('parse dependencies', function() {
         parseDependencies();
 
         assertResultIs({
-            'C:\\bar\\index.es6': {
-                originalPath: 'C:\\bar\\index.es6',
-                code: 'module.exports = 1;',
-                deps: {}
-            },
+            'C:\\bar\\index.es6': {},
             'C:\\foo\\file2.js': {
-                originalPath: 'C:\\foo\\file2.js',
-                code: 'var f = require(\'../bar\'); var b = require(\'foobar\');',
-                deps: {
-                    '../bar': {
-                        name: 'C:\\bar\\index.es6',
-                        isPath: true
-                    },
-                    'foobar': {
-                        name: 'foobar',
-                        isPath: false
-                    }
+                '../bar': {
+                    name: 'C:\\bar\\index.es6',
+                    isPath: true
+                },
+                'foobar': {
+                    name: 'foobar',
+                    isPath: false
                 }
             }
         });
