@@ -7,7 +7,7 @@ describe('parse dependencies', function() {
 
     beforeEach(function() {
 
-        files = [];
+        files = {};
 
     });
     
@@ -482,7 +482,7 @@ describe('parse dependencies', function() {
 
     var givenFile = function(file) {
 
-        files.push(file);
+        files[file.originalPath] = file;
 
     };
 

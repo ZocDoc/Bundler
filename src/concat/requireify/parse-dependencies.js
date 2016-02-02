@@ -7,25 +7,9 @@ var precinct = require('precinct');
  */
 function parse(files) {
 
-    var allFiles = getFileSet(files);
+    var rawDeps = getRawDependencies(files);
 
-    var rawDeps = getRawDependencies(allFiles);
-
-    return resolveDependencies(allFiles, rawDeps);
-
-}
-
-function getFileSet(files) {
-
-    var fileSet = {};
-
-    files.forEach(function(file) {
-
-        fileSet[file.originalPath] = file;
-
-    });
-
-    return fileSet;
+    return resolveDependencies(files, rawDeps);
 
 }
 
