@@ -45,19 +45,21 @@ function getRawDependencies(allFiles) {
 
 function resolveDependencies(allFiles, rawDeps) {
 
-    var resolvedDeps = {};
+    var resolvedFiles = {};
 
     _.each(rawDeps, function(deps, filePath) {
 
-        resolvedDeps[filePath] = {};
+        resolvedFiles[filePath] = _.extend({}, allFiles[filePath], {
+            deps: {}
+        });
 
         deps.forEach(function(dep) {
-            resolvedDeps[filePath][dep] = resolveDependency(allFiles, filePath, dep);
+            resolvedFiles[filePath].deps[dep] = resolveDependency(allFiles, filePath, dep);
         });
 
     });
 
-    return resolvedDeps;
+    return resolvedFiles;
 
 }
 
@@ -69,7 +71,7 @@ function resolveDependency(allFiles, filePath, dep) {
 
     if (dep.indexOf('./') !== 0 && dep.indexOf('../') !== 0) {
         return {
-            dep: dep,
+            name: dep,
             isPath: false
         };
     }
@@ -77,7 +79,7 @@ function resolveDependency(allFiles, filePath, dep) {
     tryPath = depPath;
     if (allFiles[tryPath]) {
         return {
-            dep: tryPath,
+            name: tryPath,
             isPath: true
         };
     }
@@ -85,7 +87,7 @@ function resolveDependency(allFiles, filePath, dep) {
     tryPath = depPath + '.js';
     if (allFiles[tryPath]) {
         return {
-            dep: tryPath,
+            name: tryPath,
             isPath: true
         };
     }
@@ -93,7 +95,7 @@ function resolveDependency(allFiles, filePath, dep) {
     tryPath = depPath + '.es6';
     if (allFiles[tryPath]) {
         return {
-            dep: tryPath,
+            name: tryPath,
             isPath: true
         };
     }
@@ -101,7 +103,7 @@ function resolveDependency(allFiles, filePath, dep) {
     tryPath = path.join(depPath, 'index.js');
     if (allFiles[tryPath]) {
         return {
-            dep: tryPath,
+            name: tryPath,
             isPath: true
         };
     }
@@ -109,7 +111,7 @@ function resolveDependency(allFiles, filePath, dep) {
     tryPath = path.join(depPath, 'index.es6');
     if (allFiles[tryPath]) {
         return {
-            dep: tryPath,
+            name: tryPath,
             isPath: true
         };
     }
