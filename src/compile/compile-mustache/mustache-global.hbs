@@ -1,0 +1,11 @@
+(function() {
+
+    this.JST = this.JST || {};
+
+    this.JST['{{{templateName}}}'] = new this.Hogan.Template({
+        code: {{{compiledTemplate}}},
+        partials: {},
+        subs: {}
+    });
+
+}).call(this);

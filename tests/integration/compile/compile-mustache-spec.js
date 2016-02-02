@@ -1,20 +1,21 @@
 var compileMustache = require('../../../src/compile/compile-mustache');
 var _ = require('underscore');
-var path = require('path');
 
 describe('compile mustache', function() {
 
     var inputPath,
-        useTemplateDirs;
+        useTemplateDirs,
+        require;
 
     beforeEach(function() {
 
         inputPath = 'C:\\foo\\templates\\sub\\bar.mustache';
         useTemplateDirs = false;
+        require = false;
 
     });
 
-    it('Given mustache code, compiles to JS.', function(done) {
+    it('Given mustache code and require is disabled, compiles to JS attaching to global.', function(done) {
 
         compile(
                 '<div> {{a}} </div>'
@@ -22,28 +23,13 @@ describe('compile mustache', function() {
             .then(assertResultIs(
                 '(function() {\n' +
                 '\n' +
-                '    var useCommonJs = typeof module !== \'undefined\' && module.exports,\n' +
-                '        Hogan,\n' +
-                '        template;\n' +
+                '    this.JST = this.JST || {};\n' +
                 '\n' +
-                '    if (useCommonJs) {\n' +
-                '        Hogan = require(\'hogan\');\n' +
-                '    } else {\n' +
-                '        Hogan = this.Hogan;\n' +
-                '    }\n' +
-                '\n' +
-                '    template = new Hogan.Template({\n' +
+                '    this.JST[\'bar\'] = new this.Hogan.Template({\n' +
                 '        code: function(c,p,i){var _=this;_.b(i=i||"");_.b("<div> ");_.b(_.v(_.f("a",c,p,0)));_.b(" </div>");return _.fl();;},\n' +
                 '        partials: {},\n' +
                 '        subs: {}\n' +
                 '    });\n' +
-                '\n' +
-                '    if (useCommonJs) {\n' +
-                '        module.exports = template;\n' +
-                '    } else {\n' +
-                '        this.JST = this.JST || {};\n' +
-                '        JST[\'bar\'] = template;\n' +
-                '    }\n' +
                 '\n' +
                 '}).call(this);',
                 done
@@ -52,7 +38,7 @@ describe('compile mustache', function() {
 
     });
 
-    it('Given mustache code and use template dirs options, compiles to JS with folder prefixed template name.', function(done) {
+    it('Given mustache code and require is disabled and use template dirs options, compiles to JS attaching to global with folder prefixed template name.', function(done) {
 
         givenUseTemplateDirs();
 
@@ -62,30 +48,36 @@ describe('compile mustache', function() {
             .then(assertResultIs(
                 '(function() {\n' +
                 '\n' +
-                '    var useCommonJs = typeof module !== \'undefined\' && module.exports,\n' +
-                '        Hogan,\n' +
-                '        template;\n' +
+                '    this.JST = this.JST || {};\n' +
                 '\n' +
-                '    if (useCommonJs) {\n' +
-                '        Hogan = require(\'hogan\');\n' +
-                '    } else {\n' +
-                '        Hogan = this.Hogan;\n' +
-                '    }\n' +
-                '\n' +
-                '    template = new Hogan.Template({\n' +
+                '    this.JST[\'sub-bar\'] = new this.Hogan.Template({\n' +
                 '        code: function(c,p,i){var _=this;_.b(i=i||"");_.b("<div> ");_.b(_.v(_.f("a",c,p,0)));_.b(" </div>");return _.fl();;},\n' +
                 '        partials: {},\n' +
                 '        subs: {}\n' +
                 '    });\n' +
                 '\n' +
-                '    if (useCommonJs) {\n' +
-                '        module.exports = template;\n' +
-                '    } else {\n' +
-                '        this.JST = this.JST || {};\n' +
-                '        JST[\'sub-bar\'] = template;\n' +
-                '    }\n' +
-                '\n' +
                 '}).call(this);',
+                done
+            ))
+            .catch(throwError);
+
+    });
+
+    it('Given mustache code and require is enabled, compiles to JS module export.', function(done) {
+
+        givenRequire();
+
+        compile(
+            '<div> {{a}} </div>'
+        )
+            .then(assertResultIs(
+                'var Hogan = require(\'hogan\');\n' +
+                '\n' +
+                'module.exports = new Hogan.Template({\n' +
+                '    code: function(c,p,i){var _=this;_.b(i=i||"");_.b("<div> ");_.b(_.v(_.f("a",c,p,0)));_.b(" </div>");return _.fl();;},\n' +
+                '    partials: {},\n' +
+                '    subs: {}\n' +
+                '});',
                 done
             ))
             .catch(throwError);
@@ -105,7 +97,8 @@ describe('compile mustache', function() {
         return compileMustache({
             code: code,
             inputPath: inputPath,
-            useTemplateDirs: useTemplateDirs
+            useTemplateDirs: useTemplateDirs,
+            require: require
         });
 
     };
@@ -113,6 +106,12 @@ describe('compile mustache', function() {
     var givenUseTemplateDirs = function() {
 
         useTemplateDirs = true;
+
+    };
+
+    var givenRequire = function() {
+
+        require = true;
 
     };
 

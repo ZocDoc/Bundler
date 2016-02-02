@@ -23,7 +23,7 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
             test.assert.verifyBundleIs(
                 ';var foo="asdf";\n' +
                 ';var foo2="bnmf";\n' +
-                ';(function(){var e,t,i="undefined"!=typeof module&&module.exports;e=i?require("hogan"):this.Hogan,t=new e.Template({code:function(e,t,i){var o=this;return o.b(i=i||""),o.b("<div>"),o.b(o.v(o.f("a",e,t,0))),o.b("</div>"),o.fl()},partials:{},subs:{}}),i?module.exports=t:(this.JST=this.JST||{},JST.mustache1=t)}).call(this);\n'
+                ';(function(){this.JST=this.JST||{},this.JST.mustache1=new this.Hogan.Template({code:function(t,i,s){var a=this;return a.b(s=s||""),a.b("<div>"),a.b(a.v(a.f("a",t,i,0))),a.b("</div>"),a.fl()},partials:{},subs:{}})}).call(this);\n'
             );
 
         });
@@ -37,7 +37,7 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
             test.assert.verifyBundleIs(
                 ';var foo="asdf";\n' +
                 ';var foo2="a new value";\n' +
-                ';(function(){var e,t,i="undefined"!=typeof module&&module.exports;e=i?require("hogan"):this.Hogan,t=new e.Template({code:function(e,t,i){var o=this;return o.b(i=i||""),o.b("<div>"),o.b(o.v(o.f("a",e,t,0))),o.b("</div>"),o.fl()},partials:{},subs:{}}),i?module.exports=t:(this.JST=this.JST||{},JST.mustache1=t)}).call(this);\n'
+                ';(function(){this.JST=this.JST||{},this.JST.mustache1=new this.Hogan.Template({code:function(t,i,s){var a=this;return a.b(s=s||""),a.b("<div>"),a.b(a.v(a.f("a",t,i,0))),a.b("</div>"),a.fl()},partials:{},subs:{}})}).call(this);\n'
             );
 
         });
@@ -51,7 +51,7 @@ test.describeIntegrationTest("Recompile Tests - ", function() {
             test.assert.verifyBundleIs(
                 ';var foo="asdf";\n' +
                 ';var foo2="bnmf";\n' +
-                ';(function(){var e,t,a="undefined"!=typeof module&&module.exports;e=a?require("hogan"):this.Hogan,t=new e.Template({code:function(e,t,a){var o=this;return o.b(a=a||""),o.b("<a>"),o.b(o.v(o.f("b",e,t,0))),o.b("</a>"),o.fl()},partials:{},subs:{}}),a?module.exports=t:(this.JST=this.JST||{},JST.mustache1=t)}).call(this);\n'
+                ';(function(){this.JST=this.JST||{},this.JST.mustache1=new this.Hogan.Template({code:function(t,s,a){var i=this;return i.b(a=a||""),i.b("<a>"),i.b(i.v(i.f("b",t,s,0))),i.b("</a>"),i.fl()},partials:{},subs:{}})}).call(this);\n'
             );
 
         });
