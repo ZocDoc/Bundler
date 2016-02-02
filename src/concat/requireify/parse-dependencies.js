@@ -21,7 +21,7 @@ function getFileSet(files) {
 
     files.forEach(function(file) {
 
-        fileSet[file.path] = file;
+        fileSet[file.originalPath] = file;
 
     });
 

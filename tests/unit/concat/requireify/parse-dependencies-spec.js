@@ -14,11 +14,11 @@ describe('parse dependencies', function() {
     it('Given files with no require statements, no dependencies are parsed', function() {
     
         givenFile({
-            path: 'C:\\foo\\file1.js',
+            originalPath: 'C:\\foo\\file1.js',
             code: 'var x = 1;'
         });
         givenFile({
-            path: 'C:\\bar\\file2.js',
+            originalPath: 'C:\\bar\\file2.js',
             code: 'module.exports = function(x) { return x * 2; };'
         });
 
@@ -32,11 +32,11 @@ describe('parse dependencies', function() {
     it('Given file with require statement to js file in same directory, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\foo\\file1.js',
+            originalPath: 'C:\\foo\\file1.js',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'./file1.js\');'
         });
 
@@ -55,11 +55,11 @@ describe('parse dependencies', function() {
     it('Given file with extension-less require statement pointing to js file in same directory, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\foo\\file1.js',
+            originalPath: 'C:\\foo\\file1.js',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'./file1\');'
         });
 
@@ -78,11 +78,11 @@ describe('parse dependencies', function() {
     it('Given file with extension-less require statement pointing to es6 file in same directory, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\foo\\file1.es6',
+            originalPath: 'C:\\foo\\file1.es6',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'./file1\');'
         });
 
@@ -101,11 +101,11 @@ describe('parse dependencies', function() {
     it('Given file with extension-less require statement pointing to subdirectory with js index file, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\foo\\bar\\index.js',
+            originalPath: 'C:\\foo\\bar\\index.js',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'./bar\');'
         });
 
@@ -124,11 +124,11 @@ describe('parse dependencies', function() {
     it('Given file with extension-less require statement pointing to subdirectory with es6 index file, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\foo\\bar\\index.es6',
+            originalPath: 'C:\\foo\\bar\\index.es6',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'./bar\');'
         });
 
@@ -147,11 +147,11 @@ describe('parse dependencies', function() {
     it('Given file with require statement to js file in different directory, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\bar\\file1.js',
+            originalPath: 'C:\\bar\\file1.js',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'../bar/file1.js\');'
         });
 
@@ -170,11 +170,11 @@ describe('parse dependencies', function() {
     it('Given file with require statement to es6 file in different directory, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\bar\\file1.es6',
+            originalPath: 'C:\\bar\\file1.es6',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'../bar/file1.es6\');'
         });
 
@@ -193,11 +193,11 @@ describe('parse dependencies', function() {
     it('Given file with extension-less require statement pointing to js file in different directory, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\bar\\file1.js',
+            originalPath: 'C:\\bar\\file1.js',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'../bar/file1\');'
         });
 
@@ -216,11 +216,11 @@ describe('parse dependencies', function() {
     it('Given file with extension-less require statement pointing to es6 file in different directory, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\bar\\file1.es6',
+            originalPath: 'C:\\bar\\file1.es6',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'../bar/file1\');'
         });
 
@@ -239,11 +239,11 @@ describe('parse dependencies', function() {
     it('Given file with extension-less require statement pointing to different directory with js index file, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\bar\\index.js',
+            originalPath: 'C:\\bar\\index.js',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'../bar\');'
         });
 
@@ -262,11 +262,11 @@ describe('parse dependencies', function() {
     it('Given file with extension-less require statement pointing to different directory with es6 index file, dependency is parsed.', function() {
 
         givenFile({
-            path: 'C:\\bar\\index.es6',
+            originalPath: 'C:\\bar\\index.es6',
             code: 'module.exports = 1;'
         });
         givenFile({
-            path: 'C:\\foo\\file2.js',
+            originalPath: 'C:\\foo\\file2.js',
             code: 'var f = require(\'../bar\');'
         });
 
@@ -285,7 +285,7 @@ describe('parse dependencies', function() {
     it('Given file with non-relative require statement, dependency is parsed unchanged.', function() {
 
         givenFile({
-            path: 'C:\\bar\\index.js',
+            originalPath: 'C:\\bar\\index.js',
             code: 'require(\'foo\');'
         });
 
@@ -303,7 +303,7 @@ describe('parse dependencies', function() {
     it('Given file with relative require statement to file not in bundle, throws error.', function() {
 
         givenFile({
-            path: 'C:\\bar\\index.js',
+            originalPath: 'C:\\bar\\index.js',
             code: 'require(\'./foo.js\');'
         });
 
