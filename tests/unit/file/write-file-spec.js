@@ -91,7 +91,6 @@ describe('write file', function() {
             .then(function(result) {
 
                 expect(result).toEqual({
-                    path: outputPath,
                     code: 'var x = 1;',
                     map: undefined
                 });
@@ -167,7 +166,6 @@ describe('write file', function() {
             .then(function(result) {
 
                 expect(result).toEqual({
-                    path: outputPath,
                     code: 'var x = 1;',
                     map: {
                         version: 3,

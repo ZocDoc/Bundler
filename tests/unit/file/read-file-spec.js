@@ -47,7 +47,6 @@ describe('read file', function() {
             .then(function(result) {
 
                 expect(result).toEqual({
-                    path: 'C:\\foo.js',
                     code: 'var x = 1;',
                     map: {
                         version: 3,
