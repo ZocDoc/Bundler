@@ -80,11 +80,11 @@ var validate = function(bundle, css) {
     return new Promise(function(resolve, reject) {
 
         if (!shouldValidate(bundle)) {
-            resolve();
+            resolve(css);
             return;
         }
 
-        var stats = new StyleStats(css, cssStatsSettings);
+        var stats = new StyleStats(css.code, cssStatsSettings);
 
         stats.parse(function onCssStatsParsed(err, result) {
 
@@ -99,7 +99,7 @@ var validate = function(bundle, css) {
             validateFileSize(bundle, result);
             validateSelectors(bundle, result);
 
-            resolve();
+            resolve(css);
 
         });
 
@@ -107,6 +107,4 @@ var validate = function(bundle, css) {
 
 };
 
-module.exports = {
-    validate: validate
-};
+exports.validate = validate;
