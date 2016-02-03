@@ -251,7 +251,8 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         concat.files({
                 files: allJsArr,
                 fileType: file.type.JS,
-                sourceMap: options.sourcemaps
+                sourceMap: options.sourcemaps,
+                require: options.require
             })
             .then(function(allJs) {
 
@@ -263,7 +264,8 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 return concat.files({
                     files: allMinJsArr,
                     fileType: file.type.JS,
-                    sourceMap: options.sourcemaps
+                    sourceMap: options.sourcemaps,
+                    require: options.require
                 });
 
             })

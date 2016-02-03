@@ -1,0 +1,52 @@
+var testDirectory = 'require-test-suite';
+var integrationTest = require('./helpers/jasmine-wrapper.js');
+var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory);
+
+test.describeIntegrationTest("Require bundles:", function() {
+
+    beforeEach(function() {
+
+        test.given.BundleOption('require');
+
+        test.given.StagingDirectoryIs('staging-dir');
+        test.given.OutputDirectoryIs('output-dir');
+
+    });
+
+    it('Given require option, requireifies js files in the staging bundle.', function() {
+
+        test.given.FileToBundle('file1.js', 'var x = 2; module.exports = x;');
+        test.given.FileToBundle('file2.js', 'var foo = require(\'./file1\'); module.exports = function(x) { return x * foo; };');
+
+        test.actions.Bundle();
+
+        test.assert.verifyFileAndContentsAre(
+            test.given.StagingDirectory + '/testjs',
+            'test.js',
+            'require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+            'var x = 2; module.exports = x;\n' +
+            '},{}],2:[function(require,module,exports){\n' +
+            'var foo = require(\'./file1\'); module.exports = function(x) { return x * foo; };\n' +
+            '},{"./file1":1}]},{},[])\n'
+        );
+
+    });
+
+    it('Given require option, requireifies js files in the bundle.', function() {
+
+        test.given.FileToBundle('file1.js', 'var x = 2; module.exports = x;');
+        test.given.FileToBundle('file2.js', 'var foo = require(\'./file1\'); module.exports = function(x) { return x * foo; };');
+
+        test.actions.Bundle();
+
+        test.assert.verifyBundleIs(
+            'require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+            'var x=2;module.exports=x;\n' +
+            '},{}],2:[function(require,module,exports){\n' +
+            'var foo=require("./file1");module.exports=function(o){return o*foo};\n' +
+            '},{"./file1":1}]},{},[])\n'
+        );
+
+    });
+
+});
