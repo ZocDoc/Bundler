@@ -161,7 +161,7 @@ BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
 BundleStatsCollector.prototype.AddExport = function (bundleName, exportName, filePath) {
 
     var exp = {};
-    exp[filePath] = exportName;
+    exp[exportName] = filePath;
     this.ExportsCollection.add(bundleName, exp);
 
 };

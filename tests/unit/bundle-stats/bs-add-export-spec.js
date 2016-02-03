@@ -42,7 +42,7 @@ describe("BundleStatsCollector - Adds files to the exports collection: ", functi
         stats.ParseJsonForStats('bundle1', 'C:\\foo\\bar\\package.json', '{"name":"foo","description":"desc.","main":"foo.js"}');
 
         assertBundleExports('bundle1', {
-            'C:\\foo\\bar\\foo.js': 'foo'
+            'foo': 'C:\\foo\\bar\\foo.js'
         });
 
     });
@@ -52,7 +52,7 @@ describe("BundleStatsCollector - Adds files to the exports collection: ", functi
         stats.ParseJsonForStats('bundle1', 'C:\\foo\\bar\\package.json', '{"name":"foo","description":"desc.","main":"./foo.js"}');
 
         assertBundleExports('bundle1', {
-            'C:\\foo\\bar\\foo.js': 'foo'
+            'foo': 'C:\\foo\\bar\\foo.js'
         });
 
     });
@@ -62,7 +62,7 @@ describe("BundleStatsCollector - Adds files to the exports collection: ", functi
         stats.ParseJsonForStats('bundle1', 'C:\\foo\\bar\\package.json', '{"name":"foo","description":"desc.","main":"bat/foo.js"}');
 
         assertBundleExports('bundle1', {
-            'C:\\foo\\bar\\bat\\foo.js': 'foo'
+            'foo': 'C:\\foo\\bar\\bat\\foo.js'
         });
 
     });
@@ -72,7 +72,7 @@ describe("BundleStatsCollector - Adds files to the exports collection: ", functi
         stats.ParseJsonForStats('bundle1', 'C:\\foo\\bar\\package.json', '{"name":"foo","description":"desc.","main":"./bat/foo.js"}');
 
         assertBundleExports('bundle1', {
-            'C:\\foo\\bar\\bat\\foo.js': 'foo'
+            'foo': 'C:\\foo\\bar\\bat\\foo.js'
         });
 
     });
@@ -82,7 +82,7 @@ describe("BundleStatsCollector - Adds files to the exports collection: ", functi
         stats.ParseJsonForStats('bundle1', 'C:\\foo\\bar\\package.json', '{"name":"foo","description":"desc.","main":"../foo.js"}');
 
         assertBundleExports('bundle1', {
-            'C:\\foo\\foo.js': 'foo'
+            'foo': 'C:\\foo\\foo.js'
         });
 
     });
@@ -93,8 +93,8 @@ describe("BundleStatsCollector - Adds files to the exports collection: ", functi
         stats.ParseJsonForStats('bundle1', 'C:\\foo\\baz\\package.json', '{"name":"baz","description":"desc.","main":"blah/index.js"}');
 
         assertBundleExports('bundle1', {
-            'C:\\foo\\bar\\foo.js': 'foo',
-            'C:\\foo\\baz\\blah\\index.js': 'baz'
+            'foo': 'C:\\foo\\bar\\foo.js',
+            'baz': 'C:\\foo\\baz\\blah\\index.js'
         });
 
     });
@@ -105,11 +105,11 @@ describe("BundleStatsCollector - Adds files to the exports collection: ", functi
         stats.ParseJsonForStats('bundle2', 'C:\\foo\\baz\\package.json', '{"name":"baz","description":"desc.","main":"blah/index.js"}');
 
         assertBundleExports('bundle1', {
-            'C:\\foo\\bar\\foo.js': 'foo'
+            'foo': 'C:\\foo\\bar\\foo.js'
         });
 
         assertBundleExports('bundle2', {
-            'C:\\foo\\baz\\blah\\index.js': 'baz'
+            'baz': 'C:\\foo\\baz\\blah\\index.js'
         });
 
     });
