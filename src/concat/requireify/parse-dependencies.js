@@ -82,6 +82,14 @@ function resolveDependency(allFiles, filePath, dep) {
         };
     }
 
+    tryPath = depPath + '.mustache';
+    if (allFiles[tryPath]) {
+        return {
+            name: tryPath,
+            isPath: true
+        };
+    }
+
     tryPath = path.join(depPath, 'index.js');
     if (allFiles[tryPath]) {
         return {

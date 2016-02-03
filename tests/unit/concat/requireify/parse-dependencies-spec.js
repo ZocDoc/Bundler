@@ -106,6 +106,31 @@ describe('parse dependencies', function() {
 
     });
 
+    it('Given file with extension-less require statement pointing to mustache file in same directory, dependency is parsed.', function() {
+
+        givenFile({
+            originalPath: 'C:\\foo\\file1.mustache',
+            code: 'module.exports = "foo";'
+        });
+        givenFile({
+            originalPath: 'C:\\foo\\file2.js',
+            code: 'var f = require(\'./file1\');'
+        });
+
+        parseDependencies();
+
+        assertResultIs({
+            'C:\\foo\\file1.mustache': {},
+            'C:\\foo\\file2.js': {
+                './file1': {
+                    name: 'C:\\foo\\file1.mustache',
+                    isPath: true
+                }
+            }
+        });
+
+    });
+
     it('Given file with extension-less require statement pointing to subdirectory with js index file, dependency is parsed.', function() {
 
         givenFile({
