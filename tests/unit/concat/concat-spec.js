@@ -21,10 +21,12 @@ describe('concat files', function() {
 
             givenFileTypeIs(FileType.JS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.js',
                 path: 'C:\\foo\\file1.js',
                 code: 'var x = 1;'
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.js',
                 path: 'C:\\foo\\file2.js',
                 code: 'var y = 2;'
             });
@@ -57,10 +59,12 @@ describe('concat files', function() {
             givenSourceMapsEnabled();
             givenFileTypeIs(FileType.JS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.js',
                 path: 'C:\\foo\\file1.js',
                 code: 'var x = 1;'
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.js',
                 path: 'C:\\foo\\file2.js',
                 code: 'var y = 2;'
             });
@@ -100,6 +104,7 @@ describe('concat files', function() {
             givenSourceMapsEnabled();
             givenFileTypeIs(FileType.JS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.es6',
                 path: 'C:\\foo\\file1.js',
                 code:
                     '"use strict";\n' +
@@ -115,6 +120,7 @@ describe('concat files', function() {
                 }
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.jsx',
                 path: 'C:\\foo\\file2.js',
                 code:
                     'var file1 = React.createClass({\n' +
@@ -183,10 +189,12 @@ describe('concat files', function() {
             givenSourceMapsEnabled();
             givenFileTypeIs(FileType.JS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.js',
                 path: 'C:\\foo\\file1.js',
                 code: 'var x = 1;'
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.es6',
                 path: 'C:\\foo\\file2.js',
                 code:
                     '"use strict";\n' +
@@ -241,6 +249,7 @@ describe('concat files', function() {
             givenSourceMapsEnabled();
             givenFileTypeIs(FileType.JS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.es6',
                 path: 'C:\\foo\\file1.min.js',
                 code: '"use strict";var odds=evens.map(function(e){return e+1});',
                 map: {
@@ -251,6 +260,7 @@ describe('concat files', function() {
                 }
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.jsx',
                 path: 'C:\\foo\\file2.min.js',
                 code: 'var file1=React.createClass({displayName:"file1",render:function(){return React.createElement("div",null,"file1 ",this.props.name)}});',
                 map: {
@@ -295,10 +305,12 @@ describe('concat files', function() {
 
             givenFileTypeIs(FileType.CSS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.css',
                 path: 'C:\\foo\\file1.css',
                 code: '.foo { background: red; }'
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.css',
                 path: 'C:\\foo\\file2.css',
                 code: '#bar { font-size: 10px; }'
             });
@@ -331,10 +343,12 @@ describe('concat files', function() {
             givenSourceMapsEnabled();
             givenFileTypeIs(FileType.CSS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.css',
                 path: 'C:\\foo\\file1.css',
                 code: '.foo { background: red; }'
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.css',
                 path: 'C:\\foo\\file2.css',
                 code: '#bar { font-size: 10px; }'
             });
@@ -374,6 +388,7 @@ describe('concat files', function() {
             givenSourceMapsEnabled();
             givenFileTypeIs(FileType.CSS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.less',
                 path: 'C:\\foo\\file1.css',
                 code:
                     '.less1 {\n' +
@@ -387,6 +402,7 @@ describe('concat files', function() {
                 }
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.scss',
                 path: 'C:\\foo\\file2.css',
                 code:
                     '#css-results #scss {\n' +
@@ -439,10 +455,12 @@ describe('concat files', function() {
             givenSourceMapsEnabled();
             givenFileTypeIs(FileType.CSS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.css',
                 path: 'C:\\foo\\file1.css',
                 code: '.foo { background: red; }'
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.scss',
                 path: 'C:\\foo\\file2.css',
                 code:
                     '#css-results #scss {\n' +
@@ -493,6 +511,7 @@ describe('concat files', function() {
             givenSourceMapsEnabled();
             givenFileTypeIs(FileType.CSS);
             givenFile({
+                originalPath: 'C:\\foo\\file1.less',
                 path: 'C:\\foo\\file1.min.css',
                 code: '.less1{color:red}',
                 map: {
@@ -503,6 +522,7 @@ describe('concat files', function() {
                 }
             });
             givenFile({
+                originalPath: 'C:\\foo\\file2.scss',
                 path: 'C:\\foo\\file2.min.css',
                 code: '#css-results #scss{background:#008000}',
                 map: {
