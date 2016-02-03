@@ -1,5 +1,6 @@
 var ArrayCollection = require('./array-collection');
 var StringCollection = require('./string-collection');
+var ObjectCollection = require('./object-collection');
 var LessImportCollection = require('./less-import-collection');
 var BundleFileCollection = require('./bundle-file-collection');
 
@@ -9,6 +10,9 @@ module.exports = {
     },
     createDebug: function(debug) {
         return new ArrayCollection(debug);
+    },
+    createExports: function(exports) {
+        return new ObjectCollection(exports);
     },
     createHash: function(hash) {
         return new StringCollection(hash);
