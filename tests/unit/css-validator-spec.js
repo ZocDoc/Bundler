@@ -6,7 +6,7 @@ describe('CssValidator', function() {
 
     beforeEach(function(){
         css = '';
-    })
+    });
 
     it('Given valid CSS, does not throw error.', function(done) {
 
@@ -94,7 +94,7 @@ describe('CssValidator', function() {
 
     var givenToBigCss = function() {
         for(var i=0; i<25; i++) {
-            givenValidCss();;
+            givenValidCss();
         }
     };
 
@@ -104,22 +104,29 @@ describe('CssValidator', function() {
         }
     };
 
-    var validate = function(cb) {
-        cssValidator.validate(bundle, css, cb);
+    var validate = function() {
+        return cssValidator.validate(bundle, css);
     };
 
     var assertValidateThrowsError = function(done) {
-        validate(function(err) {
-            expect(err).not.toBeUndefined();
-            done();
-        });
+        validate()
+            .then(function() {
+                throw new Error('Should not have succeeded.');
+            })
+            .catch(function(err) {
+                expect(err).not.toBeUndefined();
+                done();
+            });
     };
 
     var assertValidateDoesNotThrowError = function(done) {
-        validate(function(err) {
-            expect(err).toBeUndefined();
-            done();
-        });
+        validate()
+            .then(function() {
+                done();
+            })
+            .catch(function(err) {
+                throw err;
+            });
     };
 
 });
