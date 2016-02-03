@@ -1,14 +1,15 @@
 var _ = require('underscore');
 
-function order(files, deps) {
+function index(files) {
 
-    var fileOrder = {};
+    var indices = {},
+        index = 1;
 
     _.each(files, function(file, filePath) {
-        addFile(filePath, fileOrder, files, deps);
+        indices[filePath] = index++;
     });
 
-    return fileOrder;
+    return indices;
 
 }
 
@@ -28,4 +29,4 @@ function addFile(filePath, fileOrder, files, deps) {
 
 }
 
-module.exports = order;
+module.exports = index;
