@@ -395,47 +395,51 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
     var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
     var whenDone = function () {
-        var allCss = concat.files({
-                files: allCssArr,
-                fileType: file.type.CSS,
-                sourceMap: options.sourcemaps
-            }),
-            allMinCss = concat.files({
-                files: allMinCssArr,
-                fileType: file.type.CSS,
-                sourceMap: options.sourcemaps
-            });
-
-        var afterBundle = function () {
-
-            if(urlVersioning) {
-                allMinCss.code = urlVersioning.VersionUrls(allMinCss.code);
-            }
-
-            cssValidator.validate(cssBundle, allMinCss.code, function(err) {
-                if (err) {
-                    handleError(err);
-                    return;
-                }
-
-                var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
-
-                file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory)
-                    .then(cb)
-                    .catch(handleError);
-
-            });
-        };
-
-        bundleStatsCollector.AddFileHash(bundleName, allMinCss.code);
-
-        file.write(allCss.code, allCss.map, file.type.CSS, bundleName, options.siterootdirectory)
-            .then(afterBundle)
-            .catch(handleError);
 
         allCssArr.forEach(function(cssFile) {
             bundleStatsCollector.AddDebugFile(cssBundle, cssFile.path);
         });
+
+        concat.files({
+                files: allCssArr,
+                fileType: file.type.CSS,
+                sourceMap: options.sourcemaps
+            })
+            .then(function(allCss) {
+
+                return file.write(allCss.code, allCss.map, file.type.CSS, bundleName, options.siterootdirectory);
+
+            })
+            .then(function() {
+
+                return concat.files({
+                    files: allMinCssArr,
+                    fileType: file.type.CSS,
+                    sourceMap: options.sourcemaps
+                });
+
+            })
+            .then(function(allMinCss) {
+
+                if (urlVersioning) {
+                    allMinCss.code = urlVersioning.VersionUrls(allMinCss.code);
+                }
+
+                return cssValidator.validate(cssBundle, allMinCss);
+
+            })
+            .then(function(allMinCss) {
+
+                bundleStatsCollector.AddFileHash(bundleName, allMinCss.code);
+
+                var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
+
+                return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory);
+
+            })
+            .then(cb)
+            .catch(handleError);
+
     };
 
     bundleStatsCollector.ClearStatsForBundle(cssBundle);
