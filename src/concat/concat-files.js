@@ -1,6 +1,5 @@
 var FileType = require('../file').type;
 var Combiner = require('./source-map-combiner');
-var requireify = require('./requireify');
 var Promise = require('bluebird');
 
 /**
