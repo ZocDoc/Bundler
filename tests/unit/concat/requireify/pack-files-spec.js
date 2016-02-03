@@ -5,6 +5,7 @@ describe('pack files', function() {
     var allFiles,
         deps,
         indices,
+        exports,
         sourceMap,
         promise;
 
@@ -13,6 +14,7 @@ describe('pack files', function() {
         allFiles = {};
         deps = {};
         indices = {};
+        exports = {};
 
         sourceMap = false;
 
@@ -34,6 +36,7 @@ describe('pack files', function() {
                 code: 'module.exports = function(x) { return x * 2; };',
                 deps: {}
             });
+            givenExport('foo', 'C:\\foo\\foo.js');
 
         });
 
@@ -48,11 +51,12 @@ describe('pack files', function() {
             it('Combines files.', function(done) {
 
                 assertCodeIs(
-                    'require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+                    '(function(){var ir=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
                     'module.exports = 1;\n' +
                     '},{}],2:[function(require,module,exports){\n' +
                     'module.exports = function(x) { return x * 2; };\n' +
-                    '},{}]},{},[])\n',
+                    '},{}]},{},[])\n' +
+                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
                     done
                 );
 
@@ -82,11 +86,12 @@ describe('pack files', function() {
             it('Combines files.', function(done) {
 
                 assertCodeIs(
-                    'require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+                    '(function(){var ir=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
                     'module.exports = 1;\n' +
                     '},{}],2:[function(require,module,exports){\n' +
                     'module.exports = function(x) { return x * 2; };\n' +
-                    '},{}]},{},[])\n',
+                    '},{}]},{},[])\n' +
+                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
                     done
                 );
 
@@ -152,6 +157,7 @@ describe('pack files', function() {
                     }
                 }
             });
+            givenExport('foo', 'C:\\foo\\foo.js');
 
         });
 
@@ -166,14 +172,15 @@ describe('pack files', function() {
             it('Combines files.', function(done) {
 
                 assertCodeIs(
-                    'require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+                    '(function(){var ir=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
                     '"use strict";\n' +
                     '\n' +
                     'var bar = 2;\n' +
                     'module.exports = bar;\n' +
                     '},{}],2:[function(require,module,exports){\n' +
                     'var bar = require(\'./bar\'); module.exports = function(x) { return x * bar; }\n' +
-                    '},{"./bar":1}]},{},[])\n',
+                    '},{"./bar":1}]},{},[])\n' +
+                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
                     done
                 );
 
@@ -203,7 +210,7 @@ describe('pack files', function() {
             it('Combines files.', function(done) {
 
                 assertCodeIs(
-                    'require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+                    '(function(){var ir=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
                     '"use strict";\n' +
                     '\n' +
                     'var bar = 2;\n' +
@@ -211,7 +218,8 @@ describe('pack files', function() {
                     '\n' +
                     '},{}],2:[function(require,module,exports){\n' +
                     'var bar = require(\'./bar\'); module.exports = function(x) { return x * bar; }\n' +
-                    '},{"./bar":1}]},{},[])\n',
+                    '},{"./bar":1}]},{},[])\n' +
+                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
                     done
                 );
 
@@ -248,6 +256,7 @@ describe('pack files', function() {
             allFiles: allFiles,
             deps: deps,
             indices: indices,
+            exports: exports,
             sourceMap: sourceMap
         });
 
@@ -264,6 +273,12 @@ describe('pack files', function() {
         indices[file.originalPath] = file.index;
 
         deps[file.originalPath] = file.deps;
+
+    };
+
+    var givenExport = function(moduleName, filePath) {
+
+        exports[moduleName] = filePath;
 
     };
 

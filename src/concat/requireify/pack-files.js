@@ -12,6 +12,7 @@ var toStream = require('string-to-stream');
  * @param {object} options.deps
  * @param {object} options.indices
  * @param {boolean} options.sourceMap
+ * @param {object} options.exports
  * @returns {Promise}
  */
 function pack(options) {
@@ -20,12 +21,12 @@ function pack(options) {
 
         var packInput = getPackInput(options);
 
-        toStream(JSON.stringify(packInput)).pipe(browserPack({
-                hasExports: true
-            }))
+        toStream(JSON.stringify(packInput)).pipe(browserPack())
             .pipe(concat(function(stream) {
 
                 var result = sourceMap.extract(stream.toString());
+
+                result.code = exposeExports(result.code, options.exports, options.indices);
 
                 if (options.sourceMap) {
                     resolve(result);
@@ -77,6 +78,28 @@ function getPackInput(options) {
     });
 
     return packInput;
+
+}
+
+function exposeExports(code, exports, indices) {
+
+    var fullCode = [];
+
+    fullCode.push('(function(){var ir=');
+    fullCode.push(code);
+    fullCode.push(';require=function(n){');
+
+    _.each(exports, function(filePath, name) {
+        fullCode.push('if(n===\'');
+        fullCode.push(name);
+        fullCode.push('\')return ir(');
+        fullCode.push(indices[filePath]);
+        fullCode.push(');');
+    });
+
+    fullCode.push('return ir(n)}}).call(this);');
+
+    return fullCode.join('');
 
 }
 
