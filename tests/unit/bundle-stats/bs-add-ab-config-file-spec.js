@@ -18,6 +18,7 @@ describe("BundleStatsCollector - ", function() {
 
       stats = new bundleStats.BundleStatsCollector(null);
       stats.DebugCollection = collection.createDebug();
+      stats.ExportsCollection = collection.createExports();
       stats.LocalizedStrings = collection.createLocalizedStrings();
       stats.AbConfigs = collection.createAbConfigs();
       validateBundle = function(bundleName, abconfigs)
