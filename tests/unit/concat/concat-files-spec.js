@@ -363,7 +363,7 @@ describe('concat files', function() {
                 '},{}],2:[function(require,module,exports){\n' +
                 'var bar=require(\'./file1\');module.exports=function(x){return x*bar}\n' +
                 '},{"./file1":1}]},{},[])\n' +
-                ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
+                ';require=function(n){if(n===\'foo\')return ir(2);return ir(n,true)}}).call(this);',
                 done
             );
 

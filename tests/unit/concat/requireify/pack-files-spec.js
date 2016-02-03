@@ -56,7 +56,7 @@ describe('pack files', function() {
                     '},{}],2:[function(require,module,exports){\n' +
                     'module.exports = function(x) { return x * 2; };\n' +
                     '},{}]},{},[])\n' +
-                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
+                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n,true)}}).call(this);',
                     done
                 );
 
@@ -91,7 +91,7 @@ describe('pack files', function() {
                     '},{}],2:[function(require,module,exports){\n' +
                     'module.exports = function(x) { return x * 2; };\n' +
                     '},{}]},{},[])\n' +
-                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
+                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n,true)}}).call(this);',
                     done
                 );
 
@@ -180,7 +180,7 @@ describe('pack files', function() {
                     '},{}],2:[function(require,module,exports){\n' +
                     'var bar = require(\'./bar\'); module.exports = function(x) { return x * bar; }\n' +
                     '},{"./bar":1}]},{},[])\n' +
-                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
+                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n,true)}}).call(this);',
                     done
                 );
 
@@ -219,7 +219,7 @@ describe('pack files', function() {
                     '},{}],2:[function(require,module,exports){\n' +
                     'var bar = require(\'./bar\'); module.exports = function(x) { return x * bar; }\n' +
                     '},{"./bar":1}]},{},[])\n' +
-                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
+                    ';require=function(n){if(n===\'foo\')return ir(2);return ir(n,true)}}).call(this);',
                     done
                 );
 

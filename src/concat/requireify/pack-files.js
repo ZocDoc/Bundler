@@ -97,7 +97,7 @@ function exposeExports(code, exports, indices) {
         fullCode.push(');');
     });
 
-    fullCode.push('return ir(n)}}).call(this);');
+    fullCode.push('return ir(n,true)}}).call(this);');
 
     return fullCode.join('');
 
