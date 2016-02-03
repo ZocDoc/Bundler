@@ -6,6 +6,7 @@ var packFiles = require('./pack-files');
  * @param {object} options
  * @param {Array<object>} options.files
  * @param {boolean} options.sourceMap
+ * @param {object} options.exports
  * @returns {Promise}
  */
 function requireify(options) {
@@ -19,7 +20,8 @@ function requireify(options) {
         allFiles: allFiles,
         deps: deps,
         indices: indices,
-        sourceMap: options.sourceMap
+        sourceMap: options.sourceMap,
+        exports: options.exports
     });
 
 }
