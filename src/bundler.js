@@ -247,30 +247,36 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
     var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
     var whenDone = function () {
-        var allJs = concat.files({
+
+        concat.files({
                 files: allJsArr,
                 fileType: file.type.JS,
                 sourceMap: options.sourcemaps
-            }),
-            allMinJs = concat.files({
-                files: allMinJsArr,
-                fileType: file.type.JS,
-                sourceMap: options.sourcemaps
-            });
+            })
+            .then(function(allJs) {
 
-        var afterBundle = function () {
-            var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
+                return file.write(allJs.code, allJs.map, file.type.JS, bundleName, options.siterootdirectory);
 
-            bundleStatsCollector.AddFileHash(bundleName, allMinJs.code);
+            })
+            .then(function() {
 
-            file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory)
-                .then(cb)
-                .catch(handleError);
+                return concat.files({
+                    files: allMinJsArr,
+                    fileType: file.type.JS,
+                    sourceMap: options.sourcemaps
+                });
 
-        };
+            })
+            .then(function(allMinJs) {
 
-        file.write(allJs.code, allJs.map, file.type.JS, bundleName, options.siterootdirectory)
-            .then(afterBundle)
+                var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
+
+                bundleStatsCollector.AddFileHash(bundleName, allMinJs.code);
+
+                return file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory);
+
+            })
+            .then(cb)
             .catch(handleError);
 
         if (options.require) {
