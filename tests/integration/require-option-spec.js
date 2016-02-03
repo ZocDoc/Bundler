@@ -13,10 +13,11 @@ test.describeIntegrationTest("Require bundles:", function() {
 
     });
 
-    it('Given require option, requireifies js files in the staging bundle.', function() {
+    it('Given require option, requireifies js and mustache files in the staging bundle.', function() {
 
         test.given.FileToBundle('file1.js', 'var x = 2; module.exports = x;');
         test.given.FileToBundle('file2.js', 'var foo = require(\'./file1\'); module.exports = function(x) { return x * foo; };');
+        test.given.FileToBundle('file3.mustache', '<div> {{a}} </div>');
 
         test.actions.Bundle();
 
@@ -27,15 +28,24 @@ test.describeIntegrationTest("Require bundles:", function() {
             'var x = 2; module.exports = x;\n' +
             '},{}],2:[function(require,module,exports){\n' +
             'var foo = require(\'./file1\'); module.exports = function(x) { return x * foo; };\n' +
-            '},{"./file1":1}]},{},[])\n'
+            '},{"./file1":1}],3:[function(require,module,exports){\n' +
+            'var Hogan = require(\'hogan\');\n' +
+            '\n' +
+            'module.exports = new Hogan.Template({\n' +
+            '    code: function(c,p,i){var _=this;_.b(i=i||"");_.b("<div> ");_.b(_.v(_.f("a",c,p,0)));_.b(" </div>");return _.fl();;},\n' +
+            '    partials: {},\n' +
+            '    subs: {}\n' +
+            '});\n' +
+            '},{"hogan":"hogan"}]},{},[])\n'
         );
 
     });
 
-    it('Given require option, requireifies js files in the bundle.', function() {
+    it('Given require option, requireifies js and mustache files in the bundle.', function() {
 
         test.given.FileToBundle('file1.js', 'var x = 2; module.exports = x;');
         test.given.FileToBundle('file2.js', 'var foo = require(\'./file1\'); module.exports = function(x) { return x * foo; };');
+        test.given.FileToBundle('file3.mustache', '<div> {{a}} </div>');
 
         test.actions.Bundle();
 
@@ -44,7 +54,9 @@ test.describeIntegrationTest("Require bundles:", function() {
             'var x=2;module.exports=x;\n' +
             '},{}],2:[function(require,module,exports){\n' +
             'var foo=require("./file1");module.exports=function(o){return o*foo};\n' +
-            '},{"./file1":1}]},{},[])\n'
+            '},{"./file1":1}],3:[function(require,module,exports){\n' +
+            'var Hogan=require("hogan");module.exports=new Hogan.Template({code:function(a,e,r){var n=this;return n.b(r=r||""),n.b("<div> "),n.b(n.v(n.f("a",a,e,0))),n.b(" </div>"),n.fl()},partials:{},subs:{}});\n' +
+            '},{"hogan":"hogan"}]},{},[])\n'
         );
 
     });

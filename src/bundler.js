@@ -338,6 +338,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                         bundleDir: bundleDir,
                         bundleStatsCollector: bundleStatsCollector,
                         sourceMap: options.sourcemaps,
+                        require: options.require,
                         siteRoot: options.siterootdirectory,
                         useTemplateDirs: options.usetemplatedirs
                     };
