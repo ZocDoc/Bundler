@@ -1,6 +1,6 @@
 var convert = require('convert-source-map');
 
-var sourceMapRegex = /\n\/(\*|\/)# sourceMappingURL=(.*)$/;
+var sourceMapRegex = /\n\/(\*|\/)# sourceMappingURL=(.*)$/mg;
 
 function extract(code) {
 
