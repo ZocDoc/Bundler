@@ -5,7 +5,9 @@ describe('CssValidator', function() {
         css;
 
     beforeEach(function(){
-        css = '';
+        css = {
+            code: ''
+        };
     });
 
     it('Given valid CSS, does not throw error.', function(done) {
@@ -100,7 +102,7 @@ describe('CssValidator', function() {
 
     var addCssRows = function(numRowsToAdd, cssToAdd) {
         for(var i=0; i<numRowsToAdd; i++) {
-            css += cssToAdd;
+            css.code += cssToAdd;
         }
     };
 
@@ -121,7 +123,8 @@ describe('CssValidator', function() {
 
     var assertValidateDoesNotThrowError = function(done) {
         validate()
-            .then(function() {
+            .then(function(result) {
+                expect(result).toEqual(css);
                 done();
             })
             .catch(function(err) {
