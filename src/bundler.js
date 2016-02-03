@@ -252,7 +252,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 files: allJsArr,
                 fileType: file.type.JS,
                 sourceMap: options.sourcemaps,
-                require: options.require
+                require: options.require,
+                bundleName: jsBundle,
+                bundleStatsCollector: bundleStatsCollector
             })
             .then(function(allJs) {
 
@@ -265,7 +267,9 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                     files: allMinJsArr,
                     fileType: file.type.JS,
                     sourceMap: options.sourcemaps,
-                    require: options.require
+                    require: options.require,
+                    bundleName: jsBundle,
+                    bundleStatsCollector: bundleStatsCollector
                 });
 
             })
@@ -307,6 +311,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var isMustache = file.endsWith(".mustache");
         var isJsx = file.endsWith(".jsx");
         var isES6 = file.endsWith(".es6");
+        var isJson = file.endsWith(".json");
         var jsFile = isMustache ? file.replace(".mustache", ".js")
                    : isJsx ? file.replace(".jsx", ".js")
                    : isES6 ? file.replace(".es6", ".js")
@@ -343,7 +348,12 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                         useTemplateDirs: options.usetemplatedirs
                     };
 
-                    if (isMustache) {
+                    if (isJson) {
+
+                        bundleStatsCollector.ParseJsonForStats(jsBundle, filePath, code);
+                        if (! --pending) whenDone();
+
+                    } else if (isMustache) {
 
                         bundleStatsCollector.ParseMustacheForStats(jsBundle, code);
                         compile.mustache(compileOptions).then(next).catch(handleError);
@@ -412,7 +422,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         concat.files({
                 files: allCssArr,
                 fileType: file.type.CSS,
-                sourceMap: options.sourcemaps
+                sourceMap: options.sourcemaps,
+                bundleName: cssBundle,
+                bundleStatsCollector: bundleStatsCollector
             })
             .then(function(allCss) {
 
@@ -424,7 +436,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 return concat.files({
                     files: allMinCssArr,
                     fileType: file.type.CSS,
-                    sourceMap: options.sourcemaps
+                    sourceMap: options.sourcemaps,
+                    bundleName: cssBundle,
+                    bundleStatsCollector: bundleStatsCollector
                 });
 
             })
