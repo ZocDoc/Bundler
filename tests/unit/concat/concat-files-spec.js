@@ -3,10 +3,13 @@ var FileType = require('../../../src/file').type;
 
 describe('concat files', function() {
 
-    var files,
+    var bundleName = 'bundle',
+        files,
         fileType,
         sourceMap,
         require,
+        bundleStatsCollector,
+        exports,
         promise;
 
     beforeEach(function() {
@@ -14,6 +17,12 @@ describe('concat files', function() {
         files = [];
         sourceMap = false;
         require = false;
+        exports = {};
+        bundleStatsCollector = {
+            GetExportsForBundle: function() {
+                return exports;
+            }
+        };
 
     });
 
@@ -338,6 +347,9 @@ describe('concat files', function() {
                 path: 'C:\\foo\\file2.min.js',
                 code: 'var bar=require(\'./file1\');module.exports=function(x){return x*bar}'
             });
+            givenExports({
+                'foo': 'C:\\foo\\file2.js'
+            });
 
             concatFiles();
 
@@ -346,11 +358,12 @@ describe('concat files', function() {
         it('Generates requireified code.', function(done) {
 
             assertConcatenatedCodeIs(
-                'require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+                '(function(){var ir=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
                 '"use strict";var bar=2;module.exports = bar\n' +
                 '},{}],2:[function(require,module,exports){\n' +
                 'var bar=require(\'./file1\');module.exports=function(x){return x*bar}\n' +
-                '},{"./file1":1}]},{},[])\n',
+                '},{"./file1":1}]},{},[])\n' +
+                ';require=function(n){if(n===\'foo\')return ir(2);return ir(n)}}).call(this);',
                 done
             );
 
@@ -667,7 +680,9 @@ describe('concat files', function() {
             files: files,
             fileType: fileType,
             sourceMap: sourceMap,
-            require: require
+            require: require,
+            bundleName: bundleName,
+            bundleStatsCollector: bundleStatsCollector
         });
 
     };
@@ -693,6 +708,12 @@ describe('concat files', function() {
     var givenRequire = function() {
 
         require = true;
+
+    };
+
+    var givenExports = function(exp) {
+
+        exports = exp;
 
     };
 

@@ -5,10 +5,12 @@ var requireify = require('./requireify');
 
 /**
  * @param {object} options
+ * @param {string} options.bundleName
  * @param {Array<object>} options.files
  * @param {string} options.fileType
  * @param {boolean} options.sourceMap
  * @param {boolean} options.require
+ * @param {object} options.bundleStatsCollector
  * @returns {Promise}
  */
 function concat(options) {
@@ -17,7 +19,8 @@ function concat(options) {
 
         return requireify({
             files: options.files,
-            sourceMap: options.sourceMap
+            sourceMap: options.sourceMap,
+            exports: options.bundleStatsCollector.GetExportsForBundle(options.bundleName)
         });
 
     }
