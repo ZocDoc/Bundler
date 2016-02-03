@@ -159,9 +159,17 @@ BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
 };
 
 BundleStatsCollector.prototype.AddExport = function (bundleName, exportName, filePath) {
+
     var exp = {};
     exp[filePath] = exportName;
     this.ExportsCollection.add(bundleName, exp);
+
+};
+
+BundleStatsCollector.prototype.GetExportsForBundle = function(bundleName) {
+
+    return this.ExportsCollection.get(bundleName);
+
 };
 
 BundleStatsCollector.prototype.ParseJsonForStats = function (bundleName, filePath, text) {

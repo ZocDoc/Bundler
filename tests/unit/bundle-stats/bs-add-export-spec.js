@@ -116,7 +116,7 @@ describe("BundleStatsCollector - Adds files to the exports collection: ", functi
 
     var assertBundleExports = function(bundle, expected) {
 
-        expect(stats.ExportsCollection.get(bundle)).toEqual(expected);
+        expect(stats.GetExportsForBundle(bundle)).toEqual(expected);
 
     };
 
