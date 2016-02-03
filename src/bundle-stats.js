@@ -26,6 +26,7 @@ var fs = require("fs"),
     collection = require('./collection'),
     HASH_FILE_NAME = 'bundle-hashes.json',
     DEBUG_FILE_NAME = 'bundle-debug.json',
+    EXPORTS_FILE_NAME = 'bundle-exports.json',
     LOCALIZATION_FILE_NAME = 'bundle-localization-strings.json',
     LESS_IMPORTS_FILE = 'bundle-less-imports.json',
     AB_FILE_NAME = 'bundle-ab-configs.json';
@@ -40,6 +41,7 @@ function BundleStatsCollector(
     };
     this.HashCollection = { };
     this.DebugCollection = { };
+    this.ExportsCollection = { };
     this.LocalizedStrings = { };
     this.AbConfigs = {};
     this.LessImports = {};
@@ -64,6 +66,7 @@ function BundleStatsCollector(
 exports.BundleStatsCollector = BundleStatsCollector;
 exports.HASH_FILE_NAME = HASH_FILE_NAME;
 exports.DEBUG_FILE_NAME = DEBUG_FILE_NAME;
+exports.EXPORTS_FILE_NAME = EXPORTS_FILE_NAME;
 exports.LOCALIZATION_FILE_NAME = LOCALIZATION_FILE_NAME;
 exports.AB_FILE_NAME = AB_FILE_NAME;
 exports.LESS_IMPORTS_FILE = LESS_IMPORTS_FILE;
@@ -103,6 +106,7 @@ BundleStatsCollector.prototype.LoadStatsFromDisk = function (outputdirectory) {
 
     _this.HashCollection = collection.createHash(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,HASH_FILE_NAME)));
     _this.DebugCollection = collection.createDebug(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,DEBUG_FILE_NAME)));
+    _this.ExportsCollection = collection.createExports(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,EXPORTS_FILE_NAME)));
     _this.LocalizedStrings = collection.createLocalizedStrings(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,LOCALIZATION_FILE_NAME)));
     _this.AbConfigs = collection.createAbConfigs(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,AB_FILE_NAME)));
     _this.LessImports = collection.createLessImports(loadFromDisk(_this.FileSystem, outputdirectory, getFileName(this,LESS_IMPORTS_FILE)));
@@ -118,6 +122,7 @@ BundleStatsCollector.prototype.SaveStatsToDisk = function (outputdirectory) {
 
     saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,HASH_FILE_NAME), _this.HashCollection);
     saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,DEBUG_FILE_NAME), _this.DebugCollection);
+    saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,EXPORTS_FILE_NAME), _this.ExportsCollection);
     saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,LOCALIZATION_FILE_NAME), _this.LocalizedStrings);
     saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,AB_FILE_NAME), _this.AbConfigs);
     saveToDisk(_this.FileSystem, outputdirectory, getFileName(this,LESS_IMPORTS_FILE), _this.LessImports);
@@ -153,6 +158,34 @@ BundleStatsCollector.prototype.AddDebugFile = function (bundleName, fileName) {
     this.DebugCollection.add(bundleName, fileName);
 };
 
+BundleStatsCollector.prototype.AddExport = function (bundleName, exportName, filePath) {
+    var exp = {};
+    exp[filePath] = exportName;
+    this.ExportsCollection.add(bundleName, exp);
+};
+
+BundleStatsCollector.prototype.ParseJsonForStats = function (bundleName, filePath, text) {
+
+    var directory = this.Path.dirname(filePath),
+        file = this.Path.basename(filePath),
+        json,
+        resolvedPath;
+
+    if (file !== 'package.json') {
+        return;
+    }
+
+    json = JSON.parse(text);
+
+    if (!json.name || !json.main) {
+        return;
+    }
+
+    resolvedPath = this.Path.normalize(this.Path.join(directory, json.main));
+
+    this.AddExport(bundleName, json.name, resolvedPath);
+
+};
 
 BundleStatsCollector.prototype.ParseMustacheForStats = function (bundleName, text) {
     var _this = this;
