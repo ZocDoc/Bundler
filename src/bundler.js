@@ -178,7 +178,7 @@ function scanDir(allFiles, cb) {
                                                 name
                                             );
                             _.chain(filesInDir).filter(function(a) { return a.endsWith(".mustache")}).each(tmpFiles.addFile, tmpFiles);
-                            _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6"); }).each(tmpFiles.addFile, tmpFiles);
+                            _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6") || a.endsWith(".json"); }).each(tmpFiles.addFile, tmpFiles);
                         }
                     });
 

@@ -65,4 +65,37 @@ test.describeIntegrationTest("Require bundles:", function() {
 
     });
 
+    it('Given require option, picks up package.json file in bundle directory.', function() {
+
+        test.given.SubDirectory('dir');
+        test.given.DirectoryToBundle('dir');
+
+        test.given.FileNotInBundleInSubDirectory('dir', 'file1.js', 'var x = 2; module.exports = x;');
+        test.given.FileNotInBundleInSubDirectory('dir', 'file2.js', 'var foo = require(\'./file1\'); var template = require(\'./file3\'); module.exports = function(x) { return template.render({ a: x * foo }); };');
+        test.given.FileNotInBundleInSubDirectory('dir', 'file3.mustache', '<div> {{a}} </div>');
+        test.given.FileNotInBundleInSubDirectory('dir', 'package.json', '{"name":"foo","main":"file2.js"}');
+
+        test.actions.Bundle();
+
+        test.assert.verifyFileAndContentsAre(
+            test.given.StagingDirectory + '/testjs',
+            'test.js',
+            '(function(){var ir=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+            'var Hogan = require(\'hogan\');\n' +
+            '\n' +
+            'module.exports = new Hogan.Template({\n' +
+            '    code: function(c,p,i){var _=this;_.b(i=i||"");_.b("<div> ");_.b(_.v(_.f("a",c,p,0)));_.b(" </div>");return _.fl();;},\n' +
+            '    partials: {},\n' +
+            '    subs: {}\n' +
+            '});\n' +
+            '},{"hogan":"hogan"}],2:[function(require,module,exports){\n' +
+            'var x = 2; module.exports = x;\n' +
+            '},{}],3:[function(require,module,exports){\n' +
+            'var foo = require(\'./file1\'); var template = require(\'./file3\'); module.exports = function(x) { return template.render({ a: x * foo }); };\n' +
+            '},{"./file1":2,"./file3":1}]},{},[])\n' +
+            ';require=function(n){if(n===\'foo\')return ir(3);return ir(n,true)}}).call(this);'
+        );
+
+    });
+
 });
