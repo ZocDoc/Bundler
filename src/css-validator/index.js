@@ -1,8 +1,8 @@
-var _ = require('underscore');
 var path = require('path');
 var StyleStats = require('stylestats');
 var TooManySelectorsError = require('../errors/too-many-selectors-error');
 var FileTooBigError = require('../errors/file-too-big-error');
+var Promise = require('bluebird');
 
 var MAX_CSS_SELECTORS = 4095;
 var MAX_FILE_SIZE_KB = 278;
@@ -75,34 +75,36 @@ var validateSelectors = function(bundle, result) {
 
 };
 
-var validate = function(bundle, css, cb) {
+var validate = function(bundle, css) {
 
-    if (!shouldValidate(bundle)) {
-        cb();
-        return;
-    }
+    return new Promise(function(resolve, reject) {
 
-    var stats = new StyleStats(css, cssStatsSettings);
-
-    stats.parse(function onCssStatsParsed(err, result) {
-
-        // If it's an error about an empty stylesheet, don't throw.
-        // This occurs on new bundles that have no styles yet.
-        // Otherwise, bubble the error up.
-        if (err && err.message !== 'Rule is not found.') {
-            cb(err);
+        if (!shouldValidate(bundle)) {
+            resolve(css);
             return;
         }
 
-        validateFileSize(bundle, result);
-        validateSelectors(bundle, result);
+        var stats = new StyleStats(css.code, cssStatsSettings);
 
-        cb();
+        stats.parse(function onCssStatsParsed(err, result) {
+
+            // If it's an error about an empty stylesheet, don't throw.
+            // This occurs on new bundles that have no styles yet.
+            // Otherwise, bubble the error up.
+            if (err && err.message !== 'Rule is not found.') {
+                reject(err);
+                return;
+            }
+
+            validateFileSize(bundle, result);
+            validateSelectors(bundle, result);
+
+            resolve(css);
+
+        });
 
     });
 
 };
 
-module.exports = {
-    validate: validate
-};
+exports.validate = validate;

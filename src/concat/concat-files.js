@@ -1,59 +1,65 @@
 var FileType = require('../file').type;
 var Combiner = require('./source-map-combiner');
+var Promise = require('bluebird');
 
 /**
  * @param {object} options
  * @param {Array<object>} options.files
  * @param {string} options.fileType
  * @param {boolean} options.sourceMap
+ * @returns {Promise}
  */
 function concat(options) {
 
-    var code = [],
-        offset,
-        combiner,
-        result;
+    return new Promise(function(resolve) {
 
-    if (options.sourceMap) {
-        offset = 0;
-        combiner = new Combiner();
-    }
-
-    options.files.forEach(function(file) {
-
-        switch (options.fileType) {
-
-            case FileType.CSS:
-                code.push(file.code);
-                code.push('\n');
-                break;
-
-            case FileType.JS:
-                code.push(';');
-                code.push(file.code);
-                code.push('\n');
-                break;
-
-        }
+        var code = [],
+            result,
+            offset,
+            combiner;
 
         if (options.sourceMap) {
-            combiner.addFile(file.path, file.code, file.map, {
-                line: offset
-            });
-            offset += newlinesIn(file.code) + 1;
+            offset = 0;
+            combiner = new Combiner();
         }
 
+        options.files.forEach(function(file) {
+
+            switch (options.fileType) {
+
+                case FileType.CSS:
+                    code.push(file.code);
+                    code.push('\n');
+                    break;
+
+                case FileType.JS:
+                    code.push(';');
+                    code.push(file.code);
+                    code.push('\n');
+                    break;
+
+            }
+
+            if (options.sourceMap) {
+                combiner.addFile(file.path, file.code, file.map, {
+                    line: offset
+                });
+                offset += newlinesIn(file.code) + 1;
+            }
+
+        });
+
+        result = {
+            code: code.join('')
+        };
+
+        if (options.sourceMap) {
+            result.map = combiner.toSourceMap();
+        }
+
+        resolve(result);
+
     });
-
-    result = {
-        code: code.join('')
-    };
-
-    if (options.sourceMap) {
-        result.map = combiner.toSourceMap();
-    }
-
-    return result;
 
 }
 

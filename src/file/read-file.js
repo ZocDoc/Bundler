@@ -11,7 +11,6 @@ function read(filePath) {
             var extractedCode = sourceMap.extract(code);
 
             resolve({
-                path: filePath,
                 code: extractedCode.code,
                 map: extractedCode.map
             });
