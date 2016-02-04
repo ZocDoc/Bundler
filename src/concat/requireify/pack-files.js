@@ -6,6 +6,8 @@ var Promise = require('bluebird');
 var sourceMap = require('../../file/source-map');
 var toStream = require('string-to-stream');
 
+var exportsRegex = /(module.exports\s*=)|(exports\s*=)|(exports\.[A-Za-z0-9_]+\s*=)/mg;
+
 /**
  * @param {object} options
  * @param {object} options.allFiles
@@ -72,12 +74,25 @@ function getPackInput(options) {
             sourceFile: filePath,
             id: options.indices[filePath],
             source: code,
-            deps: fileDeps
+            deps: fileDeps,
+            entry: isEntry(code)
         });
 
     });
 
     return packInput;
+
+}
+
+function isEntry(code) {
+
+    // If a file doesn't export anything, we want to invoke it immediately
+    // since it's likely attaching to global objects
+    if (!code.match(exportsRegex)) {
+        return true;
+    }
+
+    return false;
 
 }
 

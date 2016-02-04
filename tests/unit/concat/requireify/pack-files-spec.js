@@ -250,6 +250,52 @@ describe('pack files', function() {
 
     });
 
+    it('Files with no exports are immediately invoked when loading the bundle.', function(done) {
+
+        givenFile({
+            index: 1,
+            originalPath: 'C:\\foo\\file1.js',
+            code: 'module.exports = 1;',
+            deps: {}
+        });
+        givenFile({
+            index: 2,
+            originalPath: 'C:\\foo\\file2.js',
+            code: 'exports = 2;',
+            deps: {}
+        });
+        givenFile({
+            index: 3,
+            originalPath: 'C:\\foo\\file3.js',
+            code: 'var x = 1;',
+            deps: {}
+        });
+        givenFile({
+            index: 4,
+            originalPath: 'C:\\foo\\file4.js',
+            code: 'exports.foo = 3;',
+            deps: {}
+        });
+        givenExport('foo', 'C:\\foo\\file2.js');
+
+        packFiles();
+
+        assertCodeIs(
+            '(function(){var ir=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+            'module.exports = 1;\n' +
+            '},{}],2:[function(require,module,exports){\n' +
+            'exports = 2;\n' +
+            '},{}],3:[function(require,module,exports){\n' +
+            'var x = 1;\n' +
+            '},{}],4:[function(require,module,exports){\n' +
+            'exports.foo = 3;\n' +
+            '},{}]},{},[3])\n' +
+            ';require=function(n){if(n===\'foo\')return ir(2);return ir(n,true)}}).call(this);',
+            done
+        );
+
+    });
+
     var packFiles = function() {
 
         promise = pack({
