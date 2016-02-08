@@ -3,15 +3,26 @@ var FileType = require('../../../src/file').type;
 
 describe('concat files', function() {
 
-    var files,
+    var bundleName = 'bundle',
+        files,
         fileType,
         sourceMap,
+        require,
+        bundleStatsCollector,
+        exports,
         promise;
 
     beforeEach(function() {
 
         files = [];
         sourceMap = false;
+        require = false;
+        exports = {};
+        bundleStatsCollector = {
+            GetExportsForBundle: function() {
+                return exports;
+            }
+        };
 
     });
 
@@ -318,6 +329,68 @@ describe('concat files', function() {
         });
 
     });
+    
+    describe('Given minified JS files and source maps enabled and require', function() {
+    
+        beforeEach(function() {
+
+            givenRequire();
+            givenSourceMapsEnabled();
+            givenFileTypeIs(FileType.JS);
+            givenFile({
+                originalPath: 'C:\\foo\\file1.es6',
+                path: 'C:\\foo\\file1.min.js',
+                code: '"use strict";var bar=2;module.exports = bar'
+            });
+            givenFile({
+                originalPath: 'C:\\foo\\file2.js',
+                path: 'C:\\foo\\file2.min.js',
+                code: 'var bar=require(\'./file1\');module.exports=function(x){return x*bar}'
+            });
+            givenExports({
+                'foo': 'C:\\foo\\file2.js'
+            });
+
+            concatFiles();
+
+        });
+
+        it('Generates requireified code.', function(done) {
+
+            assertConcatenatedCodeIs(
+                '(function(){var ir=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){\n' +
+                '"use strict";var bar=2;module.exports = bar\n' +
+                '},{}],2:[function(require,module,exports){\n' +
+                'var bar=require(\'./file1\');module.exports=function(x){return x*bar}\n' +
+                '},{"./file1":1}]},{},[])\n' +
+                ';require=function(n){if(n===\'foo\')return ir(2);return ir(n,true)}}).call(this);',
+                done
+            );
+
+        });
+
+        it('Generates source map.', function(done) {
+
+            assertConcatenatedSourceMapIs(
+                {
+                    version: 3,
+                    sources: [ 'node_modules/browser-pack/_prelude.js', 'C:\\foo\\file1.es6', 'C:\\foo\\file2.js' ],
+                    names: [  ],
+                    mappings: 'AAAA;ACAA;;ACAA',
+                    file: 'generated.js',
+                    sourceRoot: '',
+                    sourcesContent: [
+                        '(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module \'"+o+"\'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})',
+                        '"use strict";var bar=2;module.exports = bar',
+                        'var bar=require(\'./file1\');module.exports=function(x){return x*bar}'
+                    ]
+                },
+                done
+            );
+
+        });
+    
+    });
 
     describe('Given CSS files and source maps disabled', function() {
 
@@ -606,7 +679,10 @@ describe('concat files', function() {
         promise = concat.files({
             files: files,
             fileType: fileType,
-            sourceMap: sourceMap
+            sourceMap: sourceMap,
+            require: require,
+            bundleName: bundleName,
+            bundleStatsCollector: bundleStatsCollector
         });
 
     };
@@ -626,6 +702,18 @@ describe('concat files', function() {
     var givenSourceMapsEnabled = function() {
 
         sourceMap = true;
+
+    };
+
+    var givenRequire = function() {
+
+        require = true;
+
+    };
+
+    var givenExports = function(exp) {
+
+        exports = exp;
 
     };
 

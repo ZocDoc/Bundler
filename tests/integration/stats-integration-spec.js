@@ -7,8 +7,9 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
     beforeEach(function () {
         test.given.StagingDirectoryIs('staging-dir');
         test.given.OutputDirectoryIs('output-dir');
-        test.given.FileToBundle('file1.js',    'var file1 = "file1";');
-        test.given.FileToBundle('file2.js',    'var file2 = "file2";');
+        test.given.FileToBundle('file1.js',       'var file1 = "file1";');
+        test.given.FileToBundle('file2.js',       'var file2 = "file2";');
+        test.given.FileToBundle('file3.mustache', '<div> {{a}} </div>');
     });
 
     describe("Hashing: ", function() {
@@ -25,7 +26,7 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
                     var properties = Object.getOwnPropertyNames(json);
                     expect(properties.length).toBe(1);
                     expect(properties[0]).toBe('test.js');
-                    expect(json['test.js']).toBe("858a41fa69ad8e61542c1e506b1b107d");
+                    expect(json['test.js']).toBe("973896bdfac006e8574adfb9210670eb");
                 });
         });
     });
@@ -43,7 +44,8 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
                     validateJsonObject(json, function (b) {
                         expect(b).toEqual([
                             'stats-test-suite\\test\\file1.js',
-                            'stats-test-suite\\test\\file2.js'
+                            'stats-test-suite\\test\\file2.js',
+                            './stats-test-suite/staging-dir/testjs/test-file3.js'
                         ]);
                     });
                 });

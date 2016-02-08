@@ -9,17 +9,20 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
       fileSystem,
       objectOnDisk = { bundle1: "hash1", bundle2: "hash2" },
       debugOnDisk = { bundle1: [ 'file1'], bundle2: [ 'file2'] },
+      exportsOnDisk = { bundle1: { 'C:\\foo.js': 'foo' }, bundle2: { 'C:\\bar.js': 'bar' } },
       localizationOnDisk = { bundle1: [ 'localize1'], bundle2: [ 'localize2'] },
       abConfigOnDisk = { bundle1: ['config1'], bundle2: ['config2'] },
       importsOnDisk = { file1: ['import1'], file2: ['import2'] },
       outputdirectory = 'folder/folder/2',
       expectedContents = JSON.stringify(objectOnDisk, null, 4),
       expectedDebugContents = JSON.stringify(debugOnDisk, null, 4),
+      expectedExportsContents = JSON.stringify(exportsOnDisk, null, 4),
       expectedLocalizationContents = JSON.stringify(localizationOnDisk, null, 4),
       expectedAbConfigContents = JSON.stringify(abConfigOnDisk, null, 4),
       expectedLessImportContents = JSON.stringify(importsOnDisk, null, 4),
       expectedHashFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME,
       expectedDebugFile = outputdirectory + '/' + bundleStats.DEBUG_FILE_NAME,
+      expectedExportsFile = outputdirectory + '/' + bundleStats.EXPORTS_FILE_NAME,
       expectedLocalizationFile = outputdirectory + '/' + bundleStats.LOCALIZATION_FILE_NAME,
       expectedAbConfigFile = outputdirectory + '/' + bundleStats.AB_FILE_NAME,
       expectedLessImportFile = outputdirectory + '/' + bundleStats.LESS_IMPORTS_FILE;
@@ -34,6 +37,7 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
           var hash = new bundleStats.BundleStatsCollector(fileSystem);
           hash.HashCollection = collection.createHash(objectOnDisk);
           hash.DebugCollection = collection.createDebug(debugOnDisk);
+          hash.ExportsCollection = collection.createExports(exportsOnDisk);
           hash.LocalizedStrings = collection.createLocalizedStrings(localizationOnDisk);
           hash.AbConfigs = collection.createAbConfigs(abConfigOnDisk);
           hash.LessImports = collection.createLessImports(importsOnDisk);
@@ -51,6 +55,12 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
         var stats = getStatsCollector();
         stats.SaveStatsToDisk(outputdirectory);
         expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedDebugFile, expectedDebugContents)
+    });
+
+    it("Saves the exports file to the correct location.", function() {
+        var stats = getStatsCollector();
+        stats.SaveStatsToDisk(outputdirectory);
+        expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedExportsFile, expectedExportsContents);
     });
 
     it("Saves the localization file to the correct location.", function() {
@@ -104,6 +114,7 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
 
             expectedHashFile = outputdirectory + '/' + prefix + bundleStats.HASH_FILE_NAME;
             expectedDebugFile = outputdirectory + '/' + prefix + bundleStats.DEBUG_FILE_NAME;
+            expectedExportsFile = outputdirectory + '/' + prefix + bundleStats.EXPORTS_FILE_NAME;
             expectedAbConfigFile = outputdirectory + '/' + prefix + bundleStats.AB_FILE_NAME;
             expectedLocalizationFile = outputdirectory + '/' + prefix + bundleStats.LOCALIZATION_FILE_NAME;
             expectedLessImportFile = outputdirectory + '/' + prefix + bundleStats.LESS_IMPORTS_FILE;
@@ -117,6 +128,11 @@ describe("BundleStatsCollector - Save Hashes To Disk: ", function() {
         it("Saves the debug file to the correct location.", function() {
             stats.SaveStatsToDisk(outputdirectory);
             expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedDebugFile, expectedDebugContents)
+        });
+
+        it("Saves the exports file to the correct location.", function() {
+            stats.SaveStatsToDisk(outputdirectory);
+            expect(fileSystem.writeFileSync).toHaveBeenCalledWith(expectedExportsFile, expectedExportsContents);
         });
 
         it("Saves the localization file to the correct location.", function() {

@@ -121,6 +121,17 @@ test.describeIntegrationTest("Js Bundling:", function() {
 
     });
 
+    it("Given json files, then they are not concatenated into the output bundle.", function() {
+
+        test.given.FileToBundle('file1.json', '{"foo":true}');
+        test.given.FileToBundle('file2.json', '{"bar":1}');
+
+        test.actions.Bundle();
+
+        test.assert.verifyBundleIs('');
+
+    });
+
     it("Given invalid mustache, an error is thrown.", function() {
 
         test.given.FileToBundle('file1.mustache',    '<div> {{#i}} </div>');

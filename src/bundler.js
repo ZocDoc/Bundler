@@ -178,7 +178,7 @@ function scanDir(allFiles, cb) {
                                                 name
                                             );
                             _.chain(filesInDir).filter(function(a) { return a.endsWith(".mustache")}).each(tmpFiles.addFile, tmpFiles);
-                            _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6"); }).each(tmpFiles.addFile, tmpFiles);
+                            _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6") || a.endsWith(".json"); }).each(tmpFiles.addFile, tmpFiles);
                         }
                     });
 
@@ -251,7 +251,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         concat.files({
                 files: allJsArr,
                 fileType: file.type.JS,
-                sourceMap: options.sourcemaps
+                sourceMap: options.sourcemaps,
+                require: options.require,
+                bundleName: jsBundle,
+                bundleStatsCollector: bundleStatsCollector
             })
             .then(function(allJs) {
 
@@ -263,7 +266,10 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 return concat.files({
                     files: allMinJsArr,
                     fileType: file.type.JS,
-                    sourceMap: options.sourcemaps
+                    sourceMap: options.sourcemaps,
+                    require: options.require,
+                    bundleName: jsBundle,
+                    bundleStatsCollector: bundleStatsCollector
                 });
 
             })
@@ -305,6 +311,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
         var isMustache = file.endsWith(".mustache");
         var isJsx = file.endsWith(".jsx");
         var isES6 = file.endsWith(".es6");
+        var isJson = file.endsWith(".json");
         var jsFile = isMustache ? file.replace(".mustache", ".js")
                    : isJsx ? file.replace(".jsx", ".js")
                    : isES6 ? file.replace(".es6", ".js")
@@ -336,11 +343,17 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                         bundleDir: bundleDir,
                         bundleStatsCollector: bundleStatsCollector,
                         sourceMap: options.sourcemaps,
+                        require: options.require,
                         siteRoot: options.siterootdirectory,
                         useTemplateDirs: options.usetemplatedirs
                     };
 
-                    if (isMustache) {
+                    if (isJson) {
+
+                        bundleStatsCollector.ParseJsonForStats(jsBundle, filePath, code);
+                        if (! --pending) whenDone();
+
+                    } else if (isMustache) {
 
                         bundleStatsCollector.ParseMustacheForStats(jsBundle, code);
                         compile.mustache(compileOptions).then(next).catch(handleError);
@@ -409,7 +422,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         concat.files({
                 files: allCssArr,
                 fileType: file.type.CSS,
-                sourceMap: options.sourcemaps
+                sourceMap: options.sourcemaps,
+                bundleName: cssBundle,
+                bundleStatsCollector: bundleStatsCollector
             })
             .then(function(allCss) {
 
@@ -421,7 +436,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 return concat.files({
                     files: allMinCssArr,
                     fileType: file.type.CSS,
-                    sourceMap: options.sourcemaps
+                    sourceMap: options.sourcemaps,
+                    bundleName: cssBundle,
+                    bundleStatsCollector: bundleStatsCollector
                 });
 
             })

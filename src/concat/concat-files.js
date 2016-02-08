@@ -1,15 +1,29 @@
 var FileType = require('../file').type;
 var Combiner = require('./source-map-combiner');
 var Promise = require('bluebird');
+var requireify = require('./requireify');
 
 /**
  * @param {object} options
+ * @param {string} options.bundleName
  * @param {Array<object>} options.files
  * @param {string} options.fileType
  * @param {boolean} options.sourceMap
+ * @param {boolean} options.require
+ * @param {object} options.bundleStatsCollector
  * @returns {Promise}
  */
 function concat(options) {
+
+    if (options.require && options.fileType === FileType.JS) {
+
+        return requireify({
+            files: options.files,
+            sourceMap: options.sourceMap,
+            exports: options.bundleStatsCollector.GetExportsForBundle(options.bundleName)
+        });
+
+    }
 
     return new Promise(function(resolve) {
 

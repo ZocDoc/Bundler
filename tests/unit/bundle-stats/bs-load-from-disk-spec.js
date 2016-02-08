@@ -10,6 +10,7 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
       outputdirectory = 'folder/folder/2',
       expectedHashFile = outputdirectory + '/' + bundleStats.HASH_FILE_NAME,
       expectedDebugFile = outputdirectory + '/' + bundleStats.DEBUG_FILE_NAME,
+      expectedExportsFile = outputdirectory + '/' + bundleStats.EXPORTS_FILE_NAME,
       expectedAbConfigFile = outputdirectory + '/' + bundleStats.AB_FILE_NAME,
       expectedLocalizationFile = outputdirectory + '/' + bundleStats.LOCALIZATION_FILE_NAME,
       expectedLessImportFile = outputdirectory + '/' + bundleStats.LESS_IMPORTS_FILE;
@@ -38,6 +39,12 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
         var stats = getStatsCollector();
         stats.LoadStatsFromDisk(outputdirectory);
         expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedDebugFile, 'utf8')
+    });
+
+    it("Reads the exports file from the correct location.", function() {
+        var stats = getStatsCollector();
+        stats.LoadStatsFromDisk(outputdirectory);
+        expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedExportsFile, 'utf8')
     });
 
     it("Reads the localization file from the correct location.", function() {
@@ -96,6 +103,7 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
 
           expectedHashFile = outputdirectory + '/' + prefix + bundleStats.HASH_FILE_NAME;
           expectedDebugFile = outputdirectory + '/' + prefix + bundleStats.DEBUG_FILE_NAME;
+          expectedExportsFile = outputdirectory + '/' + prefix + bundleStats.EXPORTS_FILE_NAME;
           expectedAbConfigFile = outputdirectory + '/' + prefix + bundleStats.AB_FILE_NAME;
           expectedLocalizationFile = outputdirectory + '/' + prefix + bundleStats.LOCALIZATION_FILE_NAME;
           expectedLessImportFile = outputdirectory + '/' + prefix + bundleStats.LESS_IMPORTS_FILE;
@@ -109,6 +117,11 @@ describe("BundleStatsCollector - Load Hashes From Disk: ", function() {
       it("Reads the debug file from the correct location.", function() {
           stats.LoadStatsFromDisk(outputdirectory);
           expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedDebugFile, 'utf8')
+      });
+
+      it("Reads the exports file from the correct location.", function() {
+          stats.LoadStatsFromDisk(outputdirectory);
+          expect(fileSystem.readFileSync).toHaveBeenCalledWith(expectedExportsFile, 'utf8')
       });
 
       it("Reads the localization file from the correct location.", function() {

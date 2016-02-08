@@ -85,7 +85,7 @@ function processAsync(fileType, options, processFn) {
                                 resolve({
                                     code: written.code,
                                     map: written.map,
-                                    path: options.inputPath,
+                                    path: options.outputPath,
                                     originalPath: options.originalPath
                                 });
                             })
@@ -104,7 +104,7 @@ function processAsync(fileType, options, processFn) {
                             resolve({
                                 code: read.code,
                                 map: read.map,
-                                path: options.inputPath,
+                                path: options.outputPath,
                                 originalPath: options.originalPath
                             });
                         })
