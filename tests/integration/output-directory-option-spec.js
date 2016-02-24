@@ -86,9 +86,11 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
             test.assert.verifyFileAndContentsAre(
                 testDirectory + '/output-dir',
                 'file2.js',
+                '"use strict";\n' +
+                '\n' +
                 'var file2 = React.createClass({\n' +
                 '  displayName: "file2",\n' +
-                '  render: function () {\n' +
+                '  render: function render() {\n' +
                 '    return React.createElement(\n' +
                 '      "div",\n' +
                 '      null,\n' +
