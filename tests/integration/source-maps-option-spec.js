@@ -34,9 +34,11 @@ test.describeIntegrationTest("Generating source maps:", function() {
             test.assert.verifyFileAndContentsAre(
                 test.given.StagingDirectory + '/testjs',
                 'test-file1.js',
+                '"use strict";\n' +
+                '\n' +
                 'var file1 = React.createClass({\n' +
                 '  displayName: "file1",\n' +
-                '  render: function () {\n' +
+                '  render: function render() {\n' +
                 '    return React.createElement(\n' +
                 '      "div",\n' +
                 '      null,\n' +
@@ -44,7 +46,7 @@ test.describeIntegrationTest("Generating source maps:", function() {
                 '      this.props.name\n' +
                 '    );\n' +
                 '  } });\n' +
-                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxJQUFJLEtBQUssR0FBRyxLQUFLLENBQUMsV0FBVyxDQUFDOztBQUFJLFFBQU0sRUFBRSxZQUFXO0FBQUksV0FBTzs7OztNQUFZLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSTtLQUFPLENBQUM7R0FBRyxFQUFDLENBQUMsQ0FBQyJ9'
+                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksS0FBSyxHQUFHLEtBQUssQ0FBQyxXQUFXLENBQUM7O0FBQUksUUFBTSxFQUFFLGtCQUFXO0FBQUksV0FBTzs7OztNQUFZLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSTtLQUFPLENBQUM7R0FBRyxFQUFDLENBQUMsQ0FBQyJ9'
             );
 
         });
