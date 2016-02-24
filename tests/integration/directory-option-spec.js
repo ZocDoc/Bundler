@@ -4,6 +4,12 @@ var test = new integrationTest.Test(integrationTest.TestType.Undecided, testDire
 
 test.describeIntegrationTest("Directory Option:", function() {
 
+    beforeEach(function() {
+
+        test.given.OutputDirectoryIs('output-dir');
+
+    });
+
     describe("Js files", function () {
 
         beforeEach(function () {

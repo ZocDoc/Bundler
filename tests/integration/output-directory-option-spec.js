@@ -44,7 +44,7 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
             test.assert.verifyFileAndContentsAre(
                 testDirectory + '/output-dir',
                 'file2.min.js',
-                '(function(){var e,i,t="undefined"!=typeof module&&module.exports;e=t?require("hogan"):this.Hogan,i=new e.Template({code:function(e,i,t){var o=this;return o.b(t=t||""),o.b("<div> "),o.b(o.v(o.f("c",e,i,0))),o.b(" </div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file2=i)}).call(this);');
+                '(function(){this.JST=this.JST||{},this.JST.file2=new this.Hogan.Template({code:function(i,t,s){var n=this;return n.b(s=s||""),n.b("<div> "),n.b(n.v(n.f("c",i,t,0))),n.b(" </div>"),n.fl()},partials:{},subs:{}})}).call(this);');
         });
 
         it("If an output directory is specified, then any computed mustache files are put in it.", function () {
@@ -59,28 +59,13 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
                 'file2.js',
                 '(function() {\n' +
                 '\n' +
-                '    var useCommonJs = typeof module !== \'undefined\' && module.exports,\n' +
-                '        Hogan,\n' +
-                '        template;\n' +
+                '    this.JST = this.JST || {};\n' +
                 '\n' +
-                '    if (useCommonJs) {\n' +
-                '        Hogan = require(\'hogan\');\n' +
-                '    } else {\n' +
-                '        Hogan = this.Hogan;\n' +
-                '    }\n' +
-                '\n' +
-                '    template = new Hogan.Template({\n' +
+                '    this.JST[\'file2\'] = new this.Hogan.Template({\n' +
                 '        code: function(c,p,i){var _=this;_.b(i=i||"");_.b("<div> ");_.b(_.v(_.f("c",c,p,0)));_.b(" </div>");return _.fl();;},\n' +
                 '        partials: {},\n' +
                 '        subs: {}\n' +
                 '    });\n' +
-                '\n' +
-                '    if (useCommonJs) {\n' +
-                '        module.exports = template;\n' +
-                '    } else {\n' +
-                '        this.JST = this.JST || {};\n' +
-                '        JST[\'file2\'] = template;\n' +
-                '    }\n' +
                 '\n' +
                 '}).call(this);'
             );

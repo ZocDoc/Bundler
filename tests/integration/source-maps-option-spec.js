@@ -9,8 +9,8 @@ test.describeIntegrationTest("Generating source maps:", function() {
         test.given.StagingDirectoryIs('staging-dir');
         test.given.OutputDirectoryIs('output-dir');
 
-        test.given.BundleOption('-sourcemaps');
-        test.given.BundleOption('-siterootdirectory:' + test.given.BaseTestDirectory);
+        test.given.CommandLineOption('-sourcemaps');
+        test.given.CommandLineOption('-siterootdirectory:' + test.given.BaseTestDirectory);
 
     });
 
@@ -71,6 +71,67 @@ test.describeIntegrationTest("Generating source maps:", function() {
 
         });
 
+        it('Given source maps option and JS files, then combined unminified bundle JS is created with inline source map.', function() {
+
+            test.given.FileToBundle(
+                'file1.jsx',
+                'var file1 = React.createClass({'
+                + '   render: function() {'
+                + '   return <div>file1 {this.props.name}</div>;'
+                + '  }'
+                + '});'
+            );
+            test.given.FileToBundle(
+                'file2.js',
+                'var x = 1;'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testjs',
+                'test.js',
+                ';var file1 = React.createClass({\n' +
+                '  displayName: "file1",\n' +
+                '  render: function () {\n' +
+                '    return React.createElement(\n' +
+                '      "div",\n' +
+                '      null,\n' +
+                '      "file1 ",\n' +
+                '      this.props.name\n' +
+                '    );\n' +
+                '  } });\n' +
+                ';var x = 1;\n\n' +
+                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCIsIi90ZXN0L2ZpbGUyLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLElBQUksS0FBSyxHQUFHLEtBQUssQ0FBQyxXQUFXLENBQUM7O0FBQUksUUFBTSxFQUFFLFlBQVc7QUFBSSxXQUFPOzs7O01BQVksSUFBSSxDQUFDLEtBQUssQ0FBQyxJQUFJO0tBQU8sQ0FBQztHQUFHLEVBQUMsQ0FBQyxDQUFDO0FDQXpHIn0='
+            )
+
+        });
+
+        it('Given source maps option and JS files, then combined minified bundle JS is created with inline source map.', function() {
+
+            test.given.FileToBundle(
+                'file1.jsx',
+                'var file1 = React.createClass({'
+                + '   render: function() {'
+                + '   return <div>file1 {this.props.name}</div>;'
+                + '  }'
+                + '});'
+            );
+            test.given.FileToBundle(
+                'file2.js',
+                'var x = 1;'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyBundleIs(
+                ';var file1=React.createClass({displayName:"file1",render:function(){return React.createElement("div",null,"file1 ",this.props.name)}});\n' +
+                ';var x=1;\n\n' +
+                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCIsIi90ZXN0L2ZpbGUyLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLEdBQUksQ0FBQSxLQUFLLENBQUcsRUFBQSxJQUFNLENBQUQsQ0FBQyxXQUFXLENBQUMsbUJBQUksT0FBUSxXQUFlLE1BQU8sT0FBQSxrQ0FBWSxLQUFLLE1BQU07QUNBdkYsR0FBSSxHQUFJO0FEQTBCLFFBQU0sRUFBRSxZQUFXO0FBQUksV0FBTzs7OztNQUFZLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSTtLQUFPLENBQUM7R0FBRyxFQUFDLENBQUMsQ0FBQyJ9'
+            )
+
+        });
+
     });
 
     describe("Css Files", function () {
@@ -113,6 +174,52 @@ test.describeIntegrationTest("Generating source maps:", function() {
                 '\n' +
                 '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi8uLi8uLi90ZXN0L3Njc3MxLnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsWUFBWSxDQUFHLEtBQUssQ0FBQztFQUFFLFVBQVUsRUFEekIsT0FBTyxHQUM4QiJ9 */'
             );
+
+        });
+
+        it('Given source maps option and CSS files, then combined unminified bundle CSS is created with inline source map.', function() {
+
+            test.given.FileToBundle(
+                'file1.less',
+                '@color: red;\n.less1 { color: @color; }'
+            );
+            test.given.FileToBundle(
+                'file2.css',
+                '.foo { background: green; }'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testcss',
+                'test.css',
+                '.less1 {\n' +
+                '  color: red;\n' +
+                '}\n\n' +
+                '.foo { background: green; }\n\n' +
+                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmxlc3MiLCIvdGVzdC9maWxlMi5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0E7RUFBUyxVQUFBOzs7QUNEVCJ9 */'
+            )
+
+        });
+
+        it('Given source maps option and CSS files, then combined minified bundle CSS is created with inline source map.', function() {
+
+            test.given.FileToBundle(
+                'file1.less',
+                '@color: red;\n.less1 { color: @color; }'
+            );
+            test.given.FileToBundle(
+                'file2.css',
+                '.foo { background: green; }'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyBundleIs(
+                '.less1{color:red}\n' +
+                '.foo{background:green}\n\n' +
+                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmxlc3MiLCIvdGVzdC9maWxlMi5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsT0FBUyxNQUFBO0FDRFQsS0FBTyxXQUFZIn0= */'
+            )
 
         });
 

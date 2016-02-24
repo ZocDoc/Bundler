@@ -4,7 +4,8 @@ function Givens(
 )
 {
     this.Utility = testUtility;
-    this.BundleOptions = "";
+    this.CommandLineOptions = "";
+    this.BundleOptions = [];
     this.BundleContents = "";
     this.TestDirectory = "";
     this.BaseTestDirectory = "";
@@ -23,7 +24,8 @@ Givens.prototype.CleanTestSpace = function(testDirBase) {
     this.Utility.CreateDirectory(this.BaseTestDirectory);
     this.Utility.CreateDirectory(this.TestDirectory);
     this.Utility.CreateDirectory(this.ImportDirectory);
-    this.BundleOptions = "";
+    this.CommandLineOptions = "";
+    this.BundleOptions = [];
     this.BundleContents = "";
     this.StagingDirectory = "";
     this.OutputDirectory = "./" + this.TestDirectory;
@@ -57,7 +59,11 @@ Givens.prototype.SubDirectory = function (directory) {
 };
 
 Givens.prototype.BundleOption = function (option) {
-    this.BundleOptions += " " + option;
+    this.BundleOptions.push(option);
+};
+
+Givens.prototype.CommandLineOption = function (option) {
+    this.CommandLineOptions += " " + option;
 };
 
 Givens.prototype.OutputDirectoryIs = function (directory) {
@@ -65,7 +71,7 @@ Givens.prototype.OutputDirectoryIs = function (directory) {
     this.Utility.CreateDirectory(rootedDir);
     this.OutputDirectory = "./" + rootedDir;
 
-    this.BundleOption("-outputdirectory:" + this.OutputDirectory);
+    this.CommandLineOption("-outputdirectory:" + this.OutputDirectory);
 };
 
 Givens.prototype.StagingDirectoryIs = function (directory) {
@@ -73,7 +79,7 @@ Givens.prototype.StagingDirectoryIs = function (directory) {
     this.Utility.CreateDirectory(rootedDir);
     this.StagingDirectory = "./" + rootedDir;
 
-    this.BundleOption("-stagingdirectory:" + this.StagingDirectory);
+    this.CommandLineOption("-stagingdirectory:" + this.StagingDirectory);
 };
 
 Givens.prototype.ImportFile = function(fileName, contents) {
@@ -96,3 +102,11 @@ Givens.prototype.UpdatedFile = function(fileName, contents) {
 Givens.prototype.UpdatedImport = function(fileName, contents) {
     updateFile(this, this.ImportDirectory, fileName, contents);
 };
+
+Givens.prototype.GetBundleContents = function() {
+    if (this.BundleOptions.length > 0) {
+        return '#options ' + this.BundleOptions.join(', ') + '\n\n' + this.BundleContents;
+    } else {
+        return this.BundleContents;
+    }
+}

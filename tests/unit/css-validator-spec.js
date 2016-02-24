@@ -5,8 +5,10 @@ describe('CssValidator', function() {
         css;
 
     beforeEach(function(){
-        css = '';
-    })
+        css = {
+            code: ''
+        };
+    });
 
     it('Given valid CSS, does not throw error.', function(done) {
 
@@ -94,32 +96,40 @@ describe('CssValidator', function() {
 
     var givenToBigCss = function() {
         for(var i=0; i<25; i++) {
-            givenValidCss();;
+            givenValidCss();
         }
     };
 
     var addCssRows = function(numRowsToAdd, cssToAdd) {
         for(var i=0; i<numRowsToAdd; i++) {
-            css += cssToAdd;
+            css.code += cssToAdd;
         }
     };
 
-    var validate = function(cb) {
-        cssValidator.validate(bundle, css, cb);
+    var validate = function() {
+        return cssValidator.validate(bundle, css);
     };
 
     var assertValidateThrowsError = function(done) {
-        validate(function(err) {
-            expect(err).not.toBeUndefined();
-            done();
-        });
+        validate()
+            .then(function() {
+                throw new Error('Should not have succeeded.');
+            })
+            .catch(function(err) {
+                expect(err).not.toBeUndefined();
+                done();
+            });
     };
 
     var assertValidateDoesNotThrowError = function(done) {
-        validate(function(err) {
-            expect(err).toBeUndefined();
-            done();
-        });
+        validate()
+            .then(function(result) {
+                expect(result).toEqual(css);
+                done();
+            })
+            .catch(function(err) {
+                throw err;
+            });
     };
 
 });

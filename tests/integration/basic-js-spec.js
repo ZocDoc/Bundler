@@ -34,8 +34,8 @@ test.describeIntegrationTest("Js Bundling:", function() {
         test.actions.Bundle();
 
         test.assert.verifyBundleIs(
-            ';(function(){var e,i,t="undefined"!=typeof module&&module.exports;e=t?require("hogan"):this.Hogan,i=new e.Template({code:function(e,i,t){var o=this;return o.b(t=t||""),o.b("<div> "),o.b(o.v(o.f("a",e,i,0))),o.b(" </div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file1=i)}).call(this);\n' +
-            ';(function(){var e,i,t="undefined"!=typeof module&&module.exports;e=t?require("hogan"):this.Hogan,i=new e.Template({code:function(e,i,t){var o=this;return o.b(t=t||""),o.b("<div> "),o.b(o.v(o.f("b",e,i,0))),o.b(" </div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file2=i)}).call(this);\n'
+            ';(function(){this.JST=this.JST||{},this.JST.file1=new this.Hogan.Template({code:function(i,t,s){var a=this;return a.b(s=s||""),a.b("<div> "),a.b(a.v(a.f("a",i,t,0))),a.b(" </div>"),a.fl()},partials:{},subs:{}})}).call(this);\n' +
+            ';(function(){this.JST=this.JST||{},this.JST.file2=new this.Hogan.Template({code:function(i,t,s){var n=this;return n.b(s=s||""),n.b("<div> "),n.b(n.v(n.f("b",i,t,0))),n.b(" </div>"),n.fl()},partials:{},subs:{}})}).call(this);\n'
         );
 
     });
@@ -121,6 +121,17 @@ test.describeIntegrationTest("Js Bundling:", function() {
 
     });
 
+    it("Given json files, then they are not concatenated into the output bundle.", function() {
+
+        test.given.FileToBundle('file1.json', '{"foo":true}');
+        test.given.FileToBundle('file2.json', '{"bar":1}');
+
+        test.actions.Bundle();
+
+        test.assert.verifyBundleIs('');
+
+    });
+
     it("Given invalid mustache, an error is thrown.", function() {
 
         test.given.FileToBundle('file1.mustache',    '<div> {{#i}} </div>');
@@ -145,7 +156,7 @@ test.describeIntegrationTest("Js Bundling:", function() {
         test.actions.Bundle();
 
         test.assert.verifyBundleIs(
-            ';(function(){var e,i,t="undefined"!=typeof module&&module.exports;e=t?require("hogan"):this.Hogan,i=new e.Template({code:function(e,i,t){var o=this;return o.b(t=t||""),o.b("<div> "),o.b(o.v(o.f("a",e,i,0))),o.b(" </div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file1=i)}).call(this);\n' +
+            ';(function(){this.JST=this.JST||{},this.JST.file1=new this.Hogan.Template({code:function(i,t,s){var a=this;return a.b(s=s||""),a.b("<div> "),a.b(a.v(a.f("a",i,t,0))),a.b(" </div>"),a.fl()},partials:{},subs:{}})}).call(this);\n' +
             ';var file2="file2";\n' +
             ';"use strict";var file3=React.createClass({displayName:"file3",render:function(){return React.createElement("div",null,"file3 ",this.props.name)}});\n'
         );

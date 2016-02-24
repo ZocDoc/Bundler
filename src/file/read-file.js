@@ -8,7 +8,12 @@ function read(filePath) {
 
         readTextFile(filePath, function(code) {
 
-            resolve(sourceMap.extract(code));
+            var extractedCode = sourceMap.extract(code);
+
+            resolve({
+                code: extractedCode.code,
+                map: extractedCode.map
+            });
 
         });
 

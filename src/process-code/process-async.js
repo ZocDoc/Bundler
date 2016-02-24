@@ -7,6 +7,7 @@ var Step = require('step');
  * @param {file.type} fileType
  * @param {object} options
  * @param {string} options.code
+ * @param {string} options.originalPath
  * @param {string} options.inputPath
  * @param {string} options.outputPath
  * @param {string} options.bundleDir
@@ -80,7 +81,14 @@ function processAsync(fileType, options, processFn) {
                     var onAfterProcessed = function(result) {
 
                         file.write(result.code, result.map, fileType, options.outputPath, options.siteRoot)
-                            .then(resolve)
+                            .then(function(written) {
+                                resolve({
+                                    code: written.code,
+                                    map: written.map,
+                                    path: options.outputPath,
+                                    originalPath: options.originalPath
+                                });
+                            })
                             .catch(reject);
 
                     };
@@ -92,7 +100,14 @@ function processAsync(fileType, options, processFn) {
                 } else {
 
                     file.read(options.outputPath)
-                        .then(resolve)
+                        .then(function(read) {
+                            resolve({
+                                code: read.code,
+                                map: read.map,
+                                path: options.outputPath,
+                                originalPath: options.originalPath
+                            });
+                        })
                         .catch(reject);
 
                 }

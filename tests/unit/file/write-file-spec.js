@@ -4,7 +4,8 @@ var file = require('../../../src/file');
 
 describe('write file', function() {
 
-    var sourceMapComment,
+    var outputPath = 'foo-output.js',
+        sourceMapComment,
         writtenText,
         cleanedMap,
         writeFileError;
@@ -185,7 +186,7 @@ describe('write file', function() {
 
     var writeFile = function(code, map) {
         
-        return write(code, map, file.type.JS, 'foo-output.js', '');
+        return write(code, map, file.type.JS, outputPath, '');
 
     };
 
