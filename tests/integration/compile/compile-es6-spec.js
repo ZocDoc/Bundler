@@ -188,6 +188,90 @@ describe('compile ES6', function() {
 
     });
 
+    it('Given ES6 code with a class, compiles to ES5.', function(done) {
+
+        compile(
+            'class Foo {\n' +
+            '    constructor() {\n' +
+            '        this.x = 2;\n' +
+            '    }\n' +
+            '    render() {\n' +
+            '        return this.x;\n' +
+            '    }\n' +
+            '}'
+        )
+            .then(assertResultIs(
+                '"use strict";\n' +
+                '\n' +
+                'function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }\n' +
+                '\n' +
+                'var Foo = function () {\n' +
+                '    function Foo() {\n' +
+                '        _classCallCheck(this, Foo);\n' +
+                '\n' +
+                '        this.x = 2;\n' +
+                '    }\n' +
+                '\n' +
+                '    Foo.prototype.render = function render() {\n' +
+                '        return this.x;\n' +
+                '    };\n' +
+                '\n' +
+                '    return Foo;\n' +
+                '}();',
+                done
+            ))
+            .catch(throwError);
+
+    });
+
+    it('Given ES6 code with class extension, compiles to ES5.', function(done) {
+
+        compile(
+            'class Foo extends Bar {\n' +
+            '    constructor() {\n' +
+            '        super();\n' +
+            '        this.x = 2;\n' +
+            '    }\n' +
+            '    render() {\n' +
+            '        return this.x;\n' +
+            '    }\n' +
+            '}'
+        )
+            .then(assertResultIs(
+                '"use strict";\n' +
+                '\n' +
+                'function _defaults(obj, defaults) { var keys = Object.getOwnPropertyNames(defaults); for (var i = 0; i < keys.length; i++) { var key = keys[i]; var value = Object.getOwnPropertyDescriptor(defaults, key); if (value && value.configurable && obj[key] === undefined) { Object.defineProperty(obj, key, value); } } return obj; }\n' +
+                '\n' +
+                'function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }\n' +
+                '\n' +
+                'function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn\'t been initialised - super() hasn\'t been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }\n' +
+                '\n' +
+                'function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : _defaults(subClass, superClass); }\n' +
+                '\n' +
+                'var Foo = function (_Bar) {\n' +
+                '    _inherits(Foo, _Bar);\n' +
+                '\n' +
+                '    function Foo() {\n' +
+                '        _classCallCheck(this, Foo);\n' +
+                '\n' +
+                '        var _this = _possibleConstructorReturn(this, _Bar.call(this));\n' +
+                '\n' +
+                '        _this.x = 2;\n' +
+                '        return _this;\n' +
+                '    }\n' +
+                '\n' +
+                '    Foo.prototype.render = function render() {\n' +
+                '        return this.x;\n' +
+                '    };\n' +
+                '\n' +
+                '    return Foo;\n' +
+                '}(Bar);',
+                done
+            ))
+            .catch(throwError);
+
+    });
+
     it('Given ES6 code with async/await, compiles to ES5.', function(done) {
 
         compile(
@@ -226,7 +310,7 @@ describe('compile ES6', function() {
 
     });
 
-    it('Given ES6 JSX code, compiles to ES5.', function(done) {
+    it('Given JSX code, compiles to ES5.', function(done) {
 
         compile(
             'var file1 = React.createClass({\n' +

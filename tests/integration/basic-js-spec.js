@@ -64,8 +64,8 @@ test.describeIntegrationTest("Js Bundling:", function() {
         test.actions.Bundle();
 
         test.assert.verifyBundleIs(
-            ';var file1=React.createClass({displayName:"file1",render:function(){return React.createElement("div",null,"file1 ",this.props.name)}});\n' +
-            ';var file3=React.createClass({displayName:"file3",render:function(){return React.createElement("div",null,"file3 ",this.props.name)}});\n'
+            ';"use strict";var file1=React.createClass({displayName:"file1",render:function(){return React.createElement("div",null,"file1 ",this.props.name)}});\n' +
+            ';"use strict";var file3=React.createClass({displayName:"file3",render:function(){return React.createElement("div",null,"file3 ",this.props.name)}});\n'
         );
 
     });
@@ -147,7 +147,7 @@ test.describeIntegrationTest("Js Bundling:", function() {
         test.assert.verifyBundleIs(
             ';(function(){var e,i,t="undefined"!=typeof module&&module.exports;e=t?require("hogan"):this.Hogan,i=new e.Template({code:function(e,i,t){var o=this;return o.b(t=t||""),o.b("<div> "),o.b(o.v(o.f("a",e,i,0))),o.b(" </div>"),o.fl()},partials:{},subs:{}}),t?module.exports=i:(this.JST=this.JST||{},JST.file1=i)}).call(this);\n' +
             ';var file2="file2";\n' +
-            ';var file3=React.createClass({displayName:"file3",render:function(){return React.createElement("div",null,"file3 ",this.props.name)}});\n'
+            ';"use strict";var file3=React.createClass({displayName:"file3",render:function(){return React.createElement("div",null,"file3 ",this.props.name)}});\n'
         );
 
     });
