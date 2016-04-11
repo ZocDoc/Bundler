@@ -114,6 +114,20 @@ test.describeIntegrationTest("Css Bundling:", function() {
 
 	});
 
+    it('Given already minified CSS files, they are concatenated in the output bundle without re-minifying.', function() {
+
+        test.given.FileToBundle('file1.min.css', '.file1 { color:red; }');
+        test.given.FileToBundle('file2.min.css', '.file2 { color:red; }');
+
+        test.actions.Bundle();
+
+        test.assert.verifyBundleIs(
+            '.file1 { color:red; }\n' +
+            '.file2 { color:red; }\n'
+        );
+
+    });
+
 	var givenImages = function (imgFile) {
 	    var imgDir = test.given.TestDirectory + "/img";
 	    test.utility.CreateDirectory(imgDir);

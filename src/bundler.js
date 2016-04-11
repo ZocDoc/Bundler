@@ -314,7 +314,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
               jsPath = path.join(bundleDir, jsFile),
               jsPathOutput = bundleFileUtility.getOutputFilePath(bundleName, jsPath, options),
               minJsPath = bundleFileUtility.getMinFileName(bundleName, jsPathOutput,  options);
-        
+
         var i = index++;
         pending++;
         Step(

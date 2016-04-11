@@ -14,6 +14,25 @@ describe('minify JS', function() {
 
     });
 
+    it('Given file is already minified, returns original code.', function(done) {
+
+        givenFilePathIs('C:\\foo\\bar.min.js')
+
+        minify(
+                'function foo(x) {\n' +
+                '   return x * 2;\n' +
+                '}'
+            )
+            .then(assertResultIs(
+                'function foo(x) {\n' +
+                '   return x * 2;\n' +
+                '}',
+                done
+            ))
+            .catch(throwError);
+
+    });
+
     it('Given code, returns minified code.', function(done) {
 
         minify(
@@ -107,6 +126,12 @@ describe('minify JS', function() {
             sourceMap: sourceMap,
             inputPath: inputPath
         });
+
+    };
+
+    var givenFilePathIs = function(filePath) {
+
+        inputPath = filePath;
 
     };
 
