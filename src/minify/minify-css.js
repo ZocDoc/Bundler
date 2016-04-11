@@ -14,6 +14,10 @@ var path = require('path');
  */
 function minify(options) {
 
+    if (isAlreadyMinified(options.inputPath)) {
+        return Promise.resolve(options);
+    }
+
     return new Promise(function(resolve, reject) {
 
         try {
@@ -57,6 +61,12 @@ function minify(options) {
         }
 
     });
+
+}
+
+function isAlreadyMinified(filePath) {
+
+    return /\.min\.css$/.test(filePath);
 
 }
 

@@ -14,6 +14,25 @@ describe('minify CSS', function() {
 
     });
 
+    it('Given file is already minified, returns original code.', function(done) {
+
+        givenFilePathIs('C:\\foo\\bar.min.css');
+
+        minify(
+                '.foo {\n' +
+                '   background: red;\n' +
+                '}'
+            )
+            .then(assertResultIs(
+                '.foo {\n' +
+                '   background: red;\n' +
+                '}',
+                done
+            ))
+            .catch(throwError);
+
+    });
+
     it('Given code, returns minified code.', function(done) {
 
         minify(
@@ -104,6 +123,12 @@ describe('minify CSS', function() {
             inputPath: inputPath,
             siteRoot: 'C:\\'
         });
+
+    };
+
+    var givenFilePathIs = function(filePath) {
+
+        inputPath = filePath;
 
     };
 

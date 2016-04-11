@@ -162,4 +162,18 @@ test.describeIntegrationTest("Js Bundling:", function() {
         );
 
     });
+
+    it('Given already minified JS files, they are concatenated in the output bundle without re-minifying.', function() {
+
+        test.given.FileToBundle('file1.min.js', '!function(){var s="file1";return s}();');
+        test.given.FileToBundle('file2.min.js', '!function(){var s="file2";return s}();');
+
+        test.actions.Bundle();
+
+        test.assert.verifyBundleIs(
+            ';!function(){var s="file1";return s}();\n' +
+            ';!function(){var s="file2";return s}();\n'
+        );
+
+    });
 });
