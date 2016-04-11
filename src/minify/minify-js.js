@@ -11,6 +11,10 @@ var uglify = require('uglify-js');
  */
 function minify(options) {
 
+    if (isAlreadyMinified(options.inputPath)) {
+        return Promise.resolve(options);
+    }
+
     return new Promise(function(resolve, reject) {
 
         try {
@@ -32,6 +36,12 @@ function minify(options) {
         }
 
     });
+
+}
+
+function isAlreadyMinified(filePath) {
+
+    return /\.min\.js$/.test(filePath);
 
 }
 
