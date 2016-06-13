@@ -35,7 +35,7 @@ Runner.prototype.RunTests = function(err, results, type, callback) {
             return;
         }
 
-        var file = ".\\tests" + fileName.split('tests')[1];
+        var file = "./tests" + fileName.split('tests')[1];
         tasks.push(function(cb){
             _this.exec("npm test " + file, function(error, stdout, stderr) {
 
