@@ -96,8 +96,9 @@ describe("BundleFiles.", function () {
                                   ""
                               );
 
-          expect(jsFilesInDir.length).toBe(3);
+          expect(jsFilesInDir.length).toBe(4);
           expect(jsFilesInDir.contains("/file.js")).toBe(true);
+          expect(jsFilesInDir.contains("/file.min.js")).toBe(true);
           expect(jsFilesInDir.contains("/file.mustache")).toBe(true);
           expect(jsFilesInDir.contains("/file.json")).toBe(true);
       });
@@ -109,8 +110,9 @@ describe("BundleFiles.", function () {
                                   "/test1"
                               );
 
-          expect(jsFilesInDir.length).toBe(3);
+          expect(jsFilesInDir.length).toBe(4);
           expect(jsFilesInDir.contains("/test1/file.js")).toBe(true);
+          expect(jsFilesInDir.contains("/test1/file.min.js")).toBe(true);
           expect(jsFilesInDir.contains("/test1/file.mustache")).toBe(true);
           expect(jsFilesInDir.contains("/test1/file.json")).toBe(true);
       });
@@ -122,8 +124,9 @@ describe("BundleFiles.", function () {
                                   ""
                               );
 
-          expect(jsFilesInDir.length).toBe(7);
+          expect(jsFilesInDir.length).toBe(8);
           expect(jsFilesInDir.contains("/test1/file.js")).toBe(true);
+          expect(jsFilesInDir.contains("/test1/file.min.js")).toBe(true);
           expect(jsFilesInDir.contains("/test4/file.js")).toBe(true);
           expect(jsFilesInDir.contains("/test5/file.mustache")).toBe(true);
           expect(jsFilesInDir.contains("/test5/file.json")).toBe(true);
@@ -186,8 +189,9 @@ describe("BundleFiles.", function () {
                                   ""
                               );
 
-          expect(cssFilesInDir.length).toBe(4);
+          expect(cssFilesInDir.length).toBe(5);
           expect(cssFilesInDir.contains("/file.css")).toBe(true);
+          expect(cssFilesInDir.contains("/file.min.css")).toBe(true);
           expect(cssFilesInDir.contains("/file.less")).toBe(true);
           expect(cssFilesInDir.contains("/file.sass")).toBe(true);
           expect(cssFilesInDir.contains("/directory/file.scss")).toBe(true);
@@ -200,8 +204,9 @@ describe("BundleFiles.", function () {
                                   "/test2"
                               );
 
-          expect(cssFilesInDir.length).toBe(4);
+          expect(cssFilesInDir.length).toBe(5);
           expect(cssFilesInDir.contains("/test2/file.css")).toBe(true);
+          expect(cssFilesInDir.contains("/test2/file.min.css")).toBe(true);
           expect(cssFilesInDir.contains("/test2/file.less")).toBe(true);
           expect(cssFilesInDir.contains("/test2/file.sass")).toBe(true);
           expect(cssFilesInDir.contains("/test2/directory/file.scss")).toBe(true);
@@ -214,8 +219,9 @@ describe("BundleFiles.", function () {
                                   ""
                               );
 
-          expect(cssFilesInDir.length).toBe(8);
+          expect(cssFilesInDir.length).toBe(9);
           expect(cssFilesInDir.contains("/test2/file.css")).toBe(true);
+          expect(cssFilesInDir.contains("/test2/file.min.css")).toBe(true);
           expect(cssFilesInDir.contains("/test3/file.css")).toBe(true);
           expect(cssFilesInDir.contains("/test6/file.css")).toBe(true);
       });

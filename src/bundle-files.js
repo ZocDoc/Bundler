@@ -140,7 +140,9 @@ BundleFiles.prototype.getBundles = function (fileType) {
 
 BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, currentDir) {
     var _this = this,
-        matcher = fileType == exports.BundleType.Javascript ? function(name) { return name.isJs(); } : function(name) { return name.isCss(); },
+        matcher = fileType == exports.BundleType.Javascript
+            ? function(name) { return name.isJs(); }
+            : function(name) { return name.isCss(); },
         dictionary = fileType == exports.BundleType.Javascript ? _this._jsDirectories : _this._cssDirectories
         output = [];
 

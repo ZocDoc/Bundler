@@ -55,6 +55,33 @@ test.describeIntegrationTest("Webpack bundles:", function() {
 
         });
 
+        it('Given webpack option and one file pair in bundle grabbed from folder, staging bundle contains only unminified JS file.', function() {
+
+            test.given.SubDirectory('scripts');
+            test.given.FileNotInBundleInSubDirectory(
+                'scripts',
+                'file1.js',
+                'var ZD = ZD || {};\n' +
+                'ZD.foo = "bar";'
+            );
+            test.given.FileNotInBundleInSubDirectory(
+                'scripts',
+                'file1.min.js',
+                'var ZD=ZD||{};ZD.foo="bar"'
+            );
+            test.given.DirectoryToBundle('scripts');
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testjs',
+                'test.js',
+                ';var ZD = ZD || {};\n' +
+                'ZD.foo = "bar";\n'
+            );
+
+        });
+
         it('Given webpack option and one file pair in bundle, staging bundle contains only unminified JS file.', function() {
 
             test.given.FileToBundle(
@@ -108,6 +135,30 @@ test.describeIntegrationTest("Webpack bundles:", function() {
                 'ZD.foo = "bar";\n' +
                 ';var ZD = ZD || {};\n' +
                 'ZD.bar = "foo";\n'
+            );
+
+        });
+
+        it('Given webpack option and one file pair in bundle grabbed from folder, output bundle contains only minified JS file.', function() {
+
+            test.given.SubDirectory('scripts');
+            test.given.FileNotInBundleInSubDirectory(
+                'scripts',
+                'file1.js',
+                'var ZD = ZD || {};\n' +
+                'ZD.foo = "bar";'
+            );
+            test.given.FileNotInBundleInSubDirectory(
+                'scripts',
+                'file1.min.js',
+                'var ZD=ZD||{};ZD.foo="bar"'
+            );
+            test.given.DirectoryToBundle('scripts');
+
+            test.actions.Bundle();
+
+            test.assert.verifyBundleIs(
+                ';var ZD=ZD||{};ZD.foo="bar"\n'
             );
 
         });
@@ -304,6 +355,35 @@ test.describeIntegrationTest("Webpack bundles:", function() {
 
         });
 
+        it('Given webpack option and one file pair in bundle grabbed from folder, staging bundle contains only unminified CSS file.', function() {
+
+            test.given.SubDirectory('styles');
+            test.given.FileNotInBundleInSubDirectory(
+                'styles',
+                'file1.css',
+                '.foo {\n' +
+                '  background: red;\n' +
+                '}'
+            );
+            test.given.FileNotInBundleInSubDirectory(
+                'styles',
+                'file1.min.css',
+                '.foo{background:red}'
+            );
+            test.given.DirectoryToBundle('styles');
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testcss',
+                'test.css',
+                '.foo {\n' +
+                '  background: red;\n' +
+                '}\n'
+            );
+
+        });
+
         it('Given webpack option and one file pair in bundle, staging bundle contains only unminified CSS file.', function() {
 
             test.given.FileToBundle(
@@ -363,6 +443,31 @@ test.describeIntegrationTest("Webpack bundles:", function() {
                 '.bar {\n' +
                 '  background: blue;\n' +
                 '}\n'
+            );
+
+        });
+
+        it('Given webpack option and one file pair in bundle grabbed from folder, output bundle contains only minified CSS file.', function() {
+
+            test.given.SubDirectory('styles');
+            test.given.FileNotInBundleInSubDirectory(
+                'styles',
+                'file1.css',
+                '.foo {\n' +
+                '  background: red;\n' +
+                '}'
+            );
+            test.given.FileNotInBundleInSubDirectory(
+                'styles',
+                'file1.min.css',
+                '.foo{background:red}'
+            );
+            test.given.DirectoryToBundle('styles');
+
+            test.actions.Bundle();
+
+            test.assert.verifyBundleIs(
+                '.foo{background:red}\n'
             );
 
         });
