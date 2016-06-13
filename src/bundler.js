@@ -61,6 +61,7 @@ var fs = require("fs"),
     minify = require('./minify'),
     concat = require('./concat'),
     file = require('./file'),
+    webpack = require('./webpack'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -297,6 +298,13 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
     bundleStatsCollector.ClearStatsForBundle(jsBundle);
 
+    if (options.webpack) {
+        webpack.validate({
+            files: jsFiles,
+            fileType: file.type.JS
+        });
+    }
+
     jsFiles.forEach(function (file) {
         // Skip blank lines/files beginning with '.' or '#', but allow ../relative paths
 
@@ -384,25 +392,39 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
             },
             function (js) {
-                allJsArr[i] = js;
-                var withMin = function (minJs) {
-                    allMinJsArr[i] = minJs;
+                if (options.webpack) {
 
-                    if (! --pending) whenDone();
-                };
+                    if (jsPath.endsWith('.min.js')) {
+                        allMinJsArr[i] = js;
+                    } else {
+                        allJsArr[i] = js;
+                    }
 
-                minify.js({
-                    code: js.code,
-                    map: js.map,
-                    originalPath: filePath,
-                    inputPath: jsPath,
-                    outputPath: minJsPath,
-                    bundleDir: bundleDir,
-                    bundleStatsCollector: bundleStatsCollector,
-                    sourceMap: options.sourcemaps,
-                    siteRoot: options.siterootdirectory,
-                    useTemplateDirs: options.usetemplatedirs
-                }).then(withMin).catch(handleError);
+                    whenDone();
+
+                } else {
+
+                    allJsArr[i] = js;
+                    var withMin = function (minJs) {
+                        allMinJsArr[i] = minJs;
+
+                        if (! --pending) whenDone();
+                    };
+
+                    minify.js({
+                        code: js.code,
+                        map: js.map,
+                        originalPath: filePath,
+                        inputPath: jsPath,
+                        outputPath: minJsPath,
+                        bundleDir: bundleDir,
+                        bundleStatsCollector: bundleStatsCollector,
+                        sourceMap: options.sourcemaps,
+                        siteRoot: options.siterootdirectory,
+                        useTemplateDirs: options.usetemplatedirs
+                    }).then(withMin).catch(handleError);
+
+                }
             }
         );
     });
@@ -466,6 +488,13 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     };
 
     bundleStatsCollector.ClearStatsForBundle(cssBundle);
+
+    if (options.webpack) {
+        webpack.validate({
+            files: cssFiles,
+            fileType: file.type.CSS
+        });
+    }
 
     cssFiles.forEach(function (file) {
         if (!(file = file.trim())
@@ -536,25 +565,39 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
             },
             function (css) {
-                allCssArr[i] = css;
-                var withMin = function (minCss) {
-                    allMinCssArr[i] = minCss;
+                if (options.webpack) {
 
-                    if (! --pending) whenDone();
-                };
+                    if (cssPath.endsWith('.min.css')) {
+                        allMinCssArr[i] = css;
+                    } else {
+                        allCssArr[i] = css;
+                    }
 
-                minify.css({
-                    code: css.code,
-                    map: css.map,
-                    originalPath: filePath,
-                    inputPath: cssPath,
-                    outputPath: minCssPath,
-                    bundleDir: bundleDir,
-                    bundleStatsCollector: bundleStatsCollector,
-                    sourceMap: options.sourcemaps,
-                    siteRoot: options.siterootdirectory,
-                    useTemplateDirs: options.usetemplatedirs
-                }).then(withMin).catch(handleError);
+                    whenDone();
+
+                } else {
+
+                    allCssArr[i] = css;
+                    var withMin = function (minCss) {
+                        allMinCssArr[i] = minCss;
+
+                        if (!--pending) whenDone();
+                    };
+
+                    minify.css({
+                        code: css.code,
+                        map: css.map,
+                        originalPath: filePath,
+                        inputPath: cssPath,
+                        outputPath: minCssPath,
+                        bundleDir: bundleDir,
+                        bundleStatsCollector: bundleStatsCollector,
+                        sourceMap: options.sourcemaps,
+                        siteRoot: options.siterootdirectory,
+                        useTemplateDirs: options.usetemplatedirs
+                    }).then(withMin).catch(handleError);
+
+                }
             }
         );
     });

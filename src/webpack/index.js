@@ -20,7 +20,7 @@ function validate(options) {
     options.files.forEach(function(file) {
 
         if (!file.endsWith(validExtension)) {
-            throw new Error('Invalid file ' + file + ' - only ' + validExtension + ' files may be added to webpack bundles');
+            throw new Error('Invalid file ' + file + ' - only ' + validExtension + ' files may be added to webpack bundles.');
         }
 
         if (file.endsWith(minExtension)) {
