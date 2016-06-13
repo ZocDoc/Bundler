@@ -62,6 +62,7 @@ var fs = require("fs"),
     concat = require('./concat'),
     file = require('./file'),
     webpack = require('./webpack'),
+    sourceMap = require('convert-source-map'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -249,10 +250,12 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
     var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
     var whenDone = function () {
 
+        var sourceMap = options.sourcemaps && !options.webpack;
+
         concat.files({
                 files: allJsArr,
                 fileType: file.type.JS,
-                sourceMap: options.sourcemaps,
+                sourceMap: sourceMap,
                 require: options.require,
                 bundleName: jsBundle,
                 bundleStatsCollector: bundleStatsCollector
@@ -267,7 +270,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 return concat.files({
                     files: allMinJsArr,
                     fileType: file.type.JS,
-                    sourceMap: options.sourcemaps,
+                    sourceMap: sourceMap,
                     require: options.require,
                     bundleName: jsBundle,
                     bundleStatsCollector: bundleStatsCollector
@@ -378,12 +381,27 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     } else {
 
-                        bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                        next({
-                            code: code,
-                            path: jsPath,
-                            originalPath: filePath
-                        });
+                        if (options.webpack) {
+
+                            var cleanedCode = sourceMap.removeComments(code);
+                            cleanedCode = sourceMap.removeMapFileComments(cleanedCode);
+
+                            next({
+                                code: cleanedCode,
+                                path: jsPath,
+                                originalPath: filePath
+                            });
+
+                        } else {
+
+                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
+                            next({
+                                code: code,
+                                path: jsPath,
+                                originalPath: filePath
+                            });
+
+                        }
 
                     }
 
@@ -437,6 +455,8 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
     var whenDone = function () {
 
+        var sourceMap = options.sourcemaps && !options.webpack;
+
         allCssArr.forEach(function(cssFile) {
             bundleStatsCollector.AddDebugFile(cssBundle, cssFile.path);
         });
@@ -444,7 +464,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         concat.files({
                 files: allCssArr,
                 fileType: file.type.CSS,
-                sourceMap: options.sourcemaps,
+                sourceMap: sourceMap,
                 bundleName: cssBundle,
                 bundleStatsCollector: bundleStatsCollector
             })
@@ -458,7 +478,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 return concat.files({
                     files: allMinCssArr,
                     fileType: file.type.CSS,
-                    sourceMap: options.sourcemaps,
+                    sourceMap: sourceMap,
                     bundleName: cssBundle,
                     bundleStatsCollector: bundleStatsCollector
                 });
@@ -553,11 +573,26 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                     } else {
 
-                        next({
-                            code: code,
-                            path: cssPath,
-                            originalPath: filePath
-                        });
+                        if (options.webpack) {
+
+                            var cleanedCode = sourceMap.removeComments(code);
+                            cleanedCode = sourceMap.removeMapFileComments(cleanedCode);
+
+                            next({
+                                code: cleanedCode,
+                                path: cssPath,
+                                originalPath: filePath
+                            });
+
+                        } else {
+
+                            next({
+                                code: code,
+                                path: cssPath,
+                                originalPath: filePath
+                            });
+
+                        }
 
                     }
 

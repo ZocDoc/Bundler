@@ -1,6 +1,6 @@
 var testDirectory = 'webpack-test-suite';
 var integrationTest = require('./helpers/jasmine-wrapper.js');
-var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory, console);
+var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory);
 
 test.describeIntegrationTest("Webpack bundles:", function() {
 
@@ -158,6 +158,102 @@ test.describeIntegrationTest("Webpack bundles:", function() {
             test.assert.verifyBundleIs(
                 ';var ZD=ZD||{};ZD.foo="bar"\n' +
                 ';var ZD=ZD||{};ZD.bar="foo"\n'
+            );
+
+        });
+
+        it('Given webpack and sourcemap options and files without source maps, staging bundle does not contain source maps.', function() {
+
+            test.given.CommandLineOption('-sourcemaps');
+            test.given.FileToBundle(
+                'file1.js',
+                'var ZD = ZD || {};\n' +
+                'ZD.foo = "bar";'
+            );
+            test.given.FileToBundle(
+                'file1.min.js',
+                'var ZD=ZD||{};ZD.foo="bar"'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testjs',
+                'test.js',
+                ';var ZD = ZD || {};\n' +
+                'ZD.foo = "bar";\n'
+            );
+
+        });
+
+        it('Given webpack and sourcemap options and files without source maps, output bundle does not contain source maps.', function() {
+
+            test.given.CommandLineOption('-sourcemaps');
+            test.given.FileToBundle(
+                'file1.js',
+                'var ZD = ZD || {};\n' +
+                'ZD.foo = "bar";'
+            );
+            test.given.FileToBundle(
+                'file1.min.js',
+                'var ZD=ZD||{};ZD.foo="bar"'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyBundleIs(
+                ';var ZD=ZD||{};ZD.foo="bar"\n'
+            );
+
+        });
+
+        it('Given webpack and sourcemap options and files with source maps, staging bundle does not contain source maps.', function() {
+
+            test.given.CommandLineOption('-sourcemaps');
+            test.given.FileToBundle(
+                'file1.js',
+                'var ZD = ZD || {};\n' +
+                'ZD.foo = "bar";\n' +
+                '//# sourceMappingURL=file1.js.map'
+            );
+            test.given.FileToBundle(
+                'file1.min.js',
+                'var ZD=ZD||{};ZD.foo="bar"\n' +
+                '//# sourceMappingURL=file1.min.js.map'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testjs',
+                'test.js',
+                ';var ZD = ZD || {};\n' +
+                'ZD.foo = "bar";\n' +
+                '\n'
+            );
+
+        });
+
+        it('Given webpack and sourcemap options and files with source maps, output bundle does not contain source maps.', function() {
+
+            test.given.CommandLineOption('-sourcemaps');
+            test.given.FileToBundle(
+                'file1.js',
+                'var ZD = ZD || {};\n' +
+                'ZD.foo = "bar";\n' +
+                '//# sourceMappingURL=file1.js.map'
+            );
+            test.given.FileToBundle(
+                'file1.min.js',
+                'var ZD=ZD||{};ZD.foo="bar"\n' +
+                '//# sourceMappingURL=file1.min.js.map'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyBundleIs(
+                ';var ZD=ZD||{};ZD.foo="bar"\n' +
+                '\n'
             );
 
         });
@@ -320,6 +416,108 @@ test.describeIntegrationTest("Webpack bundles:", function() {
             test.assert.verifyBundleIs(
                 '.foo{background:red}\n' +
                 '.bar{background:blue}\n'
+            );
+
+        });
+
+        it('Given webpack and sourcemap options and files without source maps, staging bundle does not contain source maps.', function() {
+
+            test.given.CommandLineOption('-sourcemaps');
+            test.given.FileToBundle(
+                'file1.css',
+                '.foo {\n' +
+                '  background: red;\n' +
+                '}'
+            );
+            test.given.FileToBundle(
+                'file1.min.css',
+                '.foo{background:red}'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testcss',
+                'test.css',
+                '.foo {\n' +
+                '  background: red;\n' +
+                '}\n'
+            );
+
+        });
+
+        it('Given webpack and sourcemap options and files without source maps, output bundle does not contain source maps.', function() {
+
+            test.given.CommandLineOption('-sourcemaps');
+            test.given.FileToBundle(
+                'file1.css',
+                '.foo {\n' +
+                '  background: red;\n' +
+                '}'
+            );
+            test.given.FileToBundle(
+                'file1.min.css',
+                '.foo{background:red}'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyBundleIs(
+                '.foo{background:red}\n'
+            );
+
+        });
+
+        it('Given webpack and sourcemap options and files with source maps, staging bundle does not contain source maps.', function() {
+
+            test.given.CommandLineOption('-sourcemaps');
+            test.given.FileToBundle(
+                'file1.css',
+                '.foo {\n' +
+                '  background: red;\n' +
+                '}\n' +
+                '//# sourceMappingURL=file1.css.map'
+            );
+            test.given.FileToBundle(
+                'file1.min.css',
+                '.foo{background:red}\n' +
+                '//# sourceMappingURL=file1.min.css.map'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testcss',
+                'test.css',
+                '.foo {\n' +
+                '  background: red;\n' +
+                '}\n' +
+                '\n'
+            );
+
+        });
+
+        it('Given webpack and sourcemap options and files with source maps, output bundle does not contain source maps.', function() {
+
+            test.given.CommandLineOption('-sourcemaps');
+            test.given.FileToBundle(
+                'file1.css',
+                '.foo {\n' +
+                '  background: red;\n' +
+                '}\n' +
+                '//# sourceMappingURL=file1.css.map'
+            );
+            test.given.FileToBundle(
+                'file1.min.css',
+                '.foo{background:red}\n' +
+                '//# sourceMappingURL=file1.min.css.map'
+            );
+
+            test.actions.Bundle();
+
+            test.assert.verifyBundleIs(
+                '.foo{background:red}\n' +
+                '\n'
             );
 
         });
