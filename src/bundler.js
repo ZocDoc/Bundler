@@ -177,7 +177,8 @@ function scanDir(allFiles, cb) {
                             var filesInDir = allFiles.getFilesInDirectory(
                                                 bundlefiles.BundleType.Javascript,
                                                 currentItem,
-                                                name
+                                                name,
+                                                options
                                             );
                             _.chain(filesInDir).filter(function(a) { return a.endsWith(".mustache")}).each(tmpFiles.addFile, tmpFiles);
                             _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6") || a.endsWith(".json"); }).each(tmpFiles.addFile, tmpFiles);
@@ -226,7 +227,9 @@ function scanDir(allFiles, cb) {
                             var cssFiles = allFiles.getFilesInDirectory(
                                 bundlefiles.BundleType.Css,
                                 currentItem,
-                                name);
+                                name,
+                                options
+                            );
 
                             _.each(cssFiles, tmpFiles.addFile, tmpFiles);
                         }
