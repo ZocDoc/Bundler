@@ -52,8 +52,8 @@
     "rewire": "^2.5.1"
   },
   "scripts": {
-    "bundle": "node .\\src\\bundler.js",
+    "bundle": "node ./src/bundler.js",
     "test": "jasmine-node",
-    "test-all": "node .\\tests\\test-runner\\parallel-test-runner.js"
+    "test-all": "node ./tests/test-runner/parallel-test-runner.js"
   }
 }
