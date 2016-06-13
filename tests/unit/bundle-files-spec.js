@@ -93,7 +93,8 @@ describe("BundleFiles.", function () {
 
           var jsFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
                                   "/tests/test1",
-                                  ""
+                                  "",
+                                  {}
                               );
 
           expect(jsFilesInDir.length).toBe(3);
@@ -102,11 +103,27 @@ describe("BundleFiles.", function () {
           expect(jsFilesInDir.contains("/file.json")).toBe(true);
       });
 
+      it("Gets only .js and .min.js file types given webpack bundle", function () {
+
+          var jsFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
+              "/tests/test1",
+              "",
+              { webpack: true }
+          );
+
+          expect(jsFilesInDir.length).toBe(4);
+          expect(jsFilesInDir.contains("/file.js")).toBe(true);
+          expect(jsFilesInDir.contains("/file.min.js")).toBe(true);
+          expect(jsFilesInDir.contains("/file.mustache")).toBe(true);
+          expect(jsFilesInDir.contains("/file.json")).toBe(true);
+      });
+
       it("Prepends the current directory", function () {
 
           var jsFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
                                   "/tests/test1",
-                                  "/test1"
+                                  "/test1",
+                                  {}
                               );
 
           expect(jsFilesInDir.length).toBe(3);
@@ -119,7 +136,8 @@ describe("BundleFiles.", function () {
 
           var jsFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
                                   "/tests",
-                                  ""
+                                  "",
+                                  {}
                               );
 
           expect(jsFilesInDir.length).toBe(7);
@@ -133,7 +151,8 @@ describe("BundleFiles.", function () {
 
           var jsFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
                                   "/tests/test5/",
-                                  "test5/"
+                                  "test5/",
+                                  {}
                               );
 
           expect(jsFilesInDir.length).toBe(2);
@@ -146,7 +165,8 @@ describe("BundleFiles.", function () {
 
           var jsFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
                                   "/casing/tests",
-                                  "output/"
+                                  "output/",
+                                  {}
                               );
 
           expect(jsFilesInDir.length).toBe(1);
@@ -157,7 +177,8 @@ describe("BundleFiles.", function () {
 
           var jsFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
                                   "/casing/tests/",
-                                  "output"
+                                  "output",
+                                  {}
                               );
 
           expect(jsFilesInDir.length).toBe(1);
@@ -169,7 +190,8 @@ describe("BundleFiles.", function () {
           var shouldThrow = function () {
               files.getFilesInDirectory(bundlefiles.BundleType.Javascript,
                                       "/not_a_valid_directory",
-                                      "output"
+                                      "output",
+                                      {}
                                   );
           };
 
@@ -183,7 +205,8 @@ describe("BundleFiles.", function () {
 
           var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,
                                   "/tests/test2",
-                                  ""
+                                  "",
+                                  {}
                               );
 
           expect(cssFilesInDir.length).toBe(4);
@@ -193,11 +216,28 @@ describe("BundleFiles.", function () {
           expect(cssFilesInDir.contains("/directory/file.scss")).toBe(true);
       });
 
+      it("Gets only .css and .min.css file types given webpack bundle", function () {
+
+          var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,
+              "/tests/test2",
+              "",
+              { webpack: true }
+          );
+
+          expect(cssFilesInDir.length).toBe(5);
+          expect(cssFilesInDir.contains("/file.css")).toBe(true);
+          expect(cssFilesInDir.contains("/file.min.css")).toBe(true);
+          expect(cssFilesInDir.contains("/file.less")).toBe(true);
+          expect(cssFilesInDir.contains("/file.sass")).toBe(true);
+          expect(cssFilesInDir.contains("/directory/file.scss")).toBe(true);
+      });
+
       it("Prepends the current directory", function () {
 
           var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,
                                   "/tests/test2",
-                                  "/test2"
+                                  "/test2",
+                                  {}
                               );
 
           expect(cssFilesInDir.length).toBe(4);
@@ -211,7 +251,8 @@ describe("BundleFiles.", function () {
 
           var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,
                                   "/tests",
-                                  ""
+                                  "",
+                                  {}
                               );
 
           expect(cssFilesInDir.length).toBe(8);
@@ -224,7 +265,8 @@ describe("BundleFiles.", function () {
 
           var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,
                                   "/tests/test3/",
-                                  "test3/"
+                                  "test3/",
+                                  {}
                               );
 
           expect(cssFilesInDir.length).toBe(1);
@@ -235,7 +277,8 @@ describe("BundleFiles.", function () {
 
           var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,
                                   "/casing/tests",
-                                  "output/"
+                                  "output/",
+                                  {}
                               );
 
           expect(cssFilesInDir.length).toBe(1);
@@ -246,7 +289,8 @@ describe("BundleFiles.", function () {
 
           var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,
                                   "/casing/tests/",
-                                  "output"
+                                  "output",
+                                  {}
                               );
 
           expect(cssFilesInDir.length).toBe(1);
@@ -258,7 +302,8 @@ describe("BundleFiles.", function () {
           var shouldThrow = function () {
               files.getFilesInDirectory(bundlefiles.BundleType.Css,
                                       "/not_a_valid_directory",
-                                      "output"
+                                      "output",
+                                      {}
                                   );
           };
 

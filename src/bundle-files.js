@@ -138,9 +138,21 @@ BundleFiles.prototype.getBundles = function (fileType) {
     }
 };
 
-BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, currentDir) {
+BundleFiles.prototype.getFilesInDirectory = function (fileType, bundleDir, currentDir, options) {
     var _this = this,
-        matcher = fileType == exports.BundleType.Javascript ? function(name) { return name.isJs(); } : function(name) { return name.isCss(); },
+        matcher = fileType == exports.BundleType.Javascript
+            ? function(name) {
+                if (!options.webpack && name.endsWith('.min.js')) {
+                    return false;
+                }
+                return name.isJs();
+            }
+            : function(name) {
+                if (!options.webpack && name.endsWith('.min.css')) {
+                    return false;
+                }
+                return name.isCss();
+            },
         dictionary = fileType == exports.BundleType.Javascript ? _this._jsDirectories : _this._cssDirectories
         output = [];
 

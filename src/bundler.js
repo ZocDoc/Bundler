@@ -61,6 +61,8 @@ var fs = require("fs"),
     minify = require('./minify'),
     concat = require('./concat'),
     file = require('./file'),
+    webpack = require('./webpack'),
+    sourceMap = require('convert-source-map'),
     urlVersioning = null;
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
@@ -175,7 +177,8 @@ function scanDir(allFiles, cb) {
                             var filesInDir = allFiles.getFilesInDirectory(
                                                 bundlefiles.BundleType.Javascript,
                                                 currentItem,
-                                                name
+                                                name,
+                                                options
                                             );
                             _.chain(filesInDir).filter(function(a) { return a.endsWith(".mustache")}).each(tmpFiles.addFile, tmpFiles);
                             _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6") || a.endsWith(".json"); }).each(tmpFiles.addFile, tmpFiles);
@@ -224,7 +227,9 @@ function scanDir(allFiles, cb) {
                             var cssFiles = allFiles.getFilesInDirectory(
                                 bundlefiles.BundleType.Css,
                                 currentItem,
-                                name);
+                                name,
+                                options
+                            );
 
                             _.each(cssFiles, tmpFiles.addFile, tmpFiles);
                         }
@@ -248,10 +253,12 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
     var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
     var whenDone = function () {
 
+        var sourceMap = options.sourcemaps && !options.webpack;
+
         concat.files({
                 files: allJsArr,
                 fileType: file.type.JS,
-                sourceMap: options.sourcemaps,
+                sourceMap: sourceMap,
                 require: options.require,
                 bundleName: jsBundle,
                 bundleStatsCollector: bundleStatsCollector
@@ -266,7 +273,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                 return concat.files({
                     files: allMinJsArr,
                     fileType: file.type.JS,
-                    sourceMap: options.sourcemaps,
+                    sourceMap: sourceMap,
                     require: options.require,
                     bundleName: jsBundle,
                     bundleStatsCollector: bundleStatsCollector
@@ -296,6 +303,13 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
     };
 
     bundleStatsCollector.ClearStatsForBundle(jsBundle);
+
+    if (options.webpack) {
+        webpack.validate({
+            files: jsFiles,
+            fileType: file.type.JS
+        });
+    }
 
     jsFiles.forEach(function (file) {
         // Skip blank lines/files beginning with '.' or '#', but allow ../relative paths
@@ -370,12 +384,27 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                     } else {
 
-                        bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                        next({
-                            code: code,
-                            path: jsPath,
-                            originalPath: filePath
-                        });
+                        if (options.webpack) {
+
+                            var cleanedCode = sourceMap.removeComments(code);
+                            cleanedCode = sourceMap.removeMapFileComments(cleanedCode);
+
+                            next({
+                                code: cleanedCode,
+                                path: jsPath,
+                                originalPath: filePath
+                            });
+
+                        } else {
+
+                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
+                            next({
+                                code: code,
+                                path: jsPath,
+                                originalPath: filePath
+                            });
+
+                        }
 
                     }
 
@@ -384,25 +413,39 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
             },
             function (js) {
-                allJsArr[i] = js;
-                var withMin = function (minJs) {
-                    allMinJsArr[i] = minJs;
+                if (options.webpack) {
 
-                    if (! --pending) whenDone();
-                };
+                    if (jsPath.endsWith('.min.js')) {
+                        allMinJsArr[i] = js;
+                    } else {
+                        allJsArr[i] = js;
+                    }
 
-                minify.js({
-                    code: js.code,
-                    map: js.map,
-                    originalPath: filePath,
-                    inputPath: jsPath,
-                    outputPath: minJsPath,
-                    bundleDir: bundleDir,
-                    bundleStatsCollector: bundleStatsCollector,
-                    sourceMap: options.sourcemaps,
-                    siteRoot: options.siterootdirectory,
-                    useTemplateDirs: options.usetemplatedirs
-                }).then(withMin).catch(handleError);
+                    whenDone();
+
+                } else {
+
+                    allJsArr[i] = js;
+                    var withMin = function (minJs) {
+                        allMinJsArr[i] = minJs;
+
+                        if (! --pending) whenDone();
+                    };
+
+                    minify.js({
+                        code: js.code,
+                        map: js.map,
+                        originalPath: filePath,
+                        inputPath: jsPath,
+                        outputPath: minJsPath,
+                        bundleDir: bundleDir,
+                        bundleStatsCollector: bundleStatsCollector,
+                        sourceMap: options.sourcemaps,
+                        siteRoot: options.siterootdirectory,
+                        useTemplateDirs: options.usetemplatedirs
+                    }).then(withMin).catch(handleError);
+
+                }
             }
         );
     });
@@ -415,6 +458,8 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
     var whenDone = function () {
 
+        var sourceMap = options.sourcemaps && !options.webpack;
+
         allCssArr.forEach(function(cssFile) {
             bundleStatsCollector.AddDebugFile(cssBundle, cssFile.path);
         });
@@ -422,7 +467,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         concat.files({
                 files: allCssArr,
                 fileType: file.type.CSS,
-                sourceMap: options.sourcemaps,
+                sourceMap: sourceMap,
                 bundleName: cssBundle,
                 bundleStatsCollector: bundleStatsCollector
             })
@@ -436,7 +481,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                 return concat.files({
                     files: allMinCssArr,
                     fileType: file.type.CSS,
-                    sourceMap: options.sourcemaps,
+                    sourceMap: sourceMap,
                     bundleName: cssBundle,
                     bundleStatsCollector: bundleStatsCollector
                 });
@@ -466,6 +511,13 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
     };
 
     bundleStatsCollector.ClearStatsForBundle(cssBundle);
+
+    if (options.webpack) {
+        webpack.validate({
+            files: cssFiles,
+            fileType: file.type.CSS
+        });
+    }
 
     cssFiles.forEach(function (file) {
         if (!(file = file.trim())
@@ -524,11 +576,26 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                     } else {
 
-                        next({
-                            code: code,
-                            path: cssPath,
-                            originalPath: filePath
-                        });
+                        if (options.webpack) {
+
+                            var cleanedCode = sourceMap.removeComments(code);
+                            cleanedCode = sourceMap.removeMapFileComments(cleanedCode);
+
+                            next({
+                                code: cleanedCode,
+                                path: cssPath,
+                                originalPath: filePath
+                            });
+
+                        } else {
+
+                            next({
+                                code: code,
+                                path: cssPath,
+                                originalPath: filePath
+                            });
+
+                        }
 
                     }
 
@@ -536,25 +603,39 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
             },
             function (css) {
-                allCssArr[i] = css;
-                var withMin = function (minCss) {
-                    allMinCssArr[i] = minCss;
+                if (options.webpack) {
 
-                    if (! --pending) whenDone();
-                };
+                    if (cssPath.endsWith('.min.css')) {
+                        allMinCssArr[i] = css;
+                    } else {
+                        allCssArr[i] = css;
+                    }
 
-                minify.css({
-                    code: css.code,
-                    map: css.map,
-                    originalPath: filePath,
-                    inputPath: cssPath,
-                    outputPath: minCssPath,
-                    bundleDir: bundleDir,
-                    bundleStatsCollector: bundleStatsCollector,
-                    sourceMap: options.sourcemaps,
-                    siteRoot: options.siterootdirectory,
-                    useTemplateDirs: options.usetemplatedirs
-                }).then(withMin).catch(handleError);
+                    whenDone();
+
+                } else {
+
+                    allCssArr[i] = css;
+                    var withMin = function (minCss) {
+                        allMinCssArr[i] = minCss;
+
+                        if (!--pending) whenDone();
+                    };
+
+                    minify.css({
+                        code: css.code,
+                        map: css.map,
+                        originalPath: filePath,
+                        inputPath: cssPath,
+                        outputPath: minCssPath,
+                        bundleDir: bundleDir,
+                        bundleStatsCollector: bundleStatsCollector,
+                        sourceMap: options.sourcemaps,
+                        siteRoot: options.siterootdirectory,
+                        useTemplateDirs: options.usetemplatedirs
+                    }).then(withMin).catch(handleError);
+
+                }
             }
         );
     });
