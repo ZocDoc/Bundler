@@ -386,25 +386,17 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
 
                         if (options.webpack) {
 
-                            var cleanedCode = sourceMap.removeComments(code);
-                            cleanedCode = sourceMap.removeMapFileComments(cleanedCode);
-
-                            next({
-                                code: cleanedCode,
-                                path: jsPath,
-                                originalPath: filePath
-                            });
-
-                        } else {
-
-                            bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                            next({
-                                code: code,
-                                path: jsPath,
-                                originalPath: filePath
-                            });
+                            code = sourceMap.removeComments(code);
+                            code = sourceMap.removeMapFileComments(code);
 
                         }
+
+                        bundleStatsCollector.ParseJsForStats(jsBundle, code);
+                        next({
+                            code: code,
+                            path: jsPath,
+                            originalPath: filePath
+                        });
 
                     }
 
@@ -421,7 +413,7 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
                         allJsArr[i] = js;
                     }
 
-                    whenDone();
+                    if (! --pending) whenDone();
 
                 } else {
 
@@ -578,24 +570,16 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                         if (options.webpack) {
 
-                            var cleanedCode = sourceMap.removeComments(code);
-                            cleanedCode = sourceMap.removeMapFileComments(cleanedCode);
-
-                            next({
-                                code: cleanedCode,
-                                path: cssPath,
-                                originalPath: filePath
-                            });
-
-                        } else {
-
-                            next({
-                                code: code,
-                                path: cssPath,
-                                originalPath: filePath
-                            });
+                            code = sourceMap.removeComments(code);
+                            code = sourceMap.removeMapFileComments(code);
 
                         }
+
+                        next({
+                            code: code,
+                            path: cssPath,
+                            originalPath: filePath
+                        });
 
                     }
 
@@ -611,7 +595,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                         allCssArr[i] = css;
                     }
 
-                    whenDone();
+                    if (!--pending) whenDone();
 
                 } else {
 
