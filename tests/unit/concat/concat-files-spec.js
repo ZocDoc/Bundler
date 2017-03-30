@@ -236,9 +236,9 @@ describe('concat files', function() {
             concatFiles();
 
         });
-        
+
         it('Prefixes all lines with semi-colons and adds new lines between files.', function(done) {
-        
+
             assertConcatenatedCodeIs(
                 ';var x = 1;\n' +
                 ';"use strict";\n' +
@@ -248,7 +248,7 @@ describe('concat files', function() {
                 '});\n',
                 done
             );
-        
+
         });
 
         it('Generates source map.', function(done) {
@@ -329,9 +329,9 @@ describe('concat files', function() {
         });
 
     });
-    
+
     describe('Given minified JS files and source maps enabled and require', function() {
-    
+
         beforeEach(function() {
 
             givenRequire();
@@ -389,7 +389,7 @@ describe('concat files', function() {
             );
 
         });
-    
+
     });
 
     describe('Given CSS files and source maps disabled', function() {

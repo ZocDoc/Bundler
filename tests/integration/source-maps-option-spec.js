@@ -161,24 +161,6 @@ test.describeIntegrationTest("Generating source maps:", function() {
 
         });
 
-        it("Given source maps option and scss file, then lscssess is compiled with inline source maps.", function () {
-
-            test.given.FileToBundle('scss1.scss',
-                '$green: #008000;\n#css-results { #scss { background: $green; } }');
-
-            test.actions.Bundle();
-
-            test.assert.verifyFileAndContentsAre(
-                test.given.StagingDirectory + '/testcss',
-                'test-scss1.css',
-                '#css-results #scss {\n' +
-                '  background: #008000; }\n' +
-                '\n' +
-                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi8uLi8uLi90ZXN0L3Njc3MxLnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsWUFBWSxDQUFHLEtBQUssQ0FBQztFQUFFLFVBQVUsRUFEekIsT0FBTyxHQUM4QiJ9 */'
-            );
-
-        });
-
         it('Given source maps option and CSS files, then combined unminified bundle CSS is created with inline source map.', function() {
 
             test.given.FileToBundle(

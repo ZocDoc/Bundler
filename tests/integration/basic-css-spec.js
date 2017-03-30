@@ -18,14 +18,6 @@ test.describeIntegrationTest("Css Bundling:", function() {
         test.utility.VerifyErrorIs("Unrecognised input. Possibly missing something");
     });
 
-    it("Given an invalid scss file, then bundling fails and an error is thrown.", function () {
-        test.given.FileToBundle('scss1.scss', '$green: #008000;\n#css-results { #scss { background: $green; ');
-
-        test.actions.Bundle();
-
-        test.utility.VerifyErrorIs("Invalid CSS after");
-    });
-
 	it("Given css files, then they are concatenated into the output bundle.", function() {
 
         test.given.FileToBundle('file1.css', '.file1 { color: red; }');
@@ -55,21 +47,6 @@ test.describeIntegrationTest("Css Bundling:", function() {
         );
 
 	});
-
-    it("Given .scss files, then they are compiled and concatenated into the output bundle.", function () {
-
-        test.given.FileToBundle('scss1.scss', '$green: #008000;\n#css-results { #scss { background: $green; } }');
-        test.given.FileNotInBundle('scss2.scss', '$aqua: #088080;\n#css-results2 { #scss2 { background: $aqua; } }');
-        test.given.FileToBundle('scss3.scss', '$blue: #000080;\n#css-results3 { #scss3 { background: $blue; } }');
-
-        test.actions.Bundle();
-
-        test.assert.verifyBundleIs(
-            "#css-results #scss{background:green}\n" +
-            "#css-results3 #scss3{background:navy}\n"
-        );
-
-    });
 
 	it("Given Css and Less files together, then it compiles and concatenates everything into the output bundle.", function () {
 

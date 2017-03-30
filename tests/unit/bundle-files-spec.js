@@ -24,8 +24,6 @@ describe("BundleFiles.", function () {
             "/tests/test2/test2.css.bundle",
             "/tests/test2/file.less",
             "/tests/test2/file.min.css",
-            "/tests/test2/file.sass",
-            "/tests/test2/directory/file.scss",
             "/tests/test2/file.js",
             "/tests/test2/file.txt"
         ],
@@ -209,11 +207,9 @@ describe("BundleFiles.", function () {
                                   {}
                               );
 
-          expect(cssFilesInDir.length).toBe(4);
+          expect(cssFilesInDir.length).toBe(2);
           expect(cssFilesInDir.contains("/file.css")).toBe(true);
           expect(cssFilesInDir.contains("/file.less")).toBe(true);
-          expect(cssFilesInDir.contains("/file.sass")).toBe(true);
-          expect(cssFilesInDir.contains("/directory/file.scss")).toBe(true);
       });
 
       it("Gets only .css and .min.css file types given webpack bundle", function () {
@@ -224,12 +220,10 @@ describe("BundleFiles.", function () {
               { webpack: true }
           );
 
-          expect(cssFilesInDir.length).toBe(5);
+          expect(cssFilesInDir.length).toBe(3);
           expect(cssFilesInDir.contains("/file.css")).toBe(true);
           expect(cssFilesInDir.contains("/file.min.css")).toBe(true);
           expect(cssFilesInDir.contains("/file.less")).toBe(true);
-          expect(cssFilesInDir.contains("/file.sass")).toBe(true);
-          expect(cssFilesInDir.contains("/directory/file.scss")).toBe(true);
       });
 
       it("Prepends the current directory", function () {
@@ -240,11 +234,9 @@ describe("BundleFiles.", function () {
                                   {}
                               );
 
-          expect(cssFilesInDir.length).toBe(4);
+          expect(cssFilesInDir.length).toBe(2);
           expect(cssFilesInDir.contains("/test2/file.css")).toBe(true);
           expect(cssFilesInDir.contains("/test2/file.less")).toBe(true);
-          expect(cssFilesInDir.contains("/test2/file.sass")).toBe(true);
-          expect(cssFilesInDir.contains("/test2/directory/file.scss")).toBe(true);
       });
 
       it("Searches all sub-directories", function () {
@@ -255,7 +247,7 @@ describe("BundleFiles.", function () {
                                   {}
                               );
 
-          expect(cssFilesInDir.length).toBe(8);
+          expect(cssFilesInDir.length).toBe(6);
           expect(cssFilesInDir.contains("/test2/file.css")).toBe(true);
           expect(cssFilesInDir.contains("/test3/file.css")).toBe(true);
           expect(cssFilesInDir.contains("/test6/file.css")).toBe(true);
@@ -272,7 +264,7 @@ describe("BundleFiles.", function () {
           expect(cssFilesInDir.length).toBe(1);
           expect(cssFilesInDir.contains("test3/file.css")).toBe(true);
       });
-      
+
       it("Ignores Case", function () {
 
           var cssFilesInDir = files.getFilesInDirectory(bundlefiles.BundleType.Css,

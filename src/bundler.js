@@ -521,12 +521,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         processedFiles[file] = true;
 
         var isLess = file.endsWith(".less");
-        var isSass = (file.endsWith(".sass") || file.endsWith(".scss"));
         var cssFile = isLess ?
             file.replace(".less", ".css")
-            : isSass ?
-            file.replace(".sass", ".css").replace(".scss", ".css") :
-            file;
+            : file;
 
         var filePath = path.join(bundleDir, file),
             cssPath = path.join(bundleDir, cssFile),
@@ -540,7 +537,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                 var next = this;
 
-                if (isLess || isSass) {
+                if (isLess) {
                     cssPath = cssPathOutput;
                 }
 
@@ -561,10 +558,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                     if (isLess) {
 
                         compile.less(compileOptions).then(next).catch(handleError);
-
-                    } else if (isSass) {
-
-                        compile.sass(compileOptions).then(next).catch(handleError);
 
                     } else {
 
