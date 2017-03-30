@@ -132,6 +132,8 @@ BundleStatsCollector.prototype.AddFileHash = function (bundleName, bundleContent
     var hash = this.GenerateHash(bundleContents);
 
     this.HashCollection.add(bundleName, hash);
+
+    return hash;
 };
 
 var parseAndAddToCollection = function(bundleName, text, collection, parseRegex, cleaningFunc) {

@@ -1,8 +1,8 @@
-var testDirectory = 'stats-test-suite';
+var testDirectory = 'stats-test-suite-js';
 var integrationTest = require('./helpers/jasmine-wrapper.js');
 var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory);
 
-test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", function() {
+test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting JS:", function() {
 
     beforeEach(function () {
         test.given.StagingDirectoryIs('staging-dir');
@@ -29,6 +29,14 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
                     expect(json['test.js']).toBe("973896bdfac006e8574adfb9210670eb");
                 });
         });
+
+        it("The stats option outputs the minified file and the minified file with a hash in it", function () {
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'test.min.js');
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'test__973896bdfac006e8574adfb9210670eb__.min.js');
+        });
     });
 
     describe("Debug Files: ", function () {
@@ -43,9 +51,9 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
                 function (json) {
                     validateJsonObject(json, function (b) {
                         expect(b).toEqual([
-                            'stats-test-suite\\test\\file1.js',
-                            'stats-test-suite\\test\\file2.js',
-                            './stats-test-suite/staging-dir/testjs/test-file3.js'
+                            'stats-test-suite-js\\test\\file1.js',
+                            'stats-test-suite-js\\test\\file2.js',
+                            './stats-test-suite-js/staging-dir/testjs/test-file3.js'
                         ]);
                     });
                 });

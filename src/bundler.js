@@ -283,10 +283,13 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
             .then(function(allMinJs) {
 
                 var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
+                var hash = bundleStatsCollector.AddFileHash(bundleName, allMinJs.code);
+                var fileNameWithHash = minFileName.replace('.min.', '__' + hash + '__' + '.min.')
 
-                bundleStatsCollector.AddFileHash(bundleName, allMinJs.code);
-
-                return file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory);
+                return file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory)
+                    .then(function() {
+                        return file.write(allMinJs.code, allMinJs.map, file.type.JS, fileNameWithHash, options.siterootdirectory);
+                    });
 
             })
             .then(cb)
@@ -490,12 +493,15 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             })
             .then(function(allMinCss) {
 
-                bundleStatsCollector.AddFileHash(bundleName, allMinCss.code);
+                var hash = bundleStatsCollector.AddFileHash(bundleName, allMinCss.code);
 
                 var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
+                var fileNameWithHash = minFileName.replace('.min.', '__' + hash + '__' + '.min.');
 
-                return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory);
-
+                return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory)
+                  .then(function() {
+                      return file.write(allMinCss.code, allMinCss.map, file.type.CSS, fileNameWithHash, options.siterootdirectory);
+                  });
             })
             .then(cb)
             .catch(handleError);
