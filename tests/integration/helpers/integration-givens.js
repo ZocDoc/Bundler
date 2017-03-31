@@ -74,6 +74,14 @@ Givens.prototype.OutputDirectoryIs = function (directory) {
     this.CommandLineOption("-outputdirectory:" + this.OutputDirectory);
 };
 
+Givens.prototype.HashedDirectoryIs = function (directory) {
+    var rootedDir = this.BaseTestDirectory + '/' + directory;
+    this.Utility.CreateDirectory(rootedDir);
+    this.HashedDirectory = "./" + rootedDir;
+
+    this.CommandLineOption("-hashedfiledirectory:" + this.HashedDirectory);
+};
+
 Givens.prototype.StagingDirectoryIs = function (directory) {
     var rootedDir = this.BaseTestDirectory + '/' + directory;
     this.Utility.CreateDirectory(rootedDir);

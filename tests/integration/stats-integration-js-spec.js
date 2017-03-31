@@ -7,6 +7,7 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting JS:"
     beforeEach(function () {
         test.given.StagingDirectoryIs('staging-dir');
         test.given.OutputDirectoryIs('output-dir');
+        test.given.HashedDirectoryIs('hashing-dir');
         test.given.FileToBundle('file1.js',       'var file1 = "file1";');
         test.given.FileToBundle('file2.js',       'var file2 = "file2";');
         test.given.FileToBundle('file3.mustache', '<div> {{a}} </div>');
@@ -30,12 +31,18 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting JS:"
                 });
         });
 
-        it("The stats option outputs the minified file and the minified file with a hash in it", function () {
+        it("outputs a minified file in the output directory", function () {
 
             test.actions.Bundle();
 
             test.assert.verifyFileExists(test.given.OutputDirectory, 'test.min.js');
-            test.assert.verifyFileExists(test.given.OutputDirectory, 'test__973896bdfac006e8574adfb9210670eb__.min.js');
+        });
+
+        it("outputs a minified file with the hash in the hashed directory", function () {
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileExists(test.given.HashedDirectory, 'test__973896bdfac006e8574adfb9210670eb__.min.js');
         });
     });
 

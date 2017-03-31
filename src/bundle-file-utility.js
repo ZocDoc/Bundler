@@ -71,6 +71,13 @@ getOutputDirectory = function(bundleName, filename, options) {
     return options.outputdirectory + split + bundleFileName;
 };
 
+getHashedFileDirectory = function(bundleName, options) {
+    var split = getSplit(bundleName);
+    var bundleFileName = bundleName.split(split).pop();
+    return options.hashedfiledirectory + split + bundleFileName;
+};
+
+
 BundleFileUtility.prototype.getOutputFilePath = function(bundleName, filename, options) {
 
     if(options.stagingdirectory) {
@@ -83,6 +90,14 @@ BundleFileUtility.prototype.getOutputFilePath = function(bundleName, filename, o
 
     return filename;
 };
+
+BundleFileUtility.prototype.getBundleWithHashname = function(bundleName, hash, options) {
+    var fileName = getHashedFileDirectory(bundleName, options);
+    var extension = fileName.substring(fileName.lastIndexOf('.'));
+    return fileName.substring(0, fileName.length - extension.length)
+          + '__' + hash + '__'
+          + ".min" + extension;
+}
 
 BundleFileUtility.prototype.getMinFileName = function(bundleName, fileName, options) {
 

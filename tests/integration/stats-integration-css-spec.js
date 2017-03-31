@@ -7,6 +7,7 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting Css:
     beforeEach(function () {
         test.given.StagingDirectoryIs('staging-dir');
         test.given.OutputDirectoryIs('output-dir');
+        test.given.HashedDirectoryIs('hashing-dir');
         test.given.FileToBundle('file1.css',    '.css1 { color: red; }');
         test.given.FileToBundle('file2.css',    '.css2 { color: green; }');
         test.given.FileToBundle('file3.less',    '.css3 { color: green; }');
@@ -30,12 +31,18 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting Css:
                 });
         });
 
-        it("The stats option outputs the minified file and the minified file with a hash in it", function () {
+        it("outputs a minified file in the output directory", function () {
 
             test.actions.Bundle();
 
             test.assert.verifyFileExists(test.given.OutputDirectory, 'test.min.css');
-            test.assert.verifyFileExists(test.given.OutputDirectory, 'test__ad2983d9c10c124b24c1dda1a9ac3b69__.min.css');
+        });
+
+        it("outputs a minified file with the hash in the hashed directory", function () {
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileExists(test.given.HashedDirectory, 'test__ad2983d9c10c124b24c1dda1a9ac3b69__.min.css');
         });
     });
 
