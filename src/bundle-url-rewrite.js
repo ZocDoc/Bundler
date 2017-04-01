@@ -24,15 +24,24 @@ var ext = require('./string-extensions.js'),
     fs = require("fs"),
     hasher = require('crypto');
 
+  getSplit = function(fileName) {
+      return fileName.indexOf('/') < 0 ? '\\' : '/';
+  };
+
 function BundleUrlRewriter(
     fileSystem,
     outputRoot,
-    rootPath
+    rootPath,
+    hashDirectory
 ) {
     fileSystem = fileSystem || fs;
 
     if(!outputRoot.endsWith('/')) {
         outputRoot = outputRoot + '/';
+    }
+
+    if(hashDirectory && !hashDirectory.endsWith('/')) {
+        hashDirectory = hashDirectory + '/';
     }
 
     if (!rootPath.endsWith('/')) {
@@ -41,7 +50,14 @@ function BundleUrlRewriter(
 
     var generateHashOfFile = function (filepath) {
         var fileText = fileSystem.readFileSync(filepath);
-        return hasher.createHash('md5').update(fileText).digest('hex');
+        return {
+           text: fileText,
+           hash: hasher.createHash('md5').update(fileText).digest('hex')
+         };
+    };
+
+    var writeFile = function(filePath, fileText) {
+        fileSystem.writeFileSync(filePath, fileText);
     };
 
     this.rewriteUrl = function (url) {
@@ -55,21 +71,47 @@ function BundleUrlRewriter(
             fileUrl = cleanedUrl;
         }
 
-		var filepath = rootPath + fileUrl;
-		
+		    var filepath = rootPath + fileUrl;
+
+        var exists = fileSystem.existsSync(filepath);
+        if (!exists) {
+            return cleanedUrl;
+        }
+
+        var fileHash = generateHashOfFile(filepath).hash;
+
+    		var seperator = '__/';
+    		if(cleanedUrl.startsWith('/')) {
+    			seperator = '__';
+    		}
+
+        return outputRoot + 'version__' + fileHash + seperator + cleanedUrl;
+    };
+
+    this.rewriteHashedUrl = function (url) {
+        var cleanedUrl = url.replace("url(", "").replace(/\)/g, "").replace(/'/g, "").replace(/"/g, "");
+
+        var fileUrl;
+        var urlHashMatch = cleanedUrl.match(this.hashRegex);
+        if (urlHashMatch) {
+            fileUrl = urlHashMatch[1];
+        } else {
+            fileUrl = cleanedUrl;
+        }
+
+		    var filepath = rootPath + fileUrl;
+
         var exists = fileSystem.existsSync(filepath);
         if (!exists) {
             return cleanedUrl;
         }
 
         var fileHash = generateHashOfFile(filepath);
-        
-		var seperator = '__/';
-		if(cleanedUrl.startsWith('/')) {
-			seperator = '__';
-		}
-		
-        return outputRoot + 'version__' + fileHash + seperator + cleanedUrl;
+        var split = getSplit(filepath);
+        var fileName = filepath.split(split).pop();
+
+        writeFile(hashDirectory + fileHash.hash + fileName, fileHash.text);
+        return outputRoot + fileHash.hash + fileName;
     };
 
     var fileExtensions = [
@@ -96,6 +138,17 @@ BundleUrlRewriter.prototype.VersionUrls = function (cssFileText) {
 
     (cssFileText.match(_this.urlRegex) || []).forEach(function (url) {
         var rewrittenUrl = "url('" + _this.rewriteUrl(url) + "')";
+        cssFileText = cssFileText.replace(url, rewrittenUrl);
+    });
+
+    return cssFileText;
+};
+
+BundleUrlRewriter.prototype.VersionHashUrls = function (cssFileText) {
+    var _this = this;
+
+    (cssFileText.match(_this.urlRegex) || []).forEach(function (url) {
+        var rewrittenUrl = "url('" + _this.rewriteHashedUrl(url) + "')";
         cssFileText = cssFileText.replace(url, rewrittenUrl);
     });
 

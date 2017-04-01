@@ -63,7 +63,8 @@ var fs = require("fs"),
     file = require('./file'),
     webpack = require('./webpack'),
     sourceMap = require('convert-source-map'),
-    urlVersioning = null;
+    urlVersioning = null,
+    Promise = require('bluebird');
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
 
@@ -83,7 +84,8 @@ if(bundlerOptions.DefaultOptions.rewriteimagefileroot && bundlerOptions.DefaultO
     urlVersioning = new urlRewrite.BundleUrlRewriter(
         fs,
         bundlerOptions.DefaultOptions.rewriteimageoutputroot,
-        bundlerOptions.DefaultOptions.rewriteimagefileroot
+        bundlerOptions.DefaultOptions.rewriteimagefileroot,
+        bundlerOptions.DefaultOptions.hashedfiledirectory
     );
 }
 
@@ -487,13 +489,22 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             })
             .then(function(allMinCss) {
 
+                var code = allMinCss.code;
                 if (urlVersioning) {
+                    code = urlVersioning.VersionHashUrls(allMinCss.code);
                     allMinCss.code = urlVersioning.VersionUrls(allMinCss.code);
                 }
 
-                return cssValidator.validate(cssBundle, allMinCss);
+                return new Promise.all([
+                    cssValidator.validate(cssBundle, allMinCss),
+                    cssValidator.validate(cssBundle, {
+                        code: code
+                    })
+                ]);
             })
-            .then(function(allMinCss) {
+            .then(function(minifiedCss) {
+
+                var allMinCss = minifiedCss[0];
 
                 var hash = bundleStatsCollector.AddFileHash(bundleName, allMinCss.code);
 
@@ -504,7 +515,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                     return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory)
                         .then(function() {
                             var fileNameWithHash = bundleFileUtility.getBundleWithHashname(bundleName, hash, options);
-                            return file.write(allMinCss.code, allMinCss.map, file.type.CSS, fileNameWithHash, options.siterootdirectory);
+                            return file.write(minifiedCss[1].code, allMinCss.map, file.type.CSS, fileNameWithHash, options.siterootdirectory);
                         });
                 } else {
                     return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory);
