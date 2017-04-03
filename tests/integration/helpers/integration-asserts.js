@@ -16,6 +16,10 @@ Asserts.prototype.verifyBundleIs = function(expectedContents) {
     this.Utility.VerifyFileContents(this.Givens.OutputDirectory, "test.min." + this.Suffix, expectedContents);
 };
 
+Asserts.prototype.verifyHashedFileContents = function(fileName, expectedContents) {
+    this.Utility.VerifyFileContents(this.Givens.HashedDirectory, fileName, expectedContents);
+};
+
 Asserts.prototype.verifyFileAndContentsAre = function (directory, file, expectedContents) {
     this.Utility.VerifyFileContents(directory, file, expectedContents);
 };

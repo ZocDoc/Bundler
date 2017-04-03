@@ -63,7 +63,8 @@ var fs = require("fs"),
     file = require('./file'),
     webpack = require('./webpack'),
     sourceMap = require('convert-source-map'),
-    urlVersioning = null;
+    urlVersioning = null,
+    Promise = require('bluebird');
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
 
@@ -83,7 +84,8 @@ if(bundlerOptions.DefaultOptions.rewriteimagefileroot && bundlerOptions.DefaultO
     urlVersioning = new urlRewrite.BundleUrlRewriter(
         fs,
         bundlerOptions.DefaultOptions.rewriteimageoutputroot,
-        bundlerOptions.DefaultOptions.rewriteimagefileroot
+        bundlerOptions.DefaultOptions.rewriteimagefileroot,
+        bundlerOptions.DefaultOptions.hashedfiledirectory
     );
 }
 
@@ -283,11 +285,17 @@ function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) 
             .then(function(allMinJs) {
 
                 var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
+                var hash = bundleStatsCollector.AddFileHash(bundleName, allMinJs.code);
 
-                bundleStatsCollector.AddFileHash(bundleName, allMinJs.code);
-
-                return file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory);
-
+                if (bundlerOptions.DefaultOptions.hashedfiledirectory) {
+                    return file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory)
+                        .then(function() {
+                            var fileNameWithHash = bundleFileUtility.getBundleWithHashname(bundleName, hash, options);
+                            return file.write(allMinJs.code, allMinJs.map, file.type.JS, fileNameWithHash, options.siterootdirectory);
+                        });
+                } else {
+                    return file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory);
+                }
             })
             .then(cb)
             .catch(handleError);
@@ -481,21 +489,37 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
             })
             .then(function(allMinCss) {
 
+                var code = allMinCss.code;
                 if (urlVersioning) {
+                    code = urlVersioning.VersionHashUrls(allMinCss.code);
                     allMinCss.code = urlVersioning.VersionUrls(allMinCss.code);
                 }
 
-                return cssValidator.validate(cssBundle, allMinCss);
-
+                return new Promise.all([
+                    cssValidator.validate(cssBundle, allMinCss),
+                    cssValidator.validate(cssBundle, {
+                        code: code
+                    })
+                ]);
             })
-            .then(function(allMinCss) {
+            .then(function(minifiedCss) {
 
-                bundleStatsCollector.AddFileHash(bundleName, allMinCss.code);
+                var allMinCss = minifiedCss[0];
+
+                var hash = bundleStatsCollector.AddFileHash(bundleName, allMinCss.code);
 
                 var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
+                var fileNameWithHash = minFileName.replace('.min.', '__' + hash + '__' + '.min.');
 
-                return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory);
-
+                if (bundlerOptions.DefaultOptions.hashedfiledirectory) {
+                    return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory)
+                        .then(function() {
+                            var fileNameWithHash = bundleFileUtility.getBundleWithHashname(bundleName, hash, options);
+                            return file.write(minifiedCss[1].code, allMinCss.map, file.type.CSS, fileNameWithHash, options.siterootdirectory);
+                        });
+                } else {
+                    return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory);
+                }
             })
             .then(cb)
             .catch(handleError);
@@ -521,12 +545,9 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
         processedFiles[file] = true;
 
         var isLess = file.endsWith(".less");
-        var isSass = (file.endsWith(".sass") || file.endsWith(".scss"));
         var cssFile = isLess ?
             file.replace(".less", ".css")
-            : isSass ?
-            file.replace(".sass", ".css").replace(".scss", ".css") :
-            file;
+            : file;
 
         var filePath = path.join(bundleDir, file),
             cssPath = path.join(bundleDir, cssFile),
@@ -540,7 +561,7 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
 
                 var next = this;
 
-                if (isLess || isSass) {
+                if (isLess) {
                     cssPath = cssPathOutput;
                 }
 
@@ -561,10 +582,6 @@ function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, c
                     if (isLess) {
 
                         compile.less(compileOptions).then(next).catch(handleError);
-
-                    } else if (isSass) {
-
-                        compile.sass(compileOptions).then(next).catch(handleError);
 
                     } else {
 

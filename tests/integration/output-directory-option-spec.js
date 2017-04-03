@@ -15,7 +15,7 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
         });
 
         it("If an output directory is specified, then the minified bundle is put in it.", function () {
-            
+
             test.given.FileToBundle('file1.js', 'var file1 = "file1";');
             test.given.FileToBundle('file2.js', 'var file2 = "file2";');
 
@@ -169,26 +169,6 @@ test.describeIntegrationTest("Outputting to another directory:", function() {
                 ".file2 {\n" +
                 "  color: green;\n" +
                 "}\n");
-        });
-
-        it("If an output directory is specified, then any computed scss files are put in it.", function () {
-            test.given.FileToBundle('file1.css', '.file1 { color: red; }');
-            test.given.FileToBundle('file2.scss',
-                  '$green: #008000;'
-                + '#css-results {'
-                + '            #scss {'
-                + '                    background: $green;'
-                + '                }'
-                + '            }');
-
-            test.actions.Bundle();
-
-            test.assert.verifyFileDoesNotExist(test.given.TestDirectory, 'file2.css');
-            test.assert.verifyFileAndContentsAre(
-                testDirectory + '/output-dir',
-                'file2.css',
-                "#css-results #scss {\n" +
-                    "  background: #008000; }\n");
         });
     });
 });

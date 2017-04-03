@@ -240,7 +240,54 @@ describe("BundleFileUtility - ", function() {
         givenOutputDirectory = function(directory) {
             _options['outputdirectory'] = directory;
         };
+    });
 
+    describe("getBundleWithHashname: ", function() {
 
+        var hash = '0q921384701937204';
+        var _hashedFilePath,
+            getFileNameWithHash,
+            givenBundleName,
+            givenOutputDirectory,
+            verifyFileName,
+            bundleName;
+
+        beforeEach(() => {
+            givenOutputDirectory('hashed-directory');
+        });
+
+        it("Swaps out the extension with min.extension ", function() {
+
+            givenBundleName('/folder1/file1.js');
+
+            getFileNameWithHash();
+
+            verifyBundleName('hashed-directory/file1__0q921384701937204__.min.js');
+        });
+
+        it("Handles bundle paths with multiple periods ", function() {
+
+            givenBundleName('/fol.der1/file1.sauce.css');
+
+            getFileNameWithHash();
+
+            verifyBundleName('hashed-directory/file1.sauce__0q921384701937204__.min.css');
+        });
+
+        getFileNameWithHash = function() {
+            _hashedFilePath = getUtil().getBundleWithHashname(bundleName, hash, _options);
+        };
+
+        verifyBundleName = function(expected) {
+            expect(_hashedFilePath).toBe(expected);
+        };
+
+        givenBundleName = function(bundle) {
+            bundleName = bundle;
+        }
+
+        givenOutputDirectory = function(directory) {
+            _options['hashedfiledirectory'] = directory;
+        };
     });
 });

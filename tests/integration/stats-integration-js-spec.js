@@ -1,12 +1,13 @@
-var testDirectory = 'stats-test-suite';
+var testDirectory = 'stats-test-suite-js';
 var integrationTest = require('./helpers/jasmine-wrapper.js');
 var test = new integrationTest.Test(integrationTest.TestType.Js, testDirectory);
 
-test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", function() {
+test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting JS:", function() {
 
     beforeEach(function () {
         test.given.StagingDirectoryIs('staging-dir');
         test.given.OutputDirectoryIs('output-dir');
+        test.given.HashedDirectoryIs('hashing-dir');
         test.given.FileToBundle('file1.js',       'var file1 = "file1";');
         test.given.FileToBundle('file2.js',       'var file2 = "file2";');
         test.given.FileToBundle('file3.mustache', '<div> {{a}} </div>');
@@ -29,6 +30,20 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
                     expect(json['test.js']).toBe("973896bdfac006e8574adfb9210670eb");
                 });
         });
+
+        it("outputs a minified file in the output directory", function () {
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileExists(test.given.OutputDirectory, 'test.min.js');
+        });
+
+        it("outputs a minified file with the hash in the hashed directory", function () {
+
+            test.actions.Bundle();
+
+            test.assert.verifyFileExists(test.given.HashedDirectory, 'test__973896bdfac006e8574adfb9210670eb__.min.js');
+        });
     });
 
     describe("Debug Files: ", function () {
@@ -43,9 +58,9 @@ test.describeIntegrationTest("Integration Tests for Bundle Stats Collecting:", f
                 function (json) {
                     validateJsonObject(json, function (b) {
                         expect(b).toEqual([
-                            'stats-test-suite\\test\\file1.js',
-                            'stats-test-suite\\test\\file2.js',
-                            './stats-test-suite/staging-dir/testjs/test-file3.js'
+                            'stats-test-suite-js\\test\\file1.js',
+                            'stats-test-suite-js\\test\\file2.js',
+                            './stats-test-suite-js/staging-dir/testjs/test-file3.js'
                         ]);
                     });
                 });

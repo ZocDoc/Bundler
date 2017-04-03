@@ -40,7 +40,6 @@
     "handlebars": "^4.0.5",
     "hogan.js-template": "2.0.0",
     "less": "2.5.1",
-    "node-sass": "3.4.2",
     "precinct": "^2.5.1",
     "source-map": "^0.5.3",
     "step": "0.0.5",
