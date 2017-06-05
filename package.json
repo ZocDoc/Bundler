@@ -46,7 +46,8 @@
     "string-to-stream": "^1.0.1",
     "stylestats": "5.4.3",
     "uglify-js": "^2.6.1",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "threads": "0.8.1"
   },
   "devDependencies": {
     "app-root-path": "^1.0.0",

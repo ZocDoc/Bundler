@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var readTextFile = require('../read-text-file');
+var readTextFile = require('../read-text-file').readTextFile;
 var sourceMap = require('./source-map');
 
 function read(filePath) {

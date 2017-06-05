@@ -26,6 +26,20 @@ SOFTWARE.
 // with an exit code that will be identified as a failure by most
 // windows build systems
 
+const config = require('threads').config;
+config.set({
+  basepath : {
+    node    : __dirname + '/worker/'
+  }
+});
+
+const Pool = require('threads').Pool;
+const os = require('os');
+const cpuCount = os.cpus().length;
+const pool = new Pool(cpuCount);
+
+pool.run('bundle-worker.js');
+
 var handleError = function(err) {
     if (err.stack) {
         console.error(err.stack);
@@ -56,7 +70,8 @@ var fs = require("fs"),
     _ = require('underscore'),
     collection = require('./collection'),
     cssValidator = require('./css-validator'),
-    readTextFile = require('./read-text-file'),
+    readTextFile = require('./read-text-file').readTextFile,
+    readTextFilePs = require('./read-text-file').readTextFilePs,
     compile = require('./compile'),
     minify = require('./minify'),
     concat = require('./concat'),
@@ -68,7 +83,10 @@ var fs = require("fs"),
 
 bundleFileUtility = new bundleFileUtilityRequire.BundleFileUtility(fs);
 
-bundlerOptions.ParseCommandLineArgs(process.argv.splice(2));
+process_args = process.argv.splice(2);
+console.log('args: ' + process_args);
+
+bundlerOptions.ParseCommandLineArgs(process_args);
 
 if (!bundlerOptions.Directories.length) {
     console.log("No directories were specified.");
@@ -133,6 +151,7 @@ var scanIndex = 0;
         });
     } else {
         bundleStatsCollector.SaveStatsToDisk(bundlerOptions.DefaultOptions.outputdirectory || process.cwd());
+        pool.killAll();
     }
 })();
 
@@ -140,508 +159,38 @@ function scanDir(allFiles, cb) {
 
     allFiles.Index();
 
+    // Couldn't find a nicer way to initialize the pool with args
+    // Seems to be some interest in a 'send all' function though https://github.com/andywer/threads.js/issues/48
+    Promise.all(
+        _.range(cpuCount).map(i => pool.send({
+                type: 'bundle-options',
+                args: process_args,
+                allFiles: allFiles
+            }).promise())
+    ).then(function(){
+        
     var jsBundles  = allFiles.getBundles(bundlefiles.BundleType.Javascript);
     var cssBundles = allFiles.getBundles(bundlefiles.BundleType.Css);
 
-    Step(
-        function () {
-            var next = this;
-            var index = 0;
-            var nextBundle = function () {
-                if (index < jsBundles.length)
-                    processBundle(jsBundles[index++]);
-                else
-                    next();
-            };
-            function processBundle(jsBundle) {
-                var bundleDir = path.dirname(jsBundle);
-                var bundleName = jsBundle.replace('.bundle', '');
-
-                readTextFile(jsBundle, function (data) {
-                    var jsFiles = removeCR(data).split("\n");
-                    var options = bundlerOptions.getOptionsForBundle(jsFiles);
-
-                    bundleName = bundleFileUtility.getOutputFilePath(bundleName, bundleName, options);
-
-                    var tmpFiles = collection.createBundleFiles(jsBundle);
-
-                    jsFiles.forEach(function(name) {
-
-                        if(name.startsWith('#')) { return; }
-
-                        var currentItem = bundleDir + '/' +  name;
-                        var stat = fs.statSync(currentItem);
-                        if(!stat.isDirectory()) {
-                            tmpFiles.addFile(name);
-                        }
-                        else if(currentItem != bundleDir + '/'){
-
-                            var filesInDir = allFiles.getFilesInDirectory(
-                                                bundlefiles.BundleType.Javascript,
-                                                currentItem,
-                                                name,
-                                                options
-                                            );
-                            _.chain(filesInDir).filter(function(a) { return a.endsWith(".mustache")}).each(tmpFiles.addFile, tmpFiles);
-                            _.chain(filesInDir).filter(function(a) { return a.endsWith(".js") || a.endsWith(".jsx") || a.endsWith(".es6") || a.endsWith(".json"); }).each(tmpFiles.addFile, tmpFiles);
-                        }
-                    });
-
-                    jsFiles = tmpFiles.toJSON();
-
-                    processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, nextBundle);
-                });
-            };
-            nextBundle();
-        },
-        function () {
-            var next = this;
-            var index = 0;
-            var nextBundle = function () {
-                if (index < cssBundles.length)
-                    processBundle(cssBundles[index++]);
-                else
-                    next();
-            };
-            function processBundle(cssBundle) {
-                var bundleDir = path.dirname(cssBundle);
-                var bundleName = cssBundle.replace('.bundle', '');
-
-                readTextFile(cssBundle, function (data) {
-                    var cssFiles = removeCR(data).split("\n");
-                    var options = bundlerOptions.getOptionsForBundle(cssFiles);
-
-                    bundleName = bundleFileUtility.getOutputFilePath(bundleName, bundleName, options);
-
-                    var tmpFiles = collection.createBundleFiles(cssBundle);
-
-                    cssFiles.forEach(function(name) {
-
-                        if(name.startsWith('#')) { return; }
-
-                        var currentItem = bundleDir + '/' +  name;
-                        var stat = fs.statSync(currentItem);
-                        if(!stat.isDirectory()) {
-                            tmpFiles.addFile(name);
-                        }
-                        else if(currentItem != bundleDir + '/'){
-
-                            var cssFiles = allFiles.getFilesInDirectory(
-                                bundlefiles.BundleType.Css,
-                                currentItem,
-                                name,
-                                options
-                            );
-
-                            _.each(cssFiles, tmpFiles.addFile, tmpFiles);
-                        }
-                    });
-
-                    cssFiles = tmpFiles.toJSON();
-
-                    processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, nextBundle);
-                });
-            }
-            nextBundle();
-        },
-        cb
-    );
-}
-
-function processJsBundle(options, jsBundle, bundleDir, jsFiles, bundleName, cb) {
-
-    var processedFiles = {};
-
-    var allJsArr = [], allMinJsArr = [], index = 0, pending = 0;
-    var whenDone = function () {
-
-        var sourceMap = options.sourcemaps && !options.webpack;
-
-        concat.files({
-                files: allJsArr,
-                fileType: file.type.JS,
-                sourceMap: sourceMap,
-                require: options.require,
-                bundleName: jsBundle,
-                bundleStatsCollector: bundleStatsCollector
-            })
-            .then(function(allJs) {
-
-                return file.write(allJs.code, allJs.map, file.type.JS, bundleName, options.siterootdirectory);
-
-            })
-            .then(function() {
-
-                return concat.files({
-                    files: allMinJsArr,
-                    fileType: file.type.JS,
-                    sourceMap: sourceMap,
-                    require: options.require,
-                    bundleName: jsBundle,
-                    bundleStatsCollector: bundleStatsCollector
-                });
-
-            })
-            .then(function(allMinJs) {
-
-                var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
-                var hash = bundleStatsCollector.AddFileHash(bundleName, allMinJs.code);
-
-                if (bundlerOptions.DefaultOptions.hashedfiledirectory) {
-                    return file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory)
-                        .then(function() {
-                            var fileNameWithHash = bundleFileUtility.getBundleWithHashname(bundleName, hash, options);
-                            return file.write(allMinJs.code, allMinJs.map, file.type.JS, fileNameWithHash, options.siterootdirectory);
-                        });
-                } else {
-                    return file.write(allMinJs.code, allMinJs.map, file.type.JS, minFileName, options.siterootdirectory);
-                }
-            })
-            .then(cb)
-            .catch(handleError);
-
-        if (options.require) {
-            bundleStatsCollector.AddDebugFile(jsBundle, bundleName);
-        } else {
-            allJsArr.forEach(function(jsFile) {
-                bundleStatsCollector.AddDebugFile(jsBundle, jsFile.path);
-            });
-        }
-
-    };
-
-    bundleStatsCollector.ClearStatsForBundle(jsBundle);
-
-    if (options.webpack) {
-        webpack.validate({
-            files: jsFiles,
-            fileType: file.type.JS
-        });
-    }
-
-    jsFiles.forEach(function (file) {
-        // Skip blank lines/files beginning with '.' or '#', but allow ../relative paths
-
-        if (!(file = file.trim())
-            || (file.startsWith(".") && !file.startsWith(".."))
-            || file.startsWith('#')
-            || processedFiles[file])
-            return;
-
-        processedFiles[file] = true;
-
-        var isMustache = file.endsWith(".mustache");
-        var isJsx = file.endsWith(".jsx");
-        var isES6 = file.endsWith(".es6");
-        var isJson = file.endsWith(".json");
-        var jsFile = isMustache ? file.replace(".mustache", ".js")
-                   : isJsx ? file.replace(".jsx", ".js")
-                   : isES6 ? file.replace(".es6", ".js")
-	           : file;
-
-        var filePath = path.join(bundleDir, file),
-              jsPath = path.join(bundleDir, jsFile),
-              jsPathOutput = bundleFileUtility.getOutputFilePath(bundleName, jsPath, options),
-              minJsPath = bundleFileUtility.getMinFileName(bundleName, jsPathOutput,  options);
-
-        var i = index++;
-        pending++;
-        Step(
-            function () {
-
-                var next = this;
-
-                if (isMustache || isJsx || isES6) {
-                    jsPath = jsPathOutput;
-                }
-
-                readTextFile(filePath, function(code) {
-
-                    var compileOptions = {
-                        code: code,
-                        originalPath: filePath,
-                        inputPath: filePath,
-                        outputPath: jsPathOutput,
-                        bundleDir: bundleDir,
-                        bundleStatsCollector: bundleStatsCollector,
-                        sourceMap: options.sourcemaps,
-                        require: options.require,
-                        siteRoot: options.siterootdirectory,
-                        useTemplateDirs: options.usetemplatedirs
-                    };
-
-                    if (isJson) {
-
-                        bundleStatsCollector.ParseJsonForStats(jsBundle, filePath, code);
-                        if (! --pending) whenDone();
-
-                    } else if (isMustache) {
-
-                        bundleStatsCollector.ParseMustacheForStats(jsBundle, code);
-                        compile.mustache(compileOptions).then(next).catch(handleError);
-
-                    } else if (isJsx) {
-
-                        bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                        compile.jsx(compileOptions).then(next).catch(handleError);
-
-                    } else if (isES6) {
-
-                        bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                        compile.es6(compileOptions).then(next).catch(handleError);
-
-                    } else {
-
-                        if (options.webpack) {
-
-                            code = sourceMap.removeComments(code);
-                            code = sourceMap.removeMapFileComments(code);
-
-                        }
-
-                        bundleStatsCollector.ParseJsForStats(jsBundle, code);
-                        next({
-                            code: code,
-                            path: jsPath,
-                            originalPath: filePath
-                        });
-
-                    }
-
-
-                });
-
-            },
-            function (js) {
-                if (options.webpack) {
-
-                    if (jsPath.endsWith('.min.js')) {
-                        allMinJsArr[i] = js;
-                    } else {
-                        allJsArr[i] = js;
-                    }
-
-                    if (! --pending) whenDone();
-
-                } else {
-
-                    allJsArr[i] = js;
-                    var withMin = function (minJs) {
-                        allMinJsArr[i] = minJs;
-
-                        if (! --pending) whenDone();
-                    };
-
-                    minify.js({
-                        code: js.code,
-                        map: js.map,
-                        originalPath: filePath,
-                        inputPath: jsPath,
-                        outputPath: minJsPath,
-                        bundleDir: bundleDir,
-                        bundleStatsCollector: bundleStatsCollector,
-                        sourceMap: options.sourcemaps,
-                        siteRoot: options.siterootdirectory,
-                        useTemplateDirs: options.usetemplatedirs
-                    }).then(withMin).catch(handleError);
-
-                }
-            }
-        );
+    var jobs = _.map(jsBundles, function(bundle){
+            return pool.send({
+            type: 'compile-js',
+            bundle
+        }).promise()});
+
+    jobs.concat(_.map(cssBundles, function(bundle){
+            return pool.send({
+            type: 'compile-css',
+            bundle
+        }).promise()}));
+
+    console.log('starting ' + jobs.length + ' jobs');
+
+    Promise
+        .all(jobs)
+        .then(function(){
+            cb();
+        })
+        .catch(handleError);
     });
-}
-
-function processCssBundle(options, cssBundle, bundleDir, cssFiles, bundleName, cb) {
-
-    var processedFiles = {};
-
-    var allCssArr = [], allMinCssArr = [], index = 0, pending = 0;
-    var whenDone = function () {
-
-        var sourceMap = options.sourcemaps && !options.webpack;
-
-        allCssArr.forEach(function(cssFile) {
-            bundleStatsCollector.AddDebugFile(cssBundle, cssFile.path);
-        });
-
-        concat.files({
-                files: allCssArr,
-                fileType: file.type.CSS,
-                sourceMap: sourceMap,
-                bundleName: cssBundle,
-                bundleStatsCollector: bundleStatsCollector
-            })
-            .then(function(allCss) {
-
-                return file.write(allCss.code, allCss.map, file.type.CSS, bundleName, options.siterootdirectory);
-
-            })
-            .then(function() {
-
-                return concat.files({
-                    files: allMinCssArr,
-                    fileType: file.type.CSS,
-                    sourceMap: sourceMap,
-                    bundleName: cssBundle,
-                    bundleStatsCollector: bundleStatsCollector
-                });
-
-            })
-            .then(function(allMinCss) {
-
-                var code = allMinCss.code;
-                if (urlVersioning) {
-                    code = urlVersioning.VersionHashUrls(allMinCss.code);
-                    allMinCss.code = urlVersioning.VersionUrls(allMinCss.code);
-                }
-
-                return new Promise.all([
-                    cssValidator.validate(cssBundle, allMinCss),
-                    cssValidator.validate(cssBundle, {
-                        code: code
-                    })
-                ]);
-            })
-            .then(function(minifiedCss) {
-
-                var allMinCss = minifiedCss[0];
-
-                var hash = bundleStatsCollector.AddFileHash(bundleName, allMinCss.code);
-
-                var minFileName = bundleFileUtility.getMinFileName(bundleName, bundleName, options);
-                var fileNameWithHash = minFileName.replace('.min.', '__' + hash + '__' + '.min.');
-
-                if (bundlerOptions.DefaultOptions.hashedfiledirectory) {
-                    return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory)
-                        .then(function() {
-                            var fileNameWithHash = bundleFileUtility.getBundleWithHashname(bundleName, hash, options);
-                            return file.write(minifiedCss[1].code, allMinCss.map, file.type.CSS, fileNameWithHash, options.siterootdirectory);
-                        });
-                } else {
-                    return file.write(allMinCss.code, allMinCss.map, file.type.CSS, minFileName, options.siterootdirectory);
-                }
-            })
-            .then(cb)
-            .catch(handleError);
-
-    };
-
-    bundleStatsCollector.ClearStatsForBundle(cssBundle);
-
-    if (options.webpack) {
-        webpack.validate({
-            files: cssFiles,
-            fileType: file.type.CSS
-        });
-    }
-
-    cssFiles.forEach(function (file) {
-        if (!(file = file.trim())
-            || (file.startsWith(".") && !file.startsWith(".."))
-            || file.startsWith('#')
-            || processedFiles[file])
-            return;
-
-        processedFiles[file] = true;
-
-        var isLess = file.endsWith(".less");
-        var cssFile = isLess ?
-            file.replace(".less", ".css")
-            : file;
-
-        var filePath = path.join(bundleDir, file),
-            cssPath = path.join(bundleDir, cssFile),
-            cssPathOutput = bundleFileUtility.getOutputFilePath(bundleName, cssPath, options),
-            minCssPath = bundleFileUtility.getMinFileName(bundleName, cssPathOutput, options);
-
-        var i = index++;
-        pending++;
-        Step(
-            function () {
-
-                var next = this;
-
-                if (isLess) {
-                    cssPath = cssPathOutput;
-                }
-
-                readTextFile(filePath, function(code) {
-
-                    var compileOptions = {
-                        code: code,
-                        originalPath: filePath,
-                        inputPath: filePath,
-                        outputPath: cssPathOutput,
-                        bundleDir: bundleDir,
-                        bundleStatsCollector: bundleStatsCollector,
-                        sourceMap: options.sourcemaps,
-                        siteRoot: options.siterootdirectory,
-                        useTemplateDirs: options.usetemplatedirs
-                    };
-
-                    if (isLess) {
-
-                        compile.less(compileOptions).then(next).catch(handleError);
-
-                    } else {
-
-                        if (options.webpack) {
-
-                            code = sourceMap.removeComments(code);
-                            code = sourceMap.removeMapFileComments(code);
-
-                        }
-
-                        next({
-                            code: code,
-                            path: cssPath,
-                            originalPath: filePath
-                        });
-
-                    }
-
-                });
-
-            },
-            function (css) {
-                if (options.webpack) {
-
-                    if (cssPath.endsWith('.min.css')) {
-                        allMinCssArr[i] = css;
-                    } else {
-                        allCssArr[i] = css;
-                    }
-
-                    if (!--pending) whenDone();
-
-                } else {
-
-                    allCssArr[i] = css;
-                    var withMin = function (minCss) {
-                        allMinCssArr[i] = minCss;
-
-                        if (!--pending) whenDone();
-                    };
-
-                    minify.css({
-                        code: css.code,
-                        map: css.map,
-                        originalPath: filePath,
-                        inputPath: cssPath,
-                        outputPath: minCssPath,
-                        bundleDir: bundleDir,
-                        bundleStatsCollector: bundleStatsCollector,
-                        sourceMap: options.sourcemaps,
-                        siteRoot: options.siterootdirectory,
-                        useTemplateDirs: options.usetemplatedirs
-                    }).then(withMin).catch(handleError);
-
-                }
-            }
-        );
-    });
-}
-
-function removeCR(text) {
-    return text.replace(/\r/g, '');
 }

@@ -1,5 +1,18 @@
 var fs = require('fs');
 
+function readTextFilePs(filePath){
+    return new Promise(function(resolve, reject) {
+
+        fs.readFile(filePath, 'utf-8', function(err, fileContents) {
+            if (err) {
+                reject(err);
+            }
+
+            resolve(stripBOM(fileContents));
+        });
+    });
+}
+
 function readTextFile(filePath, cb) {
 
     fs.readFile(filePath, 'utf-8', function(err, fileContents) {
@@ -27,4 +40,7 @@ function stripBOM(content) {
 
 }
 
-module.exports = readTextFile;
+module.exports = {
+    readTextFile: readTextFile,
+    readTextFilePs: readTextFilePs
+};
