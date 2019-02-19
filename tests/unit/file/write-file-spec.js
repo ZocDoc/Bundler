@@ -6,7 +6,7 @@ describe('write file', function() {
 
     var outputPath = 'foo-output.js',
         sourceMapComment,
-        writtenText,
+        writtenTexts,
         cleanedMap,
         writeFileError;
 
@@ -20,11 +20,11 @@ describe('write file', function() {
     var spyOnWriteFile = function() {
 
         writeFileError = undefined;
-        writtenText = undefined;
+        writtenTexts = [];
 
         write.__set__('fs', {
             writeFile: function(filePath, text, encoding, cb) {
-                writtenText = text;
+                writtenTexts.push(text);
                 cb(writeFileError);
             }
         })
@@ -139,7 +139,10 @@ describe('write file', function() {
             })
             .then(function() {
 
-                assertTextWasWrittenToFile('var x = 1;\n//# sourceMappingURL=data:application/json;base64,3459g490e5g');
+				assertTextsWrittenToFiles([
+					'{"version":3,"sources":["foo.js"]}',
+					'var x = 1;\n//# sourceMappingURL=data:application/json;base64,3459g490e5g',
+				]);
 
                 done();
 
@@ -210,8 +213,14 @@ describe('write file', function() {
 
     var assertTextWasWrittenToFile = function(expected) {
 
-        expect(writtenText).toEqual(expected);
+        expect(writtenTexts).toEqual([expected]);
 
     };
+	
+	var assertTextsWrittenToFiles = function(expectedFileContents) {
+		
+		expect(writtenTexts).toEqual(expectedFileContents);
+		
+	};
 
 });
