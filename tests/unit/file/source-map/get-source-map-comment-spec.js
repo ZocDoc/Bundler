@@ -7,27 +7,21 @@ describe('get source map comment', function() {
 
     it('Given map for javascript file, returns single line source mapping URL comment.', function() {
 
-        getSourceMapComment({
-            version: 3,
-            sources: ['foo.js'],
-            names: ['a', 'b'],
-            mappings: ['AAAA', 'BBBB']
-        }, file.type.JS);
+		var sourceMapFile = 'sourceMapPath.min.js.map';
+	
+        getSourceMapComment(sourceMapFile, file.type.JS);
 
-        assertCommentIs('//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZvby5qcyJdLCJuYW1lcyI6WyJhIiwiYiJdLCJtYXBwaW5ncyI6WyJBQUFBIiwiQkJCQiJdfQ==');
+        assertCommentIs('//# sourceMappingURL=' + sourceMapFile);
 
     });
 
     it('Given map for CSS file, returns multiline source mapping URL comment.', function() {
 
-        getSourceMapComment({
-            version: 3,
-            sources: ['foo.less'],
-            names: ['a', 'b'],
-            mappings: ['AAAA', 'BBBB']
-        }, file.type.CSS);
+		var sourceMapFile = 'sourceMapPath.min.js.map';
+	
+        getSourceMapComment(sourceMapFile, file.type.CSS);
 
-        assertCommentIs('/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZvby5sZXNzIl0sIm5hbWVzIjpbImEiLCJiIl0sIm1hcHBpbmdzIjpbIkFBQUEiLCJCQkJCIl19 */');
+        assertCommentIs('/*# sourceMappingURL=' + sourceMapFile + ' */');
 
     });
 

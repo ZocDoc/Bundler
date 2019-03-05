@@ -20,7 +20,7 @@ test.describeIntegrationTest("Generating source maps:", function() {
             test.resetTestType(integrationTest.TestType.Js);
         });
 
-        it("Given source maps option and JSX file, then JSX is compiled with inline source maps.", function () {
+        it("Given source maps option and JSX file, then JSX is compiled with source map file.", function () {
 
             test.given.FileToBundle('file1.jsx',
                 'var file1 = React.createClass({'
@@ -46,12 +46,18 @@ test.describeIntegrationTest("Generating source maps:", function() {
                 '      this.props.name\n' +
                 '    );\n' +
                 '  } });\n' +
-                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksS0FBSyxHQUFHLEtBQUssQ0FBQyxXQUFXLENBQUM7O0FBQUksUUFBTSxFQUFFLGtCQUFXO0FBQUksV0FBTzs7OztNQUFZLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSTtLQUFPLENBQUM7R0FBRyxFQUFDLENBQUMsQ0FBQyJ9'
+                '//# sourceMappingURL=test-file1.js.map'
             );
+			
+			test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testjs',
+                'test-file1.js.map',
+				'{"version":3,"sources":["/test/file1.jsx"],"names":["file1","React","createClass","render","props","name"],"mappings":";;AAAA,IAAIA,QAAQC,MAAMC,WAAN,CAAkB;AAAA;AAAIC,UAAQ,kBAAW;AAAI,WAAO;AAAA;AAAA;AAAA;AAAY,WAAKC,KAAL,CAAWC;AAAvB,KAAP;AAA6C,GAAxE,EAAlB,CAAZ"}'
+			);
 
         });
 
-        it("Given source maps option and ES6 file, then ES6 is compiled with inline source maps.", function () {
+        it("Given source maps option and ES6 file, then ES6 is compiled with source map file.", function () {
 
             test.given.FileToBundle('file1.es6',
                 'var odds = evens.map(v => v + 1);');
@@ -66,12 +72,18 @@ test.describeIntegrationTest("Generating source maps:", function() {
                 'var odds = evens.map(function (v) {\n' +
                 '  return v + 1;\n' +
                 '});\n' +
-                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmVzNiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksSUFBSSxHQUFHLEtBQUssQ0FBQyxHQUFHLENBQUMsVUFBQSxDQUFDO1NBQUksQ0FBQyxHQUFHLENBQUM7Q0FBQSxDQUFDLENBQUMifQ=='
+                '//# sourceMappingURL=test-file1.js.map'
             );
+			
+			test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testjs',
+                'test-file1.js.map',
+				'{"version":3,"sources":["/test/file1.es6"],"names":["odds","evens","map","v"],"mappings":";;AAAA,IAAIA,OAAOC,MAAMC,GAAN,CAAU;AAAA,SAAKC,IAAI,CAAT;AAAA,CAAV,CAAX"}'
+			);
 
         });
 
-        it('Given source maps option and JS files, then combined unminified bundle JS is created with inline source map.', function() {
+        it('Given source maps option and JS files, then combined unminified bundle JS is created with source map file.', function() {
 
             test.given.FileToBundle(
                 'file1.jsx',
@@ -104,12 +116,17 @@ test.describeIntegrationTest("Generating source maps:", function() {
                 '    );\n' +
                 '  } });\n' +
                 ';var x = 1;\n\n' +
-                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCIsIi90ZXN0L2ZpbGUyLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsSUFBSSxLQUFLLEdBQUcsS0FBSyxDQUFDLFdBQVcsQ0FBQzs7QUFBSSxRQUFNLEVBQUUsa0JBQVc7QUFBSSxXQUFPOzs7O01BQVksSUFBSSxDQUFDLEtBQUssQ0FBQyxJQUFJO0tBQU8sQ0FBQztHQUFHLEVBQUMsQ0FBQyxDQUFDO0FDQXpHIn0='
+                '//# sourceMappingURL=test.js.map'
             )
 
+			test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testjs',
+                'test-file1.js.map',
+				'{"version":3,"sources":["/test/file1.jsx"],"names":["file1","React","createClass","render","props","name"],"mappings":";;AAAA,IAAIA,QAAQC,MAAMC,WAAN,CAAkB;AAAA;AAAIC,UAAQ,kBAAW;AAAI,WAAO;AAAA;AAAA;AAAA;AAAY,WAAKC,KAAL,CAAWC;AAAvB,KAAP;AAA6C,GAAxE,EAAlB,CAAZ"}'
+			);
         });
 
-        it('Given source maps option and JS files, then combined minified bundle JS is created with inline source map.', function() {
+        it('Given source maps option and JS files, then combined minified bundle JS is created with source map file.', function() {
 
             test.given.FileToBundle(
                 'file1.jsx',
@@ -129,9 +146,14 @@ test.describeIntegrationTest("Generating source maps:", function() {
             test.assert.verifyBundleIs(
                 ';"use strict";var file1=React.createClass({displayName:"file1",render:function(){return React.createElement("div",null,"file1 ",this.props.name)}});\n' +
                 ';var x=1;\n\n' +
-                '//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmpzeCIsIi90ZXN0L2ZpbGUyLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJZQUFBLElBQUksT0FBUSxNQUFNLGlDQUFnQixPQUFRLFdBQWUsTUFBTyxPQUFBLGtDQUFZLEtBQUssTUFBTTtBQ0F2RixHQUFJLEdBQUk7QURBUixJQUFJLEtBQUssR0FBRyxLQUFLLENBQUMsV0FBVyxDQUFDOztBQUFJLFFBQU0sRUFBRSxrQkFBVztBQUFJLFdBQU87Ozs7TUFBWSxJQUFJLENBQUMsS0FBSyxDQUFDLElBQUk7S0FBTyxDQUFDO0dBQUcsRUFBQyxDQUFDLENBQUMifQ=='
+                '//# sourceMappingURL=test.min.js.map'
             )
-
+			
+			test.assert.verifyFileAndContentsAre(
+                test.given.OutputDirectory,
+                '/test.min.js.map',
+				'{"version":3,"sources":["/test/file1.jsx","/test/file2.js"],"names":[],"mappings":"YAAA,IAAI,OAAQ,MAAM,aAAY,YAAA,QAAI,OAAQ,WAAe,MAAO,OAAA,cAAA,MAAA,KAAA,SAAY,KAAK,MAAM;ACAvF,GAAI,GAAI;ADAR,IAAI,QAAQ,MAAM,WAAN,CAAkB;AAAA;AAAI,UAAQ,kBAAW;AAAI,WAAO;AAAA;AAAA;AAAA;AAAY,WAAK,KAAL,CAAW;AAAvB,KAAP;AAA6C,GAAxE,EAAlB,CAAZ"}'
+			);
         });
 
     });
@@ -142,7 +164,7 @@ test.describeIntegrationTest("Generating source maps:", function() {
             test.resetTestType(integrationTest.TestType.Css);
         });
 
-        it("Given source maps option and less file, then less is compiled with inline source maps.", function () {
+        it("Given source maps option and less file, then less is compiled with source map file.", function () {
 
             test.given.FileToBundle('less1.less',
                 '@color: red;\n.less1 { color: @color; }');
@@ -156,12 +178,17 @@ test.describeIntegrationTest("Generating source maps:", function() {
                 '  color: red;\n' +
                 '}\n' +
                 '\n' +
-                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2xlc3MxLmxlc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0E7RUFBUyxVQUFBIn0= */'
+                '/*# sourceMappingURL=test-less1.css.map */'
             );
 
+			test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testcss',
+                'test-less1.css.map',
+				'{"version":3,"sources":["/test/less1.less"],"names":[],"mappings":"AACA;EAAS,UAAA"}'
+			);
         });
 
-        it('Given source maps option and CSS files, then combined unminified bundle CSS is created with inline source map.', function() {
+        it('Given source maps option and CSS files, then combined unminified bundle CSS is created with source map file.', function() {
 
             test.given.FileToBundle(
                 'file1.less',
@@ -181,8 +208,14 @@ test.describeIntegrationTest("Generating source maps:", function() {
                 '  color: red;\n' +
                 '}\n\n' +
                 '.foo { background: green; }\n\n' +
-                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmxlc3MiLCIvdGVzdC9maWxlMi5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0E7RUFBUyxVQUFBOzs7QUNEVCJ9 */'
+                '/*# sourceMappingURL=test.css.map */'
             )
+			
+            test.assert.verifyFileAndContentsAre(
+                test.given.StagingDirectory + '/testcss',
+                'test.css.map',
+				'{"version":3,"sources":["/test/file1.less","/test/file2.css"],"names":[],"mappings":"AACA;EAAS,UAAA;;;ACDT"}'
+			);
 
         });
 
@@ -202,8 +235,14 @@ test.describeIntegrationTest("Generating source maps:", function() {
             test.assert.verifyBundleIs(
                 '.less1{color:red}\n' +
                 '.foo{background:green}\n\n' +
-                '/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi90ZXN0L2ZpbGUxLmxlc3MiLCIvdGVzdC9maWxlMi5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsT0FBUyxNQUFBO0FDRFQsS0FBTyxXQUFZIn0= */'
-            )
+                '/*# sourceMappingURL=test.min.css.map */'
+            );
+			
+			test.assert.verifyFileAndContentsAre(
+                test.given.OutputDirectory,
+                '/test.min.css.map',
+				'{"version":3,"sources":["/test/file1.less","/test/file2.css"],"names":[],"mappings":"AACA,OAAS,MAAA;ACDT,KAAO,WAAY"}'
+			);
 
         });
 

@@ -1,17 +1,17 @@
 var convert = require('convert-source-map');
 var type = require('../file-type');
 
-function getComment(map, fileType) {
+function getComment(relativeSourceMapPath, fileType) {
 
-    var encodedMap = 'sourceMappingURL=data:application/json;base64,' + convert.fromObject(map).toBase64();
+    var sourceMapUrl = 'sourceMappingURL=' + relativeSourceMapPath;
 
     switch (fileType) {
 
         case type.CSS:
-            return '/*# ' + encodedMap + ' */';
+            return '/*# ' + sourceMapUrl + ' */';
 
         case type.JS:
-            return '//# ' + encodedMap;
+            return '//# ' + sourceMapUrl;
 
     }
 

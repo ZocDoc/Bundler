@@ -353,8 +353,8 @@ describe('compile ES6', function() {
                     map: {
                         version: 3,
                         sources: ['C:\\foo\\bar.es6'],
-                        names: [],
-                        mappings: ';;AAAA,IAAM,CAAC,GAAG,CAAC,CAAC',
+                        names: [ 'x' ],
+                        mappings: ';;AAAA,IAAMA,IAAI,CAAV',
                         file: 'unknown',
                         sourcesContent: ['const x = 5;']
                     }
