@@ -6,7 +6,7 @@ var path = require('path');
 function read(filePath) {
     return new Promise(function(resolve) {
 
-		var fileDir = path.parse(filePath).dir;
+        var fileDir = path.parse(filePath).dir;
         readTextFile(filePath, function(code) {
 
             var extractedCode = sourceMap.extract(code, fileDir);
