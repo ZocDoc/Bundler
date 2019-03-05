@@ -56,7 +56,8 @@
   },
   "scripts": {
     "bundle": "node .\\src\\bundler.js",
-    "test": "jasmine-node",
+    "test-integration": "jasmine-node --color --verbose --junitreport .\\tests\\integration",
+    "test-unit": "jasmine-node --color .\\tests\\unit\\file",
     "test-all": "node .\\tests\\test-runner\\parallel-test-runner.js"
   }
 }
